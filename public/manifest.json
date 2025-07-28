@@ -1,0 +1,24 @@
+{
+  "name": "Omelette's",
+  "short_name": "Omelette's",
+  "icons": [
+    {
+      "src": "/image/logos.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/image/logos.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "theme_color": "#0d7a68",
+  "description": "Omelette's",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "scope": "/",
+  "orientation": "portrait-primary"
+}

@@ -1,0 +1,36 @@
+/* Noto Sans Lao Regular */
+@font-face {
+    font-family: 'Noto Sans Lao';
+    src: url('/fonts/Noto_Sans_Lao/NotoSansLao-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap; /* Recommended for performance */
+  }
+  
+  /* Noto Sans Lao Bold */
+  @font-face {
+    font-family: 'Noto Sans Lao';
+    src: url('/fonts/Noto_Sans_Lao/NotoSansLao-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  /* Add more @font-face rules for other weights or styles if needed */
+  
+  /* You can do the same for your other fonts like Ubuntu */
+  @font-face {
+    font-family: 'Ubuntu';
+    src: url('/fonts/Ubuntu/Ubuntu-Regular.ttf') format('truetype'); /* Adjust filename */
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  @font-face {
+    font-family: 'Ubuntu';
+    src: url('/fonts/Ubuntu/Ubuntu-Bold.ttf') format('truetype'); /* Adjust filename */
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+  }
