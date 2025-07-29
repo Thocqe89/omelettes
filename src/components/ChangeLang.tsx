@@ -1,4 +1,3 @@
-
 import { useTranslation } from "react-i18next";
 
 const LanguageSwitcher = () => {
@@ -15,7 +14,6 @@ const LanguageSwitcher = () => {
       <button onClick={() => changeLanguage("la")}>ລາວ</button>
       <button onClick={() => changeLanguage("zh")}>中文</button>
       <button onClick={() => changeLanguage("th")}>ไทย</button>
-      
     </div>
   );
 };

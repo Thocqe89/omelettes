@@ -7,15 +7,10 @@ import { Provider } from "./provider.tsx";
 import "@/styles/globals.css";
 // import PwaInstallPrompt from "./components/InstallPrompt.tsx";
 
-
-
-
-
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-      {/* <PwaInstallPrompt/> */}
+    {/* <PwaInstallPrompt/> */}
     <BrowserRouter>
-  
       <Provider>
         <App />
       </Provider>

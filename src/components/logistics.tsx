@@ -1,62 +1,65 @@
 import * as React from "react";
-
-import DefaultLayout from "@/layouts/default";
 import { useTranslation } from "react-i18next";
-import Loading from "@/components/loading";
 import { addToast } from "@heroui/toast";
 import { BsCheck2All } from "react-icons/bs";
 import { QRCodeSVG } from "qrcode.react";
 import { Box, Paper } from "@mui/material";
-import {   Button,  Input } from "@heroui/react";
+import { Button, Input } from "@heroui/react";
 import { FiDownload } from "react-icons/fi";
 import html2canvas from "html2canvas";
-import {Form} from "@heroui/form";
+import { Form } from "@heroui/form";
 
+import Loading from "@/components/loading";
+import DefaultLayout from "@/layouts/default";
 
-const WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbxK6TxvDKhMbYhK-vZyZH9s8PZrmMg5k9ETVQue0DzlRhg0eu6tEA-QvmIJzaHiOn46Ig/exec";
+const WEB_APP_POST_URL = import.meta.env.VITE_GOOGLE_SHEET_URL;
 
 export default function Logistics() {
   const { t } = useTranslation();
   const [status, setStatus] = React.useState("");
-  const [submittedData, setSubmittedData] = React.useState<Record<string, any> | null>(null);
+  const [submittedData, setSubmittedData] = React.useState<Record<
+    string,
+    any
+  > | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
   const qrRef = React.useRef<HTMLDivElement>(null);
 
-const handleDownloadImage = async () => {
-  if (qrRef.current) {
-    const canvas = await html2canvas(qrRef.current);
-    const link = document.createElement("a");
-    link.download = `${submittedData?.id || "qr-code"}.png`;
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-  }
-};
+  const handleDownloadImage = async () => {
+    if (qrRef.current) {
+      const canvas = await html2canvas(qrRef.current);
+      const link = document.createElement("a");
 
-const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  setIsLoading(true);
-  const form = e.currentTarget;
-  const formData = new FormData(form);
-  const data = Object.fromEntries(formData.entries());
-
-  const now = new Date();
-  const datePart = now.toISOString().slice(0, 10).replace(/-/g, "");
-  const timePart = now.toTimeString().slice(0, 8).replace(/:/g, "");
-  const id = `OMS-${datePart}-${timePart}`;
-  const enhancedData = {
-    ...data,
-    id,
-    date: now.toLocaleDateString(),
+      link.download = `${submittedData?.id || "qr-code"}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    }
   };
 
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+
+    const now = new Date();
+    const datePart = now.toISOString().slice(0, 10).replace(/-/g, "");
+    const timePart = now.toTimeString().slice(0, 8).replace(/:/g, "");
+    const id = `OMS-${datePart}-${timePart}`;
+    const enhancedData = {
+      ...data,
+      id,
+      date: now.toLocaleDateString(),
+    };
+
     try {
-      const response = await fetch(WEB_APP_URL, {
+      const response = await fetch(WEB_APP_POST_URL, {
         method: "POST",
         body: new URLSearchParams(enhancedData as Record<string, string>),
       });
 
       const responseData = await response.json();
+
       setStatus(responseData.status);
       setSubmittedData({ ...enhancedData, status: responseData.status });
 
@@ -97,97 +100,111 @@ const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
             {status !== "Success" && (
               <Form className="space-y-8" onSubmit={onSubmit}>
-                 <Input
-                isRequired
-                errorMessage={t("invalid_name") || "Please enter your name correctly"}
-                label={t("name")}
-                labelPlacement="inside"
-                name="name"
-                placeholder="tock"
-                type="text"
-              />
+                <Input
+                  isRequired
+                  errorMessage={
+                    t("invalid_name") || "Please enter your name correctly"
+                  }
+                  label={t("name")}
+                  labelPlacement="inside"
+                  name="name"
+                  placeholder="tock"
+                  type="text"
+                />
 
-              <Input
-                isRequired
-                errorMessage={t("invalid_phone") || "Please enter a valid phone number"}
-                label={t("phone")}
-                labelPlacement="inside"
-                name="phone"
-                placeholder="2012345678"
-                type="tel"
-              />
+                <Input
+                  isRequired
+                  errorMessage={
+                    t("invalid_phone") || "Please enter a valid phone number"
+                  }
+                  label={t("phone")}
+                  labelPlacement="inside"
+                  name="phone"
+                  placeholder="2012345678"
+                  type="tel"
+                />
 
-              <Input
-                isRequired
-                label={t("province")}
-                labelPlacement="inside"
-                name="province"
-                placeholder={t("enter_province") || "Enter province"}
-                type="text"
-              />
+                <Input
+                  isRequired
+                  label={t("province")}
+                  labelPlacement="inside"
+                  name="province"
+                  placeholder={t("enter_province") || "Enter province"}
+                  type="text"
+                />
 
-              <Input
-                isRequired
-                label={t("district")}
-                labelPlacement="inside"
-                name="district"
-                placeholder={t("enter_district") || "Enter district"}
-                type="text"
-              />
+                <Input
+                  isRequired
+                  label={t("district")}
+                  labelPlacement="inside"
+                  name="district"
+                  placeholder={t("enter_district") || "Enter district"}
+                  type="text"
+                />
 
-              <Input
-                isRequired
-                label={t("village")}
-                labelPlacement="inside"
-                name="village"
-                placeholder={t("enter_village") || "Enter village"}
-                type="text"
-              />
+                <Input
+                  isRequired
+                  label={t("village")}
+                  labelPlacement="inside"
+                  name="village"
+                  placeholder={t("enter_village") || "Enter village"}
+                  type="text"
+                />
 
-              <Input
-                isRequired
-                label={t("logistic_unit")}
-                labelPlacement="inside"
-                name="logistic_unit"
-                placeholder={t("enter_logistic_unit") || "Enter hall unit"}
-                type="text"
-              />
+                <Input
+                  isRequired
+                  label={t("logistic_unit")}
+                  labelPlacement="inside"
+                  name="logistic_unit"
+                  placeholder={t("enter_logistic_unit") || "Enter hall unit"}
+                  type="text"
+                />
 
-              {/* New logistic info fields */}
-              <Input
-                isRequired
-                label={t("logistic_name")}
-                labelPlacement="inside"
-                name="logistic_name"
-                placeholder={t("enter_logistic_name") || "Enter logistic name"}
-                type="text"
-              />
+                {/* New logistic info fields */}
+                <Input
+                  isRequired
+                  label={t("logistic_name")}
+                  labelPlacement="inside"
+                  name="logistic_name"
+                  placeholder={
+                    t("enter_logistic_name") || "Enter logistic name"
+                  }
+                  type="text"
+                />
 
-              <Input
-                isRequired
-                label={t("logistic_address")}
-                labelPlacement="inside"
-                name="logistic_address"
-                placeholder={t("enter_logistic_address") || "Enter logistic address"}
-                type="text"
-              />
+                <Input
+                  isRequired
+                  label={t("logistic_address")}
+                  labelPlacement="inside"
+                  name="logistic_address"
+                  placeholder={
+                    t("enter_logistic_address") || "Enter logistic address"
+                  }
+                  type="text"
+                />
 
-              <Input
-                isRequired
-                label={t("logistic_phone")}
-                labelPlacement="inside"
-                name="logistic_phone"
-                placeholder={t("enter_logistic_phone") || "Enter logistic phone"}
-                type="tel"
-              />
+                <Input
+                  isRequired
+                  label={t("logistic_phone")}
+                  labelPlacement="inside"
+                  name="logistic_phone"
+                  placeholder={
+                    t("enter_logistic_phone") || "Enter logistic phone"
+                  }
+                  type="tel"
+                />
 
-              <p className="text-1xl text-yellow-600 dark:text-yellow-400 font-medium">
-                ⚠️ {t("double_check_warning")}
-              </p>
+                <p className="text-1xl text-yellow-600 dark:text-yellow-400 font-medium">
+                  ⚠️ {t("double_check_warning")}
+                </p>
 
-              <Button type="submit" className="bg-[#0d7a68] text-white" fullWidth>
-                {t("submit")}
-              </Button>
+                <Button
+                  fullWidth
+                  className="bg-[#0d7a68] text-white"
+                  type="submit"
+                >
+                  {t("submit")}
+                </Button>
               </Form>
             )}
 
@@ -202,26 +219,36 @@ const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
                 <ul className="space-y-4">
                   {/* Personal Details */}
-                  
+
                   <li className="flex justify-between items-start">
                     <span className="font-semibold">{t("name")}: </span>
-                    <span className="text-right break-words max-w-[60%]">{submittedData.name}</span>
+                    <span className="text-right break-words max-w-[60%]">
+                      {submittedData.name}
+                    </span>
                   </li>
                   <li className="flex justify-between items-start">
                     <span className="font-semibold">{t("phone")}: </span>
-                    <span className="text-right break-words max-w-[60%]">{submittedData.phone}</span>
+                    <span className="text-right break-words max-w-[60%]">
+                      {submittedData.phone}
+                    </span>
                   </li>
                   <li className="flex justify-between items-start">
                     <span className="font-semibold">{t("province")}: </span>
-                    <span className="text-right break-words max-w-[60%]">{submittedData.province}</span>
+                    <span className="text-right break-words max-w-[60%]">
+                      {submittedData.province}
+                    </span>
                   </li>
                   <li className="flex justify-between items-start">
                     <span className="font-semibold">{t("district")}: </span>
-                    <span className="text-right break-words max-w-[60%]">{submittedData.district}</span>
+                    <span className="text-right break-words max-w-[60%]">
+                      {submittedData.district}
+                    </span>
                   </li>
                   <li className="flex justify-between items-start">
                     <span className="font-semibold">{t("village")}: </span>
-                    <span className="text-right break-words max-w-[60%]">{submittedData.village}</span>
+                    <span className="text-right break-words max-w-[60%]">
+                      {submittedData.village}
+                    </span>
                   </li>
 
                   {/* Red line separator */}
@@ -231,20 +258,36 @@ const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
                   {/* Logistic Details */}
                   <li className="flex justify-between items-start">
-                    <span className="font-semibold">{t("logistic_unit")}: </span>
-                    <span className="text-right break-words max-w-[60%]">{submittedData.logistic_unit}</span>
+                    <span className="font-semibold">
+                      {t("logistic_unit")}:{" "}
+                    </span>
+                    <span className="text-right break-words max-w-[60%]">
+                      {submittedData.logistic_unit}
+                    </span>
                   </li>
                   <li className="flex justify-between items-start">
-                    <span className="font-semibold">{t("logistic_name")}: </span>
-                    <span className="text-right break-words max-w-[60%]">{submittedData.logistic_name}</span>
+                    <span className="font-semibold">
+                      {t("logistic_name")}:{" "}
+                    </span>
+                    <span className="text-right break-words max-w-[60%]">
+                      {submittedData.logistic_name}
+                    </span>
                   </li>
                   <li className="flex justify-between items-start">
-                    <span className="font-semibold">{t("logistic_address")}: </span>
-                    <span className="text-right break-words max-w-[60%]">{submittedData.logistic_address}</span>
+                    <span className="font-semibold">
+                      {t("logistic_address")}:{" "}
+                    </span>
+                    <span className="text-right break-words max-w-[60%]">
+                      {submittedData.logistic_address}
+                    </span>
                   </li>
                   <li className="flex justify-between items-start">
-                    <span className="font-semibold">{t("logistic_phone")}: </span>
-                    <span className="text-right break-words max-w-[60%]">{submittedData.logistic_phone}</span>
+                    <span className="font-semibold">
+                      {t("logistic_phone")}:{" "}
+                    </span>
+                    <span className="text-right break-words max-w-[60%]">
+                      {submittedData.logistic_phone}
+                    </span>
                   </li>
 
                   {/* Red line separator */}
@@ -255,19 +298,25 @@ const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                   {/* ID, Date, Status */}
                   <li className="flex justify-between items-start">
                     <span className="font-semibold">{t("id")}: </span>
-                    <span className="text-right break-words max-w-[60%]">{submittedData.id}</span>
+                    <span className="text-right break-words max-w-[60%]">
+                      {submittedData.id}
+                    </span>
                   </li>
                   <li className="flex justify-between items-start">
                     <span className="font-semibold">{t("date")}: </span>
-                    <span className="text-right break-words max-w-[60%]">{submittedData.date}</span>
+                    <span className="text-right break-words max-w-[60%]">
+                      {submittedData.date}
+                    </span>
                   </li>
                   <li className="flex justify-between items-start">
                     <span className="font-semibold">{t("status")}: </span>
                     <span className="text-right break-words max-w-[60%]">
                       {submittedData.status === "Success" ? (
                         <span className="flex items-center gap-1">
-                          <p className="text-default-500">Form submitted successfully</p> |{" "}
-                          <BsCheck2All size={23} color="#0d7a68" />
+                          <p className="text-default-500">
+                            Form submitted successfully
+                          </p>{" "}
+                          | <BsCheck2All color="#0d7a68" size={23} />
                         </span>
                       ) : (
                         submittedData.status
@@ -308,15 +357,15 @@ const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                       }}
                     >
                       <QRCodeSVG
-                        value={`${submittedData.id}`}
-                        size={200}
-                        level="H"
-                        fgColor="#0d7a68"
                         bgColor="#ffffff"
+                        fgColor="#0d7a68"
+                        level="H"
+                        size={200}
+                        value={`${submittedData.id}`}
                       />
                       <img
-                        src="/image/logo01.png"
                         alt="Logo"
+                        src="/image/logo01.png"
                         style={{
                           position: "absolute",
                           top: "50%",
@@ -397,15 +446,14 @@ const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                   </Box>
                 </Paper>
                 <div className="flex justify-center mt-4">
-  <Button
-    onClick={handleDownloadImage}
-    className="bg-[#0d7a68] text-white flex items-center gap-2"
-  >
-    <FiDownload size={18} />
-    {t("download_qr_image")}
-  </Button>
-</div>
-
+                  <Button
+                    className="bg-[#0d7a68] text-white flex items-center gap-2"
+                    onClick={handleDownloadImage}
+                  >
+                    <FiDownload size={18} />
+                    {t("download_qr_image")}
+                  </Button>
+                </div>
               </div>
             )}
           </div>

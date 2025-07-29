@@ -1,16 +1,19 @@
 import DefaultLayout from "@/layouts/default";
+
 import * as React from "react";
 import { useTranslation } from "react-i18next";
-
 import { Modal, ModalBody, ModalContent, ModalHeader } from "@heroui/modal";
 import { useState } from "react";
 import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
 import { AiFillTruck } from "react-icons/ai";
-import { AiOutlineRight, AiOutlinePlusCircle, AiOutlineMinusCircle } from "react-icons/ai";
-import 'aos/dist/aos.css';
+import {
+  AiOutlineRight,
+  AiOutlinePlusCircle,
+  AiOutlineMinusCircle,
+} from "react-icons/ai";
+import "aos/dist/aos.css";
 import { Image } from "@heroui/image";
-
 
 export default function StorePage() {
   const { t } = useTranslation();
@@ -29,7 +32,7 @@ export default function StorePage() {
   const [expandedProduct, setExpandedProduct] = useState<string | null>(null);
 
   const toggleExpand = (productName: string) => {
-    setExpandedProduct(prev => (prev === productName ? null : productName));
+    setExpandedProduct((prev) => (prev === productName ? null : productName));
   };
 
   const productList = [
@@ -40,7 +43,7 @@ export default function StorePage() {
       priceKey: "price_comac",
       imageSrc: "c919/p1.png",
       orderId: "OMS202501",
-      isNew: true
+      isNew: true,
     },
     {
       id: "qatar_777",
@@ -48,7 +51,7 @@ export default function StorePage() {
       descriptionKey: "product_qatar_777_description",
       priceKey: "price_qatar",
       imageSrc: "c919/p3.png",
-      orderId: "OMS202502"
+      orderId: "OMS202502",
     },
     {
       id: "antonov_an225",
@@ -56,7 +59,7 @@ export default function StorePage() {
       descriptionKey: "product_antonov_an225_description",
       priceKey: "price_antonov",
       imageSrc: "c919/p2.png",
-      orderId: "OMS202503"
+      orderId: "OMS202503",
     },
     {
       id: "china_eastern_c919",
@@ -65,16 +68,14 @@ export default function StorePage() {
       priceKey: "price_china_eastern",
       imageSrc: "c919/p4.png",
       orderId: "OMS202504",
-      isNew: true
-    }
+      isNew: true,
+    },
   ];
 
   return (
     <DefaultLayout>
       <section className="flex flex-col items-center justify-center gap-10 py-16 md:py-20 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
         <div className="inline-block max-w-xl text-center">
-       
-        
           <h1 className="text-3xl sm:text-4xl lg:text-5xl text-[#0d7a68] dark:text-green-400 font-extrabold text-center mb-3">
             {t("store")}
           </h1>
@@ -85,7 +86,7 @@ export default function StorePage() {
 
         {/* --- Responsive Grid Container for Product Cards --- */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 pb-8">
-          {productList.map(product => (
+          {productList.map((product) => (
             <div
               key={product.id}
               // Card container: consistent height, flex column, responsive width
@@ -107,10 +108,10 @@ export default function StorePage() {
               {/* Product Image Section */}
               <div className="flex justify-center items-center h-2/5 md:h-1/2 overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-700 mb-4">
                 <Image
-                  src={product.imageSrc}
                   isZoomed
                   alt={t(product.nameKey)}
                   className="object-contain w-full h-full group-hover:scale-105 transition-transform duration-500"
+                  src={product.imageSrc}
                 />
               </div>
 
@@ -119,8 +120,12 @@ export default function StorePage() {
                 <h2 className="text-xl sm:text-2xl text-gray-800 dark:text-gray-100 font-semibold mb-2 break-words leading-tight">
                   {t(product.nameKey)}
                 </h2>
-                <p className="text-base sm:text-lg md:text-xl text-gray-500 dark:text-gray-400 mb-4 font-medium">{t("price")}</p>
-                <p className="text-3xl sm:text-4xl text-green-700 dark:text-green-400 font-extrabold mb-4">{t(product.priceKey)}</p>
+                <p className="text-base sm:text-lg md:text-xl text-gray-500 dark:text-gray-400 mb-4 font-medium">
+                  {t("price")}
+                </p>
+                <p className="text-3xl sm:text-4xl text-green-700 dark:text-green-400 font-extrabold mb-4">
+                  {t(product.priceKey)}
+                </p>
 
                 {/* Expand/Collapse Button */}
                 <button
@@ -148,22 +153,40 @@ export default function StorePage() {
                     </p>
                     <ul className="space-y-2 mb-4 text-left px-2 md:px-4">
                       <li className="flex items-center">
-                        <span className="text-green-500 dark:text-green-400 mr-2">✔</span> {t("feature_high_quality")}
+                        <span className="text-green-500 dark:text-green-400 mr-2">
+                          ✔
+                        </span>{" "}
+                        {t("feature_high_quality")}
                       </li>
                       <li className="flex items-center">
-                        <span className="text-green-500 dark:text-green-400 mr-2">✔</span> {t("feature_detailed_design")}
+                        <span className="text-green-500 dark:text-green-400 mr-2">
+                          ✔
+                        </span>{" "}
+                        {t("feature_detailed_design")}
                       </li>
                       <li className="flex items-center">
-                        <span className="text-green-500 dark:text-green-400 mr-2">✔</span> {t("feature_perfect_display")}
+                        <span className="text-green-500 dark:text-green-400 mr-2">
+                          ✔
+                        </span>{" "}
+                        {t("feature_perfect_display")}
                       </li>
                       <li className="flex items-center">
-                        <span className="text-green-500 dark:text-green-400 mr-2">✔</span> {t("feature_collector_item")}
+                        <span className="text-green-500 dark:text-green-400 mr-2">
+                          ✔
+                        </span>{" "}
+                        {t("feature_collector_item")}
                       </li>
                       <li className="flex items-center">
-                        <span className="text-green-500 dark:text-green-400 mr-2">✔</span> {t("feature_secure_packaging")}
+                        <span className="text-green-500 dark:text-green-400 mr-2">
+                          ✔
+                        </span>{" "}
+                        {t("feature_secure_packaging")}
                       </li>
                       <li className="flex items-center">
-                        <span className="text-green-500 dark:text-green-400 mr-2">✔</span> {t("feature_customer_support")}
+                        <span className="text-green-500 dark:text-green-400 mr-2">
+                          ✔
+                        </span>{" "}
+                        {t("feature_customer_support")}
                       </li>
                     </ul>
                   </div>
@@ -181,12 +204,13 @@ export default function StorePage() {
                 onClick={() => {
                   const message = encodeURIComponent(
                     `${t("whatsapp_order_greeting")} "${t(product.nameKey)}"\n` +
-                    `${t("whatsapp_order_id")} ${product.orderId}\n\n` +
-                    `${t("whatsapp_note")}\n` +
-                    `${t("whatsapp_payment_required")}\n` +
-                    `${t("whatsapp_send_proof")}\n` +
-                    `${t("whatsapp_record_unboxing")}`
+                      `${t("whatsapp_order_id")} ${product.orderId}\n\n` +
+                      `${t("whatsapp_note")}\n` +
+                      `${t("whatsapp_payment_required")}\n` +
+                      `${t("whatsapp_send_proof")}\n` +
+                      `${t("whatsapp_record_unboxing")}`,
                   );
+
                   window.location.href = `https://wa.me/8562055058028?text=${message}`;
                 }}
               >
@@ -200,25 +224,25 @@ export default function StorePage() {
         {/* Logistics and Payment Section */}
         <div className="flex flex-col items-center gap-6 mt-12 w-full max-w-3xl px-4">
           <Button
+            className="flex items-center gap-2 px-6 py-3 sm:px-8 sm:py-4 rounded-full text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl transition-shadow duration-300"
             style={{ backgroundColor: "#0d7a68", color: "white" }}
             onClick={handleClick}
-            className="flex items-center gap-2 px-6 py-3 sm:px-8 sm:py-4 rounded-full text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl transition-shadow duration-300"
           >
             {t("logistics")} <AiFillTruck color="white" size={25} />
           </Button>
 
           {showNotice && (
-            <div
-              className="mb-6 p-4 sm:p-5 rounded-2xl bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 shadow-lg text-sm sm:text-base md:text-lg max-w-md text-center animate-fade-in-down"
-            >
+            <div className="mb-6 p-4 sm:p-5 rounded-2xl bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 shadow-lg text-sm sm:text-base md:text-lg max-w-md text-center animate-fade-in-down">
               ⚠️ <strong>{t("notice")}</strong> {t("complete_your_payment")}
               <div className="mt-4 sm:mt-5">
                 <Link href="/logistics">
-                  <button
-                    className="bg-[#0d7a68] hover:bg-[#0a5c4d] text-white flex items-center gap-2 px-5 py-2  rounded-full font-semibold shadow-md text-sm sm:text-base"
-
-                  >
-                    {t("i_have_paid_continue")} <AiOutlineRight className="hover:translate-x-1 transition-transform duration-200" size={25} color="#ffffff" />
+                  <button className="bg-[#0d7a68] hover:bg-[#0a5c4d] text-white flex items-center gap-2 px-5 py-2  rounded-full font-semibold shadow-md text-sm sm:text-base">
+                    {t("i_have_paid_continue")}{" "}
+                    <AiOutlineRight
+                      className="hover:translate-x-1 transition-transform duration-200"
+                      color="#ffffff"
+                      size={25}
+                    />
                   </button>
                 </Link>
               </div>
@@ -233,10 +257,19 @@ export default function StorePage() {
         {/* Bank Modals Section */}
         <div className="flex justify-center gap-4 sm:gap-6 mt-8">
           {/* JDB Button + Modal */}
-          <button onClick={handleOpen('jdb')} className="transform hover:scale-110 transition-transform duration-200">
-            <Image src="/image/jdb.png" alt="JDB" width={50} height={50} className="sm:w-60 sm:h-60" />
+          <button
+            className="transform hover:scale-110 transition-transform duration-200"
+            onClick={handleOpen("jdb")}
+          >
+            <Image
+              alt="JDB"
+              className="sm:w-60 sm:h-60"
+              height={50}
+              src="/image/jdb.png"
+              width={50}
+            />
           </button>
-          <Modal isOpen={openModal === 'jdb'} onOpenChange={handleClose}>
+          <Modal isOpen={openModal === "jdb"} onOpenChange={handleClose}>
             <ModalContent className="w-full max-w-md sm:max-w-xl p-4 sm:p-6 rounded-xl shadow-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
               <>
                 <ModalHeader className="flex items-center justify-between text-xl sm:text-2xl text-[#0d7a68] dark:text-green-400 font-bold pb-3 sm:pb-4 border-b border-gray-200 dark:border-gray-700">
@@ -245,53 +278,81 @@ export default function StorePage() {
                 <ModalBody className="flex flex-col items-center gap-3 sm:gap-4 py-4 sm:py-6">
                   <Image
                     isBlurred
+                    alt="JDB Bank QR Code"
                     className="w-full max-w-[250px] sm:max-w-[300px] h-auto rounded-lg shadow-md"
                     src={imgjdb}
-                    alt="JDB Bank QR Code"
                   />
-                  <p className="text-sm sm:text-base text-gray-700 dark:text-gray-200 text-center">{t("scan_to_pay")}</p>
+                  <p className="text-sm sm:text-base text-gray-700 dark:text-gray-200 text-center">
+                    {t("scan_to_pay")}
+                  </p>
                 </ModalBody>
               </>
             </ModalContent>
           </Modal>
 
           {/* BCEL Button + Modal */}
-          <button onClick={handleOpen('bcel')} className="transform hover:scale-110 transition-transform duration-200">
-            <Image src="/image/bcel.png" alt="BCEL" width={50} height={50} className="sm:w-60 sm:h-60" />
+          <button
+            className="transform hover:scale-110 transition-transform duration-200"
+            onClick={handleOpen("bcel")}
+          >
+            <Image
+              alt="BCEL"
+              className="sm:w-60 sm:h-60"
+              height={50}
+              src="/image/bcel.png"
+              width={50}
+            />
           </button>
-          <Modal isOpen={openModal === 'bcel'} onOpenChange={handleClose}>
+          <Modal isOpen={openModal === "bcel"} onOpenChange={handleClose}>
             <ModalContent className="w-full max-w-md sm:max-w-xl p-4 sm:p-6 rounded-xl shadow-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
               <>
-                <ModalHeader className="flex items-center justify-between text-xl sm:text-2xl text-[#0d7a68] dark:text-green-400 font-bold pb-3 sm:pb-4 border-b border-gray-200 dark:border-gray-700">BCEL Bank QR Code</ModalHeader>
+                <ModalHeader className="flex items-center justify-between text-xl sm:text-2xl text-[#0d7a68] dark:text-green-400 font-bold pb-3 sm:pb-4 border-b border-gray-200 dark:border-gray-700">
+                  BCEL Bank QR Code
+                </ModalHeader>
                 <ModalBody className="flex flex-col items-center gap-3 sm:gap-4 py-4 sm:py-6">
                   <Image
                     isBlurred
+                    alt="BCEL Bank QR Code"
                     className="w-full max-w-[250px] sm:max-w-[300px] h-auto rounded-lg shadow-md"
                     src={imgbcel}
-                    alt="BCEL Bank QR Code"
                   />
-                  <p className="text-sm sm:text-base text-gray-700 dark:text-gray-200 text-center">{t("scan_to_pay")}</p>
+                  <p className="text-sm sm:text-base text-gray-700 dark:text-gray-200 text-center">
+                    {t("scan_to_pay")}
+                  </p>
                 </ModalBody>
               </>
             </ModalContent>
           </Modal>
 
           {/* LDB Button + Modal */}
-          <button onClick={handleOpen('ldb')} className="transform hover:scale-110 transition-transform duration-200">
-            <Image src="/image/ldb.png" alt="LDB" width={50} height={50} className="sm:w-60 sm:h-60" />
+          <button
+            className="transform hover:scale-110 transition-transform duration-200"
+            onClick={handleOpen("ldb")}
+          >
+            <Image
+              alt="LDB"
+              className="sm:w-60 sm:h-60"
+              height={50}
+              src="/image/ldb.png"
+              width={50}
+            />
           </button>
-          <Modal isOpen={openModal === 'ldb'} onOpenChange={handleClose}>
+          <Modal isOpen={openModal === "ldb"} onOpenChange={handleClose}>
             <ModalContent className="w-full max-w-md sm:max-w-xl p-4 sm:p-6 rounded-xl shadow-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
               <>
-                <ModalHeader className="flex items-center justify-between text-xl sm:text-2xl text-[#0d7a68] dark:text-green-400 font-bold pb-3 sm:pb-4 border-b border-gray-200 dark:border-gray-700">LDB Bank QR Code</ModalHeader>
+                <ModalHeader className="flex items-center justify-between text-xl sm:text-2xl text-[#0d7a68] dark:text-green-400 font-bold pb-3 sm:pb-4 border-b border-gray-200 dark:border-gray-700">
+                  LDB Bank QR Code
+                </ModalHeader>
                 <ModalBody className="flex flex-col items-center gap-3 sm:gap-4 py-4 sm:py-6">
                   <Image
                     isBlurred
+                    alt="LDB Bank QR Code"
                     className="w-full max-w-[250px] sm:max-w-[300px] h-auto rounded-lg shadow-md"
                     src={imgldb}
-                    alt="LDB Bank QR Code"
                   />
-                  <p className="text-sm sm:text-base text-gray-700 dark:text-gray-200 text-center">{t("scan_to_pay")}</p>
+                  <p className="text-sm sm:text-base text-gray-700 dark:text-gray-200 text-center">
+                    {t("scan_to_pay")}
+                  </p>
                 </ModalBody>
               </>
             </ModalContent>
@@ -299,8 +360,8 @@ export default function StorePage() {
         </div>
 
         {/* Separator Line */}
-        <div data-aos="slide-up" className="mt-12">
-          <div className="h-1 w-64 sm:w-80 md:w-96 bg-[#0d7a68] dark:bg-green-600 rounded-full mx-auto transition-colors duration-300"></div>
+        <div className="mt-12" data-aos="slide-up">
+          <div className="h-1 w-64 sm:w-80 md:w-96 bg-[#0d7a68] dark:bg-green-600 rounded-full mx-auto transition-colors duration-300" />
         </div>
       </section>
     </DefaultLayout>

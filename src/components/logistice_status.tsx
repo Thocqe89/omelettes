@@ -1,10 +1,12 @@
 import * as React from "react";
-import DefaultLayout from "@/layouts/default";
 import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 
-const WEB_APP_POST_URL =
-  "https://script.google.com/macros/s/AKfycbxK6TxvDKhMbYhK-vZyZH9s8PZrmMg5k9ETVQue0DzlRhg0eu6tEA-QvmIJzaHiOn46Ig/exec";
+import DefaultLayout from "@/layouts/default";
+
+const WEB_APP_POST_URL = import.meta.env.VITE_GOOGLE_SHEET_URL;
+
+
 
 export default function ProductInputForm() {
   const { t } = useTranslation();
@@ -24,9 +26,12 @@ export default function ProductInputForm() {
 
   const [loading, setLoading] = React.useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,7 +39,11 @@ export default function ProductInputForm() {
 
     // Basic validation example
     if (!form.productId || !form.productName) {
-      alert(t("please_fill_required_fields") || "Please fill in Product ID and Product Name.");
+      alert(
+        t("please_fill_required_fields") ||
+          "Please fill in Product ID and Product Name.",
+      );
+
       return;
     }
 
@@ -90,20 +99,23 @@ export default function ProductInputForm() {
           {t("add_new_product") || "Add New Product"}
         </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-6 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md">
+        <form
+          className="space-y-6 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md"
+          onSubmit={handleSubmit}
+        >
           <div>
             <label className="block mb-1 font-semibold" htmlFor="productId">
               {t("product_id") || "Product ID"} *
             </label>
             <input
-              type="text"
-              id="productId"
-              name="productId"
-              value={form.productId}
-              onChange={handleChange}
               required
               className="w-full px-3 py-2 border rounded-md border-green-400 focus:outline-none focus:ring-2 focus:ring-green-600"
+              id="productId"
+              name="productId"
               placeholder="e.g. P12345"
+              type="text"
+              value={form.productId}
+              onChange={handleChange}
             />
           </div>
 
@@ -112,14 +124,14 @@ export default function ProductInputForm() {
               {t("product_name") || "Product Name"} *
             </label>
             <input
-              type="text"
-              id="productName"
-              name="productName"
-              value={form.productName}
-              onChange={handleChange}
               required
               className="w-full px-3 py-2 border rounded-md border-green-400 focus:outline-none focus:ring-2 focus:ring-green-600"
+              id="productName"
+              name="productName"
               placeholder="e.g. Airplane Model X"
+              type="text"
+              value={form.productName}
+              onChange={handleChange}
             />
           </div>
 
@@ -128,13 +140,13 @@ export default function ProductInputForm() {
               {t("category") || "Category"}
             </label>
             <input
-              type="text"
+              className="w-full px-3 py-2 border rounded-md border-green-400 focus:outline-none focus:ring-2 focus:ring-green-600"
               id="category"
               name="category"
+              placeholder="e.g. Toys"
+              type="text"
               value={form.category}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-md border-green-400 focus:outline-none focus:ring-2 focus:ring-green-600"
-              placeholder="e.g. Toys"
             />
           </div>
 
@@ -143,13 +155,13 @@ export default function ProductInputForm() {
               {t("description") || "Description"}
             </label>
             <textarea
+              className="w-full px-3 py-2 border rounded-md border-green-400 focus:outline-none focus:ring-2 focus:ring-green-600"
               id="description"
               name="description"
+              placeholder="Detailed product description"
+              rows={3}
               value={form.description}
               onChange={handleChange}
-              rows={3}
-              className="w-full px-3 py-2 border rounded-md border-green-400 focus:outline-none focus:ring-2 focus:ring-green-600"
-              placeholder="Detailed product description"
             />
           </div>
 
@@ -159,47 +171,53 @@ export default function ProductInputForm() {
                 {t("cost_price") || "Cost Price"}
               </label>
               <input
-                type="number"
-                step="0.01"
+                className="w-full px-3 py-2 border rounded-md border-green-400 focus:outline-none focus:ring-2 focus:ring-green-600"
                 id="costPrice"
                 name="costPrice"
+                placeholder="e.g. 100.00"
+                step="0.01"
+                type="number"
                 value={form.costPrice}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-md border-green-400 focus:outline-none focus:ring-2 focus:ring-green-600"
-                placeholder="e.g. 100.00"
               />
             </div>
 
             <div>
-              <label className="block mb-1 font-semibold" htmlFor="sellingPrice">
+              <label
+                className="block mb-1 font-semibold"
+                htmlFor="sellingPrice"
+              >
                 {t("selling_price") || "Selling Price"}
               </label>
               <input
-                type="number"
-                step="0.01"
+                className="w-full px-3 py-2 border rounded-md border-green-400 focus:outline-none focus:ring-2 focus:ring-green-600"
                 id="sellingPrice"
                 name="sellingPrice"
+                placeholder="e.g. 150.00"
+                step="0.01"
+                type="number"
                 value={form.sellingPrice}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-md border-green-400 focus:outline-none focus:ring-2 focus:ring-green-600"
-                placeholder="e.g. 150.00"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block mb-1 font-semibold" htmlFor="stockQuantity">
+              <label
+                className="block mb-1 font-semibold"
+                htmlFor="stockQuantity"
+              >
                 {t("stock_quantity") || "Stock Quantity"}
               </label>
               <input
-                type="number"
+                className="w-full px-3 py-2 border rounded-md border-green-400 focus:outline-none focus:ring-2 focus:ring-green-600"
                 id="stockQuantity"
                 name="stockQuantity"
+                placeholder="e.g. 50"
+                type="number"
                 value={form.stockQuantity}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-md border-green-400 focus:outline-none focus:ring-2 focus:ring-green-600"
-                placeholder="e.g. 50"
               />
             </div>
 
@@ -208,13 +226,13 @@ export default function ProductInputForm() {
                 {t("supplier") || "Supplier"}
               </label>
               <input
-                type="text"
+                className="w-full px-3 py-2 border rounded-md border-green-400 focus:outline-none focus:ring-2 focus:ring-green-600"
                 id="supplier"
                 name="supplier"
+                placeholder="Supplier name"
+                type="text"
                 value={form.supplier}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-md border-green-400 focus:outline-none focus:ring-2 focus:ring-green-600"
-                placeholder="Supplier name"
               />
             </div>
           </div>
@@ -224,12 +242,12 @@ export default function ProductInputForm() {
               {t("date_added") || "Date Added"}
             </label>
             <input
-              type="date"
+              className="w-full px-3 py-2 border rounded-md border-green-400 focus:outline-none focus:ring-2 focus:ring-green-600"
               id="dateAdded"
               name="dateAdded"
+              type="date"
               value={form.dateAdded}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-md border-green-400 focus:outline-none focus:ring-2 focus:ring-green-600"
             />
           </div>
 
@@ -238,22 +256,24 @@ export default function ProductInputForm() {
               {t("image_url") || "Image URL"}
             </label>
             <input
-              type="url"
+              className="w-full px-3 py-2 border rounded-md border-green-400 focus:outline-none focus:ring-2 focus:ring-green-600"
               id="imageUrl"
               name="imageUrl"
+              placeholder="https://example.com/image.jpg"
+              type="url"
               value={form.imageUrl}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-md border-green-400 focus:outline-none focus:ring-2 focus:ring-green-600"
-              placeholder="https://example.com/image.jpg"
             />
           </div>
 
           <button
-            type="submit"
-            disabled={loading}
             className="w-full py-3 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition disabled:opacity-50"
+            disabled={loading}
+            type="submit"
           >
-            {loading ? (t("saving") || "Saving...") : (t("save_product") || "Save Product")}
+            {loading
+              ? t("saving") || "Saving..."
+              : t("save_product") || "Save Product"}
           </button>
         </form>
       </section>

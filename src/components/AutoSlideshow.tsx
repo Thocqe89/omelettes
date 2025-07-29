@@ -34,8 +34,8 @@ export default function AutoSlideshow() {
             isBlurred
             isZoomed
             alt={`Slide ${i + 1}`}
-            src={src}
             className="w-full h-[400px] object-cover rounded-lg"
+            src={src}
           />
         </div>
       ))}
