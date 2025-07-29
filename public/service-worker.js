@@ -2,7 +2,7 @@ const CACHE_NAME = 'omelettes-v1';
 const ASSETS = [
   '/',
   '/index.html',
-  '/image/logo-w.png',
+  '/image/logov4.png',
   '/styles/main.css',
   '/scripts/app.js'
 ];
