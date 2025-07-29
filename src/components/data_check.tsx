@@ -73,6 +73,7 @@ export default function DataCheck() {
 
     try {
       const res = await fetch(WEB_APP_POST_URL);
+      
       const data: any[] = await res.json(); // Explicitly type as any[] if structure is not strict
 
       const matchedEntries = data.filter((item: any) => {
@@ -101,6 +102,7 @@ export default function DataCheck() {
     } finally {
       setLoading(false);
     }
+    
   };
 
   const resetState = () => {
