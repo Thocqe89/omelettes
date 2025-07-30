@@ -6,8 +6,6 @@ import DefaultLayout from "@/layouts/default";
 
 const WEB_APP_POST_URL = import.meta.env.VITE_GOOGLE_SHEET_URL;
 
-
-
 export default function ProductInputForm() {
   const { t } = useTranslation();
 

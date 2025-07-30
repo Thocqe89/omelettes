@@ -19,9 +19,7 @@ interface EntryData {
   [key: string]: string | undefined; // Allows for dynamic or additional string keys
 }
 
-
 const WEB_APP_POST_URL = import.meta.env.VITE_GOOGLE_SHEET_URL;
-
 
 /**
  * DataCheck is a component that allows users to scan a QR code or search for entries by phone number.
@@ -73,7 +71,7 @@ export default function DataCheck() {
 
     try {
       const res = await fetch(WEB_APP_POST_URL);
-      
+
       const data: any[] = await res.json(); // Explicitly type as any[] if structure is not strict
 
       const matchedEntries = data.filter((item: any) => {
@@ -102,7 +100,6 @@ export default function DataCheck() {
     } finally {
       setLoading(false);
     }
-    
   };
 
   const resetState = () => {

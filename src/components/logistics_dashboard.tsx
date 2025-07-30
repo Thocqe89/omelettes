@@ -70,11 +70,8 @@ export default function Logistics_dashboard() {
                 const phone = phoneKey ? String(entry[phoneKey]) : null;
 
                 return (
-                  <div data-aos="zoom-in-up">
-                    <div
-                      key={index}
-                      className="bg-green-50 border border-green-300 p-6 rounded-2xl text-sm text-green-800 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
-                    >
+                  <div key={index} data-aos="zoom-in-up">
+                    <div className="bg-green-50 border border-green-300 p-6 rounded-2xl text-sm text-green-800 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200">
                       <div className="space-y-2">
                         {Object.entries(entry).map(([key, value]) => {
                           const lowerKey = key.trim().toLowerCase();

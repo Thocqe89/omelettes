@@ -41,6 +41,7 @@ export default ({ mode }: ConfigEnv) => {
         },
         injectRegister: 'auto',
         workbox: {
+          maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB
           runtimeCaching: [
             {
               urlPattern: ({ request }) => request.destination === 'document',

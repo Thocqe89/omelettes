@@ -1,471 +1,281 @@
-import { Accordion, AccordionItem } from "@heroui/accordion";
-import { Button } from "@heroui/button";
-import { Image } from "@heroui/image";
-import { Link } from "@heroui/link";
 import { useTranslation } from "react-i18next";
-
 import DefaultLayout from "@/layouts/default";
-import "aos/dist/aos.css";
+import { useState, useEffect, useCallback } from "react";
+import Loading from "@/components/loading";
+import { Button } from "@heroui/react";
+import { addToast } from "@heroui/toast";
+import {
+ 
+  useDisclosure,
+} from "@heroui/react";
+
+interface Product {
+  purchaseLink: string;
+  id: string;
+  name: string;
+  type: string;
+  size: string;
+  priceYuan: number;
+  exchangeRate: number;
+  priceLak: number;
+  quantity: number;
+  chinaShipping: number;
+  localShipping: number;
+  totalCost: number;
+  unitCost: number;
+  sellingPrice: number;
+  profit: number;
+  finalSellingPrice: number;
+  soldOut?: boolean;
+  notes?: string;
+}
 
 export default function ProductsPage() {
   const { t } = useTranslation();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const apiUrl = import.meta.env.VITE_PRODUCT_DETAILS_API;
+
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  const [newProduct, setNewProduct] = useState({
+    id: "",
+    name: "",
+    type: "",
+    size: "",
+    priceYuan: "",
+    priceLak: "",
+    quantity: "",
+  });
+
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await fetch(apiUrl);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+      const data = await response.json();
+
+      const productsData = data.slice(1).map((row: any[]) => {
+        if (!row || row.length < 18) return null;
+        return {
+          purchaseLink: row[0] || "",
+          id: row[1] || "N/A",
+          name: row[2] || "N/A",
+          type: row[3] || "",
+          size: row[4] || "",
+          priceYuan: Number(row[5]) || 0,
+          exchangeRate: Number(row[6]) || 0,
+          priceLak: Number(row[7]) || 0,
+          quantity: Number(row[8]) || 0,
+          chinaShipping: Number(row[9]) || 0,
+          localShipping: Number(row[10]) || 0,
+          totalCost: Number(row[11]) || 0,
+          unitCost: Number(row[12]) || 0,
+          sellingPrice: Number(row[13]) || 0,
+          profit: Number(row[14]) || 0,
+          finalSellingPrice: Number(row[15]) || 0,
+          soldOut: Boolean(row[16]),
+          notes: row[17] || "",
+        };
+      }).filter(Boolean);
+
+      setProducts(productsData as Product[]);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+      setError(t("error_fetching_products") || "Failed to load products");
+      addToast({
+        title: t("danger"),
+        description: t("error_fetching_products") || "Failed to load products",
+        color: "danger",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [apiUrl, t]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData, refreshKey]);
+
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const { name, value } = e.target;
+    setNewProduct((prev) => ({ ...prev, [name]: value }));
+  }
+
+  async function handleAddProduct() {
+    if (!newProduct.id.trim() || !newProduct.name.trim()) {
+      addToast({
+        title: t("error"),
+        description: t("product_id_name_required") || "Product ID and Name are required",
+        color: "danger",
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: newProduct.id.trim(),
+          name: newProduct.name.trim(),
+          type: newProduct.type.trim(),
+          size: newProduct.size.trim(),
+          priceYuan: Number(newProduct.priceYuan) || 0,
+          priceLak: Number(newProduct.priceLak) || 0,
+          quantity: Number(newProduct.quantity) || 0,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to add product");
+
+      addToast({
+        title: t("success"),
+        description: t("product_added") || "Product added successfully",
+        color: "success",
+      });
+
+      setNewProduct({
+        id: "",
+        name: "",
+        type: "",
+        size: "",
+        priceYuan: "",
+        priceLak: "",
+        quantity: "",
+      });
+      onOpenChange();
+      setRefreshKey((k) => k + 1);
+    } catch (err) {
+      console.error("Add product failed:", err);
+      addToast({
+        title: t("error"),
+        description: t("failed_to_add_product") || "Failed to add product",
+        color: "danger",
+      });
+    }
+  }
+
+  const handleRefresh = () => {
+    setRefreshKey((prev) => prev + 1);
+    addToast({
+      title: t("refreshed"),
+      description: t("data_refreshed") || "Data refreshed",
+      color: "success",
+    });
+  };
+
+  if (loading) {
+    return (
+      <DefaultLayout>
+        <div className="flex justify-center items-center h-screen">
+          <Loading />
+        </div>
+      </DefaultLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <DefaultLayout>
+        <div className="text-center py-10">
+          <div className="text-red-500 mb-4">{error}</div>
+          <Button className="bg-[#0d7a68] text-white" onClick={handleRefresh}>
+            {t("retry") || "Try Again"}
+          </Button>
+        </div>
+      </DefaultLayout>
+    );
+  }
 
   return (
     <DefaultLayout>
       <section className="flex flex-col items-center justify-center gap-8 py-12">
-        <div className="flex flex-col items-center w-full max-w-5xl px-4 text-center">
-          <h1 className="text-3xl text-[#0d7a68] font-bold text-center">
-            {t("product")}{" "}
-          </h1>
-          <p className="text-gray-500 mt-2 text-sm md:text-base">
-            {t("authentic_image")}
-          </p>
+        <div className="w-full max-w-7xl px-4 overflow-x-auto">
+          <h1 className="text-3xl font-bold text-center text-[#0d7a68] mb-6">{t("product")}</h1>
+          <table className="min-w-full bg-white border border-gray-200 text-sm">
+            <thead   className="bg-green-50 border border-green-300 p-6 rounded-2xl text-sm text-green-800 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200">
+              <tr>
+                <th className="py-2 px-3">{t("purchase_link")}</th>
+                <th className="py-2 px-3">{t("product_id")}</th>
+                <th className="py-2 px-3">{t("name")}</th>
+                <th className="py-2 px-3">{t("type")}</th>
+                <th className="py-2 px-3">{t("size")}</th>
+                <th className="py-2 px-3">{t("price_¥")}</th>
+                <th className="py-2 px-3">{t("exchange_rate")}</th>
+                <th className="py-2 px-3">{t("price_lak")}</th>
+                <th className="py-2 px-3">{t("quantity")}</th>
+                <th className="py-2 px-3">{t("shipping_china")}</th>
+                <th className="py-2 px-3">{t("local_shipping")}</th>
+                <th className="py-2 px-3">{t("total_cost")}</th>
+                <th className="py-2 px-3">{t("unit_cost")}</th>
+                <th className="py-2 px-3">{t("selling_price")}</th>
+                <th className="py-2 px-3">{t("profit")}</th>
+                <th className="py-2 px-3">{t("final_selling_price")}</th>
+                <th className="py-2 px-3">{t("status")}</th>
+                <th className="py-2 px-3">{t("notes")}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 text-gray-700">
+              {products.map((p) => (
+                <tr key={p.id} className={p.soldOut ? "opacity-60" : ""}>
+                  <td className="py-2 px-3">
+                    <a
+                      href={p.purchaseLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#0d7a68] underline"
+                    >
+                      Link
+                    </a>
+                  </td>
+                  <td className="py-2 px-3">{p.id}</td>
+                  <td className="py-2 px-3">{p.name}</td>
+                  <td className="py-2 px-3">{p.type}</td>
+                  <td className="py-2 px-3">{p.size}</td>
+                  <td className="py-2 px-3 text-right">{p.priceYuan.toLocaleString()} ¥</td>
+                  <td className="py-2 px-3 text-right">{p.exchangeRate}</td>
+                  <td className="py-2 px-3 text-right">{p.priceLak.toLocaleString()} </td>
+                  <td className="py-2 px-3 text-right">{p.quantity}</td>
+                  <td className="py-2 px-3 text-right">{p.chinaShipping.toLocaleString()} </td>
+                  <td className="py-2 px-3 text-right">{p.localShipping.toLocaleString()} </td>
+                  <td className="py-2 px-3 text-right">{p.totalCost.toLocaleString()} </td>
+                  <td className="py-2 px-3 text-right">{p.unitCost.toLocaleString()} </td>
+                  <td className="py-2 px-3 text-right">{p.sellingPrice.toLocaleString()} </td>
+                  <td className={`py-2 px-3 text-right ${p.profit >= 0 ? "text-green-600" : "text-red-600"}`}>
+                    {p.profit.toLocaleString()}
+                  </td>
+                  <td className="py-2 px-3 text-right">{p.finalSellingPrice.toLocaleString()} </td>
+                  <td className="py-2 px-3 text-center">
+                    {p.soldOut ? (
+                      <span className="text-red-600">{t("sold_out")}</span>
+                    ) : (
+                      <span className="text-green-600">{t("available")}</span>
+                    )}
+                  </td>
+                  <td className="py-2 px-3">{p.notes}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-          <Accordion className="mt-6 w-full max-w-4xl " variant="splitted">
-            <AccordionItem
-              // className="bg-gray-900 text-white"
-              key="1"
-              aria-label="COMAC C919"
-              startContent={
-                <div data-aos="zoom-in">
-                  <Image
-                    alt="Company Logo"
-                    src="/c919/Comac-Logo-768x432.png"
-                    width={100}
-                  />
-                </div>
-              }
-              title=" COMAC C919"
-            >
-              <div className="w-full flex flex-col items-start  gap-8">
-                {/* Description List */}
-                <ul className="list-disc list-inside text-left max-w-2xl space-y-2">
-                  <li>
-                    <strong>Scale Ratio:</strong> 1:200
-                  </li>
-                  <li>
-                    <strong>Origin:</strong> Mainland China
-                  </li>
-                  <li>
-                    <strong>Aircraft Series:</strong> Passenger Aircraft
-                  </li>
-                  <li>
-                    <strong>Material:</strong> Aluminum
-                  </li>
-                  <li>
-                    <strong>Length:</strong> 20 cm (8 inches)
-                  </li>
-                </ul>
-
-                {/* Images Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border border-[#0d7a68] rounded-xl p-4">
-                  {[
-                    "c1.png",
-                    "c2.png",
-                    "c3.png",
-                    "c4.png",
-                    "c5.png",
-                    "c6.png",
-                    "c7.png",
-                    "c8.png",
-                  ].map((img, idx) => (
-                    <div data-aos="zoom-in-down">
-                      <Image
-                        key={idx}
-                        isBlurred
-                        alt={`COMAC C919 Model ${idx + 1}`}
-                        className="rounded-lg"
-                        src={`/products/${img}`}
-                        width={500}
-                      />
-                    </div>
-                  ))}
-                </div>
-                <Link className="flex justify-end w-full" href="/store">
-                  <div data-aos="zoom-in-right">
-                    <Button className="bg-[#0d7a68] text-white ">
-                      {t("shop_now")}
-                    </Button>
-                  </div>
-                </Link>
-              </div>
-            </AccordionItem>
-
-            <AccordionItem
-              // style={{ backgroundColor: "#660033", color: "white" }}
-              key="2"
-              aria-label="Boeing 777 FIFA World Cup"
-              startContent={
-                <div data-aos="zoom-in">
-                  <Image
-                    alt="Company Logo"
-                    src="/c919/Qatar-Airways-Logo.png"
-                    width={100}
-                  />
-                </div>
-              }
-              title="Boeing 777 FIFA World Cup"
-            >
-              <div className="w-full flex flex-col items-start gap-8">
-                {/* Description List */}
-
-                <ul className="list-disc list-inside text-left max-w-2xl space-y-2">
-                  <li>
-                    <strong>Dimensions:</strong> 7.87 × 7.09 × 2.36 inches (20 ×
-                    18 × 6 cm)
-                  </li>
-                  <li>
-                    <strong>Material:</strong> Durable die-cast metal with
-                    plastic wheels and display stand
-                  </li>
-                  <li>
-                    <strong>Painting:</strong> Real Qatar Airways 2022 World Cup
-                    livery using spray painting (not stickers)
-                  </li>
-                  <li>
-                    <strong>Special:</strong> Great for desktop display or
-                    aviation-themed gifts
-                  </li>
-                </ul>
-
-                {/* Images Grid */}
-                <div
-                  className="grid grid-cols-1 md:grid-cols-2 gap-4 border rounded-xl p-4"
-                  style={{ borderColor: "#660033" }}
-                >
-                  {[
-                    "q1.png",
-                    "q2.png",
-                    "q3.png",
-                    "q4.png",
-                    "q5.png",
-                    "q6.png",
-                    "q7.png",
-                    "q8.png",
-                    "q9.png",
-                    "q10.png",
-                    "q11.png",
-                    "q12.png",
-                  ].map((img, idx) => (
-                    <div data-aos="zoom-in-down">
-                      <Image
-                        key={idx}
-                        isBlurred
-                        alt={`Qatar Model ${idx + 1}`}
-                        className="rounded-lg"
-                        src={`/products/qatar/${img}`}
-                        width={500} // bigger
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                {/* Button below the grid */}
-
-                <Link className="flex justify-end w-full" href="/store">
-                  <div data-aos="zoom-in-right">
-                    <Button className="bg-[#0d7a68] text-white ">
-                      {t("shop_now")}
-                    </Button>
-                  </div>
-                </Link>
-              </div>
-            </AccordionItem>
-
-            <AccordionItem
-              key="3"
-              aria-label="Antonov An-225 Mriya "
-              startContent={
-                <div data-aos="zoom-in">
-                  <Image
-                    alt="Company Logo"
-                    src="/c919/Antonov_Airlines_logo.png"
-                    width={70}
-                  />
-                </div>
-              }
-              title="Antonov An-225 Mriya  "
-            >
-              <div className="w-full flex flex-col items-start gap-8">
-                {/* Description List */}
-
-                <ul className="list-disc list-inside text-left max-w-2xl space-y-2">
-                  <li>
-                    <strong>Dimensions:</strong> 7.87 × 7.09 × 2.36 inches (20 ×
-                    18 × 6 cm)
-                  </li>
-                  <li>
-                    <strong>Material:</strong> Durable die-cast metal with
-                    plastic wheels and display stand
-                  </li>
-                  <li>
-                    <strong>Painting:</strong> Real Qatar Airways 2022 World Cup
-                    livery using spray painting (not stickers)
-                  </li>
-                  <li>
-                    <strong>Special:</strong> Great for desktop display or
-                    aviation-themed gifts
-                  </li>
-                </ul>
-
-                {/* Images Grid */}
-                <div
-                  className="grid grid-cols-1 md:grid-cols-2 gap-4 border rounded-xl p-4"
-                  style={{ borderColor: "#067039FF" }}
-                >
-                  {[
-                    "1.png",
-                    "2.png",
-                    "3.png",
-                    "4.png",
-                    "5.png",
-                    "6.png",
-                    "7.png",
-                    "8.png",
-                    "9.png",
-                    "10.png",
-                    "11.png",
-                    "12.png",
-                  ].map((img, idx) => (
-                    <div data-aos="zoom-in-down">
-                      <Image
-                        key={idx}
-                        isBlurred
-                        alt={`antonov Model ${idx + 1}`}
-                        className="rounded-lg"
-                        src={`/image/antonov/${img}`}
-                        width={500} // bigger
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                {/* Button below the grid */}
-
-                <Link className="flex justify-end w-full" href="/store">
-                  <div data-aos="zoom-in-right">
-                    <Button className="bg-[#0d7a68] text-white ">
-                      {t("shop_now")}
-                    </Button>
-                  </div>
-                </Link>
-              </div>
-            </AccordionItem>
-            <AccordionItem
-              key="4"
-              aria-label="China Eastern"
-              startContent={
-                <div data-aos="zoom-in">
-                  <Image
-                    alt="Company Logo"
-                    src="/c919/China-Eastern.png"
-                    width={100}
-                  />
-                </div>
-              }
-              title="China Eastern "
-            >
-              <div className="w-full flex flex-col items-start gap-8">
-                {/* Description List */}
-
-                <ul className="list-disc list-inside text-left max-w-2xl space-y-2">
-                  <li>
-                    <strong>Dimensions:</strong> 7.87 × 7.09 × 2.36 inches (20 ×
-                    18 × 6 cm)
-                  </li>
-                  <li>
-                    <strong>Material:</strong> Durable die-cast metal with
-                    plastic wheels and display stand
-                  </li>
-                  <li>
-                    <strong>Painting:</strong> Real Qatar Airways 2022 World Cup
-                    livery using spray painting (not stickers)
-                  </li>
-                  <li>
-                    <strong>Special:</strong> Great for desktop display or
-                    aviation-themed gifts
-                  </li>
-                </ul>
-
-                {/* Images Grid */}
-                <div
-                  className="grid grid-cols-1 md:grid-cols-2 gap-4 border rounded-xl p-4"
-                  style={{ borderColor: "#92040BFF" }}
-                >
-                  {[
-                    "e1.png",
-                    "e2.png",
-                    "e3.png",
-                    "e4.png",
-                    "e5.png",
-                    "e6.png",
-                    "e8.png",
-                    "e9.png",
-                    "e10.png",
-                    "e11.png",
-                  ].map((img, idx) => (
-                    <div data-aos="zoom-in-down">
-                      <Image
-                        key={idx}
-                        isBlurred
-                        alt={`China Eastern Model ${idx + 1}`}
-                        className="rounded-lg"
-                        src={`/image/China Eastern/${img}`}
-                        width={500} // bigger
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                {/* Button below the grid */}
-
-                <Link className="flex justify-end w-full" href="/store">
-                  <div data-aos="zoom-in-right">
-                    <Button className="bg-[#0d7a68] text-white ">
-                      {t("shop_now")}
-                    </Button>
-                  </div>
-                </Link>
-              </div>
-            </AccordionItem>
-            <AccordionItem
-              key="5"
-              aria-label="China Airlines"
-              startContent={
-                <div data-aos="zoom-in">
-                  <Image alt="Company Logo" src="/c919/china.png" width={130} />
-                </div>
-              }
-              title="China Airlines"
-            >
-              <div className="w-full flex justify-center">
-                <Image
-                  isBlurred
-                  alt="Antonov An-225 Mriya"
-                  className="rounded-lg"
-                  src="/image/menu/no product.png"
-                  width={400}
-                />
-              </div>
-              <Link className="flex justify-end w-full" href="/store">
-                <div data-aos="zoom-in-right">
-                  <Button className="bg-[#0d7a68] ">{t("shop_now")}</Button>
-                </div>
-              </Link>
-            </AccordionItem>
-            <AccordionItem
-              key="6"
-              aria-label="Tahi Airways"
-              startContent={
-                <div data-aos="zoom-in">
-                  {" "}
-                  <Image alt="Company Logo" src="/c919/thai.png" width={100} />
-                </div>
-              }
-              title="Thai Airways"
-            >
-              <div className="w-full flex justify-center">
-                <Image
-                  isBlurred
-                  alt="Antonov An-225 Mriya"
-                  className="rounded-lg"
-                  src="/image/menu/no product.png"
-                  width={400}
-                />
-              </div>
-              <Link className="flex justify-end w-full" href="/store">
-                <div data-aos="zoom-in-right">
-                  <Button className="bg-[#0d7a68] ">{t("shop_now")}</Button>
-                </div>
-              </Link>
-            </AccordionItem>
-            <AccordionItem
-              key="7"
-              aria-label="Bangkok Airways"
-              startContent={
-                <div data-aos="zoom-in">
-                  <Image
-                    alt="Company Logo"
-                    src="/c919/bangkok.png"
-                    width={110}
-                  />
-                </div>
-              }
-              title="Bangkok Airways"
-            >
-              <div className="w-full flex justify-center">
-                <Image
-                  isBlurred
-                  alt="Antonov An-225 Mriya"
-                  className="rounded-lg"
-                  src="/image/menu/no product.png"
-                  width={400}
-                />
-              </div>
-              <Link className="flex justify-end w-full" href="/store">
-                <div data-aos="zoom-in-right">
-                  <Button className="bg-[#0d7a68] ">{t("shop_now")}</Button>
-                </div>
-              </Link>
-            </AccordionItem>
-            <AccordionItem
-              key="8"
-              aria-label="China Airlines"
-              startContent={
-                <div data-aos="zoom-in">
-                  <Image alt="Company Logo" src="/c919/china.png" width={130} />
-                </div>
-              }
-              title="China Airlines"
-            >
-              <div className="w-full flex justify-center">
-                <Image
-                  isBlurred
-                  alt="Antonov An-225 Mriya"
-                  className="rounded-lg"
-                  src="/image/menu/no product.png"
-                  width={400}
-                />
-              </div>
-              <Link className="flex justify-end w-full" href="/store">
-                <div data-aos="zoom-in-right">
-                  <Button className="bg-[#0d7a68] ">{t("shop_now")}</Button>
-                </div>
-              </Link>
-            </AccordionItem>
-            <AccordionItem
-              key="9"
-              aria-label="Air China"
-              startContent={
-                <div data-aos="zoom-in">
-                  <Image
-                    alt="Company Logo"
-                    src="/c919/airchina.png"
-                    width={130}
-                  />
-                </div>
-              }
-              title="Air China"
-            >
-              <div className="w-full flex justify-center">
-                <Image
-                  isBlurred
-                  alt="Antonov An-225 Mriya"
-                  className="rounded-lg"
-                  src="/image/menu/no product.png"
-                  width={400}
-                />
-              </div>
-              <Link className="flex justify-end w-full" href="/store">
-                <div data-aos="zoom-in-right">
-                  <Button className="bg-[#0d7a68] text-white ">
-                    {t("shop_now")}
-                  </Button>
-                </div>
-              </Link>
-            </AccordionItem>
-          </Accordion>
+          <div className="flex flex-wrap gap-4 mt-6 justify-center">
+            <Button className="bg-[#0d7a68] text-white" onClick={handleRefresh} disabled={loading}>
+              {t("refresh_data") || "Refresh Data"}
+            </Button>
+            <Button className="border-[#0d7a68] text-[#0d7a68]" onClick={onOpen}>
+              {t("add_new_product") || "Add New Product"}
+            </Button>
+          </div>
         </div>
+
+        {/* Modal not expanded in this snippet */}
       </section>
     </DefaultLayout>
   );

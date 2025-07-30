@@ -110,10 +110,10 @@ export default function DefaultLayout({
           isExternal
           className="flex items-center gap-1 text-white"
           href="https://www.facebook.com/profile.php?id=100092652948333"
-          title="Omelette&apos;s"
+          title="Omelette's"
         >
           <span className="text-wihite">Powered by</span>
-          <p className="text-wihite">Omelette's</p>
+          <p className="text-wihite">Omelette&apos;s</p>
         </Link>
         <span className="mx-1 text-white">|</span>
         <span className="text-white">Copyright © 2023-2025 </span>
