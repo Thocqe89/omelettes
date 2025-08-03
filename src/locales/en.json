@@ -19,7 +19,7 @@
   "anouncement": "Announcement",
   "authentic_image": "Authentic image — taken from our actual product",
   "language": "Language",
-  "price": "30$",
+  "price": "Price",
   "accept_all_bank": "Accept all bank",
   "full_product_list": "Explore Our Collection",
   "easy_to_buy": "Easy to buy",
@@ -90,5 +90,12 @@
   "order_details": "Order Details",
   "enter_phone_number": "Enter phone number",
   "no_data_found": "No data found",
-  "download_qr_image": "Download QR Image"
+  "download_qr_image": "Download QR Image",
+  "filter_by_status": "Filter by status",
+  "all": "All",
+  "available": "Available",
+  "sold_out": "Sold Out",
+  "in_transit": "In Transit",
+  "loadedTitle": "Success!",
+  "loadedDesc": "Data has been downloaded successfully."
 }

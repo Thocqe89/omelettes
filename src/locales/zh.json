@@ -19,7 +19,7 @@
   "anouncement": "公告",
   "authentic_image": "真实图片 — 拍摄自我们的实际产品",
   "language": "语言",
-  "price": "30美元",
+  "price": "价格",
   "accept_all_bank": "接受所有银行",
   "full_product_list": "探索我们的系列",
   "easy_to_buy": "易于购买",
@@ -97,5 +97,12 @@
      "order_details": "订单详情",
      "enter_phone_number": "输入电话号码",
       "no_data_found": "未找到数据",
-  "download_qr_image": "下载二维码图片"
+  "download_qr_image": "下载二维码图片",
+  "filter_by_status": "按状态筛选",
+  "all": "全部",
+  "available": "可购买",
+  "sold_out": "售罄",
+  "in_transit": "运输中",
+    "loadedTitle": "成功!",
+  "loadedDesc": "数据已成功下载。"
 }

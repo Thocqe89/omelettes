@@ -1,13 +1,12 @@
 import { Link } from "@heroui/link";
-import { FaChevronUp } from "react-icons/fa6";
-
-// import { Tooltip } from "@heroui/tooltip";
+import { AiOutlineUp } from "react-icons/ai";
 // import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 
 import { Navbar } from "@/components/navbar";
 import Loading from "@/components/loading";
 import { MobileFooter } from "@/components/MobileFooter";
+// import { ToastProvider } from "@heroui/toast";
 
 export default function DefaultLayout({
   children,
@@ -50,42 +49,26 @@ export default function DefaultLayout({
 
   return (
     <div className="relative flex flex-col min-h-screen">
+      
       <Navbar />
+       {/* <ToastProvider placement="top-right" toastOffset={60} /> */}
       <main className="flex-grow pb-8">
         {" "}
         {/* Add this padding-bottom */}
+       
         <div className="w-full overflow-x-hidden">
           {isLoading ? <Loading /> : children}
         </div>
-        {/* WhatsApp Button (only on medium+ screens) */}
-        {/* <div className="fixed bottom-6 right-6 z-40 hidden md:block">
-          <Tooltip content={t("hello")} placement="left">
-            <button
-              className="rounded-full shadow-lg bg-white/90 hover:bg-[#0d7a68]  transition-all p-2"
-              onClick={() => {
-                window.location.href = "https://wa.me/2055058028?text=Hi,%20I%20need%20help%20with%20your%20services.%20Can%20an%20assistant%20assist%20me?%20%0A%0Aສະບາຍດີ,%20ຂ້ອຍມີຄຳຖາມ%20?";
-              }}
-            >
-              <Image
-                isZoomed
-                src="/image/cp-1-r.png"
-                alt="Contact Us"
-                width={80}
-                className="w-10 h-10"
-              />
-            </button>
-          </Tooltip>
-        </div> */}
-        {/* Scroll to Top Button */}
+        
         {showScrollTop && (
           <button
             aria-label="Scroll to top"
-            className="fixed bottom-[90px] left-1/2 -translate-x-1/2 z-[10000]   text-[#0d7a68] p-2 sm:p-3 rounded-full shadow-lg  transition"
+            className="fixed bottom-[80px] left-1/2 -translate-x-1/2 z-[10000]   text-[#0d7a68] p-2 sm:p-3 rounded-full  transition"
             onClick={scrollToTop}
           >
-            <FaChevronUp
+            <AiOutlineUp 
               className="sm:size-10 animate-bounce hover:animate-none"
-              size={24}
+              size={20}
             />
             {/* <img src="/image/cp-1-r.png" alt="Contact Us" width={80} className="w-10 h-10 animate-bounce hover:animate-none" /> */}
           </button>

@@ -67,8 +67,8 @@ export const MobileFooter = () => {
     }`;
 
   return (
-    <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/70 dark:bg-gray-900/70 border-t border-default-100 shadow-md flex justify-around pt-8 pb-8 text-xs backdrop-blur-sm">
-      <Link
+    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/70 dark:bg-gray-900/70 border-t border-default-100 shadow-md flex justify-around pt-8 pb-8 text-xs backdrop-blur-sm">
+ <Link
         className={navItemClass("home")}
         href="/"
         onClick={() => setActiveTab("home")}

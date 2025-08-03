@@ -6,24 +6,26 @@ import ProductsPage from "./pages/products";
 import Logistics from "./components/logistics";
 import Logistics_dashboard from "./components/logistics_dashboard";
 import DataCheck from "./components/data_check";
+import Logistics_status from "./components/logistics_status";
 
-// Fix import typo here:
-import Logistics_status from "./components/logistice_status";
 
+import "aos/dist/aos.css";
 import AboutPage from "@/pages/about";
-import StorePage from "@/pages/store"; // Fix import typo here
+import StorePage from "@/pages/store";
 import BlogPage from "@/pages/blog";
 import IndexPage from "@/pages/index";
+import Three_eaves from "./components/three_eaves";
+import Omellets from "./components/omelettes";
 
 function App() {
   return (
     <I18nextProvider i18n={i18n}>
       <Routes>
         <Route element={<IndexPage />} path="/" />
-
         <Route element={<ProductsPage />} path="/product" />
         <Route element={<StorePage />} path="/store" />
-        <Route element={<BlogPage />} path="/blog" />
+         <Route element={<Three_eaves />} path="/thee_eaves" /> 
+          <Route element={<Omellets />} path="/omelettes" /> 
         <Route element={<AboutPage />} path="/about" />
         <Route element={<Logistics />} path="/logistics" />
         <Route element={<Logistics_dashboard />} path="/logistics_dashboard" />

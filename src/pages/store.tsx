@@ -1,5 +1,3 @@
-import DefaultLayout from "@/layouts/default";
-
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 // import { Modal, ModalBody, ModalContent, ModalHeader } from "@heroui/modal";
@@ -14,6 +12,8 @@ import {
 } from "react-icons/ai";
 import "aos/dist/aos.css";
 import { Image } from "@heroui/image";
+
+import DefaultLayout from "@/layouts/default";
 
 export default function StorePage() {
   const { t } = useTranslation();

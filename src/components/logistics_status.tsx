@@ -82,8 +82,7 @@ export default function ProductInputForm() {
         dateAdded: dayjs().format("YYYY-MM-DD"),
         imageUrl: "",
       });
-    } catch (error) {
-      console.error(error);
+    } catch {
       alert(t("error_adding_product") || "Error adding product.");
     }
 

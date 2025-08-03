@@ -20,7 +20,6 @@ const ScanQR: React.FC<ScanQRProps> = ({ onScan }) => {
       if (result) {
         const id = result.getText();
 
-        console.log("Scanned ID (Camera):", id);
         setScanResult(id);
         onScan(id); // Pass the ID to the parent component
         setUseCamera(false); // Turn off camera after successful scan
@@ -66,7 +65,6 @@ const ScanQR: React.FC<ScanQRProps> = ({ onScan }) => {
         if (qrCode?.data) {
           const scannedId = qrCode.data;
 
-          console.log("Scanned ID (Image):", scannedId);
           onScan(scannedId); // Pass the ID to the parent component
           setError(null); // Clear any previous error
         } else {

@@ -19,7 +19,7 @@
   "anouncement": "ແຈ້ງການ",
   "authentic_image": "ຮູບພາບຕົ້ນສະບັບ — ຖ່າຍຈາກຜະລິດຕະພັນຕົວຈິງຂອງພວກເຮົາ",
   "language": "ພາສາ",
-  "price": "30$",
+  "price": "ລາຄາ",
   "accept_all_bank": "ຮອງຮັບທຸກທະນາຄານ",
   "full_product_list": "ສຳຫຼວດຄໍເລັກຊັນຂອງພວກເຮົາ",
   "easy_to_buy": "ຊື້ງ່າຍ",
@@ -97,5 +97,14 @@
      "order_details": "ລາຍລະອຽດການສັ່ງ",
      "enter_phone_number": "ປ້ອນເບີໂທລະສັບ",
       "no_data_found": "ບໍ່ພົບຂໍ້ມູນ",
-  "download_qr_image": "ດາວໂຫລດຮູບ QR"
+  "download_qr_image": "ດາວໂຫລດຮູບ QR",
+  
+  "filter_by_status": "ກວດດ້ວຍສະຖານະ",
+  "all": "ທັງໝົດ",
+  "available": "ມີໃນສະຕັອກ",
+  "sold_out": "ຂາຍໝົດແລ້ວ",
+  "in_transit": "ກຳລັງຂົນສົ່ງ",
+    "loadedTitle": "ສຳເລັດ!",
+  "loadedDesc": "ດາວໂຫລດຮຂໍ້ມູນສຳເລັດ"
+
 }

@@ -19,7 +19,7 @@
   "anouncement": "ประกาศ",
   "authentic_image": "รูปภาพจริง — ถ่ายจากผลิตภัณฑ์จริงของเรา",
   "language": "ภาษา",
-  "price": "30$",
+  "price": "ราคา",
   "accept_all_bank": "รับทุกธนาคาร",
   "full_product_list": "สำรวจคอลเลกชันของเรา",
   "easy_to_buy": "ซื้อง่าย",
@@ -96,5 +96,12 @@
      "order_details": "รายละเอียดการสั่งซื้อ",
   "enter_phone_number": "กรอกหมายเลขโทรศัพท์",
   "no_data_found": "ไม่พบข้อมูล",
-  "download_qr_image": "ดาวน์โหลดภาพ QR"
+  "download_qr_image": "ดาวน์โหลดภาพ QR",
+  "filter_by_status": "กรองตามสถานะ",
+  "all": "ทั้งหมด",
+  "available": "มีในสต็อก",
+  "sold_out": "หมด",
+  "in_transit": "กำลังขนส่ง",
+    "loadedTitle": "สำเร็จ!",
+  "loadedDesc":"ดาวน์โหลดข้อมูลเรียบร้อย"
 }

@@ -64,8 +64,7 @@ export default function Logistics() {
       setSubmittedData({ ...enhancedData, status: responseData.status });
 
       form.reset();
-    } catch (error) {
-      console.error("Error:", error);
+    } catch {
       setStatus("Error submitting data.");
       addToast({
         title: t("error"),
@@ -74,7 +73,6 @@ export default function Logistics() {
     } finally {
       setIsLoading(false);
     }
-    console.log("Submitting data:", enhancedData);
   };
 
   React.useEffect(() => {

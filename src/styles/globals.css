@@ -17,6 +17,12 @@ body {
   scroll-behavior: smooth;
   
 }
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+    flex-direction: column;
+  }
+}
 
 
 .scrollbar-hide {

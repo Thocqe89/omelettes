@@ -16,10 +16,10 @@ export const siteConfig = {
       label: "store",
       href: "/store",
     },
-    {
-      label: "blog",
-      href: "/blog",
-    },
+    // {
+    //   label: "thee_eaves",
+    //   href: "/thee_eaves",
+    // },
     {
       label: "about_us",
       href: "/about",
@@ -38,10 +38,10 @@ export const siteConfig = {
       label: "store",
       href: "/store",
     },
-    {
-      label: "blog",
-      href: "/blog",
-    },
+    // {
+    //   label: "omelette",
+    //   href: "/omelettes",
+    // },
     {
       label: "about_us",
       href: "/about",

@@ -22,8 +22,7 @@ export default function Logistics_dashboard() {
         setEntries(data);
         setLoading(false);
       })
-      .catch((err) => {
-        console.error("Error loading data:", err);
+      .catch(() => {
         setLoading(false);
       });
   }, []);
