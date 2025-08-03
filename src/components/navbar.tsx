@@ -401,7 +401,7 @@ export const Navbar = () => {
               </NavbarMenuItem>
             ))}
 
-            {/* Existing omelettes link */}
+         
             {/* <div>
               <Link
                 className="text-default-500 hover:text-green-500 text-lg font-normal"
@@ -409,7 +409,7 @@ export const Navbar = () => {
               >
                 {t("omellets")}
               </Link>
-            </div> */}
+            </div>
 
             {/* New Accordion Dropdown for store pages */}
            

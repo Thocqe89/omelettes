@@ -12,10 +12,10 @@ export const siteConfig = {
       label: "product",
       href: "/product",
     },
-    {
-      label: "store",
-      href: "/store",
-    },
+    // {
+    //   label: "store",
+    //   href: "/store",
+    // },
     // {
     //   label: "thee_eaves",
     //   href: "/thee_eaves",
@@ -34,10 +34,10 @@ export const siteConfig = {
       label: "product",
       href: "/product",
     },
-    {
-      label: "store",
-      href: "/store",
-    },
+    // {
+    //   label: "store",
+    //   href: "/omelletes",
+    // },
     // {
     //   label: "omelette",
     //   href: "/omelettes",

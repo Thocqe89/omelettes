@@ -79,12 +79,12 @@ export const MobileFooter = () => {
       </Link>
 
       <Link
-        className={navItemClass("store")}
-        href="/store"
-        onClick={() => setActiveTab("store")}
+        className={navItemClass("omelettes")}
+        href="/omelettes"
+        onClick={() => setActiveTab("omelettes")}
       >
         <AiOutlineShopping size={24} />
-        <p className={textClass("store")}>{t("store")}</p>
+        <p className={textClass("omelettes")}>{t("store")}</p>
       </Link>
 
       <Link

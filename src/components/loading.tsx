@@ -1,20 +1,20 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Image } from "@heroui/image";
-import { addToast } from "@heroui/react";
-import { useTranslation } from "react-i18next";
+// import { addToast } from "@heroui/react";
+// import { useTranslation } from "react-i18next";
 
 export default function Loading() {
-  const { t } = useTranslation(); // pull from i18next
+  // const { t } = useTranslation(); // pull from i18next
   const [loaded, setLoaded] = useState(false);
 
   const handleImageLoad = () => {
     setLoaded(true);
-    addToast({
-      title: t("loadedTitle"), // from locales
-      description: t("loadedDesc"),
-      color: "success",
-    });
+    // addToast({
+    //   title: t("loadedTitle"), // from locales
+    //   description: t("loadedDesc"),
+    //   color: "success",
+    // });
   };
 
   return (
