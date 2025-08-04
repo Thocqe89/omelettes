@@ -14,7 +14,7 @@ import AboutPage from "@/pages/about";
 // import StorePage from "./components/omelettes";
 // import BlogPage from "@/pages/blog";
 import IndexPage from "@/pages/index";
-import Three_eaves from "./components/three_eaves";
+import ThreeLeaves from "./components/three_eaves";
 import Omellets from "./components/omelettes";
 
 function App() {
@@ -24,7 +24,7 @@ function App() {
         <Route element={<IndexPage />} path="/" />
         <Route element={<ProductsPage />} path="/product" />
         <Route element={<Omellets />} path="/omellets" />
-         <Route element={<Three_eaves />} path="/thee_eaves" /> 
+         <Route element={<ThreeLeaves />} path="/thee_eaves" /> 
           <Route element={<Omellets />} path="/omelettes" /> 
          <Route element={<AboutPage />} path="/about" /> 
         <Route element={<Logistics />} path="/logistics" />
