@@ -103,5 +103,11 @@
   "sold_out": "หมด",
   "in_transit": "กำลังขนส่ง",
     "loadedTitle": "สำเร็จ!",
-  "loadedDesc":"ดาวน์โหลดข้อมูลเรียบร้อย"
+  "loadedDesc":"ดาวน์โหลดข้อมูลเรียบร้อย",
+  "type": "ประเภท",
+        "size": "ขนาด",
+        "quantity": "จำนวน",
+        "final_selling_price": "ราคา",
+  
+        "notes": "บันทึก"
 }

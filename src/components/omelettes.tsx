@@ -4,7 +4,7 @@ import { FaWhatsapp, FaPlane } from "react-icons/fa";
 import Loading from "@/components/loading";
 import DefaultLayout from "@/layouts/default";
 import { addToast } from "@heroui/toast";
-import "aos/dist/aos.css";
+
 import { Image } from "@heroui/image";
 import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
 
@@ -29,7 +29,7 @@ interface Product {
     image_5?: string | null;
     image_6?: string | null;
     image_7?: string | null;
-      image_8?: string | null;
+    image_8?: string | null;
     image_9?: string | null;
     image_10?: string | null;
     image_11?: string | null;
@@ -115,7 +115,7 @@ export default function Omellets() {
       "image_13",
       "image_14",
       "image_15",
-      
+
     ] as const;
 
     if (product.Images) {
@@ -146,12 +146,12 @@ export default function Omellets() {
     });
   }
   function handlePrevImage(productId: string, totalImages: number) {
-  setImageIndexes((prev) => {
-    const current = prev[productId] ?? 0;
-    const prevIndex = (current - 1 + totalImages) % totalImages;
-    return { ...prev, [productId]: prevIndex };
-  });
-}
+    setImageIndexes((prev) => {
+      const current = prev[productId] ?? 0;
+      const prevIndex = (current - 1 + totalImages) % totalImages;
+      return { ...prev, [productId]: prevIndex };
+    });
+  }
 
   const filteredEntries = entries.filter((entry) =>
     Object.values(entry).some((value) =>
@@ -180,7 +180,7 @@ export default function Omellets() {
             {/* Search */}
             <div className="flex justify-center">
               <input
-                className="w-full max-w-lg px-5 py-3 rounded-full border border-[#0d7a68] focus:outline-none focus:ring-2 focus:ring-green-800 dark:bg-gray-800 dark:border-[#0d7a68] dark:text-white shadow-sm"
+                className="w-full max-w-lg px-5 py-3 rounded-full border border-[#0d7a68] focus:outline-none focus:ring-2 focus:ring-green-800 dark:bg-gray-800 dark:border-white dark:text-white shadow-sm"
                 placeholder={t("search") || "Search airplane models..."}
                 type="text"
                 value={searchTerm}
@@ -202,88 +202,132 @@ export default function Omellets() {
                     <div
                       key={entry.ID}
                       className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col hover:shadow-xl transition-shadow"
-                      data-aos="fade-up"
                     >
+
                       {/* Image with Next button */}
-                     
-<div className="relative h-[300px] bg-gray-100 dark:bg-gray-700 p-4 flex items-center justify-center">
-  <img
-    src={images[currentImageIndex]}
-    alt={`${entry.Name} image ${currentImageIndex + 1}`}
-    className="object-contain max-h-full max-w-full rounded-lg shadow-md"
-    loading="lazy"
-  />
 
-  {images.length > 1 && (
-    <>
-      {/* Left button */}
-      <button
-        onClick={() => handlePrevImage(entry.ID, images.length)}
-        className="absolute top-1/2 left-4 transform -translate-y-1/2 text-2xl text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition"
-        aria-label={`Previous image of ${entry.Name}`}
-      >
-        <AiOutlineLeft />
-      </button>
+                      <div className="relative h-[250px] flex items-center justify-center rounded-lg overflow-hidden">
+                        {/* Blurred Background */}
+                        <div
+                          className="absolute inset-0 bg-cover bg-center filter blur-xl scale-110"
+                          style={{
+                            backgroundImage: `url(${images[currentImageIndex]})`,
+                          }}
+                        ></div>
 
-      {/* Right button */}
-      <button
-        onClick={() => handleNextImage(entry.ID, images.length)}
-        className="absolute top-1/2 right-4 transform -translate-y-1/2 text-2xl text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition"
-        aria-label={`Next image of ${entry.Name}`}
-      >
-        <AiOutlineRight />
-      </button>
-    </>
-  )}
-</div>
+                        {/* Overlay to dim background slightly */}
+                        <div className="absolute inset-0 bg-black bg-opacity-10 dark:bg-opacity-20"></div>
+
+                        {/* Foreground Image */}
+                        <img
+                          src={images[currentImageIndex]}
+                          alt={`${entry.Name} image ${currentImageIndex + 1}`}
+                          className="relative max-h-full max-w-full object-contain z-10 "
+                          loading="lazy"
+                        />
+
+                        {images.length > 1 && (
+                          <>
+                            {/* Left button */}
+                            <button
+                              onClick={() => handlePrevImage(entry.ID, images.length)}
+                              className="absolute top-1/2 left-4 -translate-y-1/2 text-2xl text-white hover:text-gray-200 z-20 transition"
+                              aria-label={`Previous image of ${entry.Name}`}
+                            >
+                              <AiOutlineLeft />
+                            </button>
+
+                            {/* Right button */}
+                            <button
+                              onClick={() => handleNextImage(entry.ID, images.length)}
+                              className="absolute top-1/2 right-4 -translate-y-1/2 text-2xl text-white hover:text-gray-200 z-20 transition"
+                              aria-label={`Next image of ${entry.Name}`}
+                            >
+                              <AiOutlineRight />
+                            </button>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Content */}
+                      {/* <div className="flex flex-col flex-1 p-5"> */}
+                      {/* Name & Logo */}
+                      {/* <h3 className="text-xl font-bold text-[#0d7a68] dark:text-[#0d7a68] flex items-center gap-3">
+    {entry.Logo ? (
+      <Image
+        isBlurred
+        src={entry.Logo}
+        alt={`${entry.Name} logo`}
+        className="w-16 h-16 object-contain bg-transparent"
+      />
+    ) : (
+      <FaPlane className="text-sky-500" />
+    )}
+    <span className="text-gray-400 text-2xl font-light">|</span>
+    {entry.Name}
+  </h3> */}
+
+                      {/* Details */}
+                      {/* <p className="text-sm mt-1 text-gray-700 dark:text-gray-300">
+    {t("id")}: <span className="text-[#0d7a68] dark:text-[#0d7a68]">
+      OMS-00-00-{entry.ID}
+    </span>
+  </p> */}
+                      {/* </div> */}
+
+
 
                       {/* Content */}
                       <div className="flex flex-col flex-1 p-5">
                         {/* Name & Logo */}
-                        <h3 className="text-xl font-bold text-[#0d7a68] dark:text-[#0d7a68] flex items-center gap-3">
+                        <h3 className="text-xl font-bold text-[#0d7a68] dark:text-white flex items-center gap-3">
                           {entry.Logo ? (
                             <Image
                               isBlurred
                               src={entry.Logo}
                               alt={`${entry.Name} logo`}
-                              className="w-16 h-16 object-contain bg-transparent"
+                              className="w-16 h-16 object-contain bg-transparent rounded-fulldark:bg-white rounded-lg"
                             />
                           ) : (
                             <FaPlane className="text-sky-500" />
                           )}
-                           <span className="text-gray-400 text-2xl font-light">|</span>
+                          <span className="text-gray-400 text-2xl font-light dark:text-gray-400">|</span>
                           {entry.Name}
                         </h3>
 
                         {/* Details */}
-<p className="text-sm mt-1 text-gray-700 dark:text-gray-300">
-  {t("id")}: <span className="text-[#0d7a68] dark:text-[#0d7a68]">
+                      <p className="text-sm mt-1 text-gray-500 dark:text-gray-400">
+  {t("id")}:{" "}
+  <span className="text-[#0d7a68] dark:text-white font-bold">
     OMS-00-00-{entry.ID}
   </span>
 </p>
 
-<p className="text-sm">
-  {t("type")}: <span className="text-[#0d7a68] dark:text-[#0d7a68]">
+<p className="text-sm mt-1 text-gray-500 dark:text-gray-400">
+  {t("type")}:{" "}
+  <span className="text-[#0d7a68] dark:text-white font-bold">
     {entry.Type}
   </span>
 </p>
 
-<p className="text-sm">
-  {t("size")}: <span className="text-[#0d7a68] dark:text-[#0d7a68]">
+<p className="text-sm mt-1 text-gray-500 dark:text-gray-400">
+  {t("size")}:{" "}
+  <span className="text-[#0d7a68] dark:text-white font-bold">
     {entry.Size}
   </span>
 </p>
 
-<p className="text-sm mt-1 text-gray-700 dark:text-gray-300">
-  {t("quantity")}: <span className="text-[#0d7a68] dark:text-[#0d7a68]">
+<p className="text-sm mt-1 text-gray-500 dark:text-gray-400">
+  {t("quantity")}:{" "}
+  <span className="text-[#0d7a68] dark:text-white font-bold">
     {entry["Qty Bought"]}
   </span>
 </p>
 
 {/* Price */}
-<p className="text-sm mt-2">
-  <span className="text-gray-500 dark:text-gray-400">{t("price")}:</span>{" "}
-  <span className="text-[#0d7a68] dark:text-[#0d7a68] font-semibold">
+<p className="text-sm mt-2 text-gray-500 dark:text-gray-400">
+  {t("price")}:{" "}
+  <span className="text-[#0d7a68] dark:text-white font-bold">
     {entry["Final Selling Price"].toLocaleString(undefined, {
       style: "currency",
       currency: "LAK",
@@ -292,10 +336,23 @@ export default function Omellets() {
 </p>
 
 
+
+                        {/* WhatsApp Button */}
                         {/* WhatsApp Button */}
                         <a
-                          className="mt-4 inline-flex items-center justify-center gap-2 bg-[#0d7a68] text-white font-medium py-2 px-5 rounded-full hover:bg-[#0d7a68] transition-all shadow-md"
-                          href={`https://wa.me/2055058028`}
+                          className="mt-4 inline-flex items-center justify-center gap-2 bg-[#0d7a68] text-white font-medium py-2 px-5 rounded-full hover:bg-white hover:text-white hover:transition-all shadow-md"
+                          href={`https://wa.me/2055058028?text=${encodeURIComponent(
+                            `New Order Request\n` +
+                            `ID: OMS-00-00-${entry.ID}\n` +
+                            `Name: ${entry.Name}\n` +
+                            `Type: ${entry.Type}\n` +
+                            `Size: ${entry.Size}\n` +
+                            `Price: ${entry["Final Selling Price"].toLocaleString(undefined, {
+                              style: "currency",
+                              currency: "LAK",
+                            })}\n` +
+                            `Please confirm availability.`
+                          )}`}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
@@ -304,6 +361,7 @@ export default function Omellets() {
                             {t("shop_now") || "Order Now"}
                           </span>
                         </a>
+
                       </div>
                     </div>
                   );
@@ -311,7 +369,7 @@ export default function Omellets() {
               </div>
             )}
 
-            <div className="mt-8 w-80 mx-auto" data-aos="zoom-in">
+            <div className="mt-8 w-80 mx-auto">
               <div className="h-1 w-full bg-[#0d7a68]" />
             </div>
           </div>

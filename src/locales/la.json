@@ -105,6 +105,12 @@
   "sold_out": "ຂາຍໝົດແລ້ວ",
   "in_transit": "ກຳລັງຂົນສົ່ງ",
     "loadedTitle": "ສຳເລັດ!",
-  "loadedDesc": "ດາວໂຫລດຮຂໍ້ມູນສຳເລັດ"
+  "loadedDesc": "ດາວໂຫລດຮຂໍ້ມູນສຳເລັດ",
+   "type": "ປະເພດ",
+        "size": "ຂະໜາດ",
+        "quantity": "ຈຳນວນ",
+        "final_selling_price": "ລາຄາ",
+     
+        "notes": "ບັນທຶກ"
 
 }

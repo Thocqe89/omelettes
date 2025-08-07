@@ -97,5 +97,10 @@
   "sold_out": "Sold Out",
   "in_transit": "In Transit",
   "loadedTitle": "Success!",
-  "loadedDesc": "Data has been downloaded successfully."
+  "loadedDesc": "Data has been downloaded successfully.",
+  "type": "Type",
+  "quantity": "Total",
+    "final_selling_price": "Price",
+    
+        "notes": "Notes"
 }

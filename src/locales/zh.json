@@ -104,5 +104,11 @@
   "sold_out": "售罄",
   "in_transit": "运输中",
     "loadedTitle": "成功!",
-  "loadedDesc": "数据已成功下载。"
+  "loadedDesc": "数据已成功下载。",
+  "type": "类型",
+      "size": "尺寸",
+      "quantity": "数量",
+      "final_selling_price": "价格",
+   
+      "notes": "备注"
 }

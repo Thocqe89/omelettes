@@ -14,7 +14,7 @@ import AboutPage from "@/pages/about";
 // import StorePage from "./components/omelettes";
 // import BlogPage from "@/pages/blog";
 import IndexPage from "@/pages/index";
-import ThreeLeaves from "./components/three_eaves";
+import ThreeLeaves from "./components/three_leaves";
 import Omellets from "./components/omelettes";
 
 function App() {

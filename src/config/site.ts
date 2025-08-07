@@ -26,10 +26,10 @@ export const siteConfig = {
     },
   ],
   navMenuItems: [
-    {
-      label: "home",
-      href: "/",
-    },
+    // {
+    //   label: "home",
+    //   href: "/",
+    // },
     {
       label: "product",
       href: "/product",

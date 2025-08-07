@@ -42,15 +42,17 @@ export const MobileFooter = () => {
      * the text color is set to green. Otherwise, the text color defaults with a hover effect to green.
      */
 
-    /*******  c58481ae-36ec-44ef-8c0b-00b6b03693cb  *******/ const path =
+    /*******  c58481ae-36ec-44ef-8c0b-00b6b03693cb  *******/
       window.location.pathname;
 
-    if (path === "/") setActiveTab("home");
-    else if (path.startsWith("/store")) setActiveTab("store");
-    else if (path.startsWith("/dataCheck")) setActiveTab("dataCheck");
-    else if (path.startsWith("/anouncement")) setActiveTab("anouncement");
-    else setActiveTab(""); // fallback
-  }, [window.location.pathname]);
+    const path = window.location.pathname;
+  if (path === "/") setActiveTab("home");
+  else if (path.startsWith("/store")) setActiveTab("store");
+  else if (path.startsWith("/omelettes")) setActiveTab("omelettes");
+  else if (path.startsWith("/dataCheck")) setActiveTab("dataCheck");
+  else if (path.startsWith("/anouncement")) setActiveTab("anouncement");
+  else setActiveTab(""); // fallback
+}, []);
 
   const navItemClass = (tab: string) =>
     `flex flex-col items-center gap-1 -mt-6 transition duration-200 transform ${
