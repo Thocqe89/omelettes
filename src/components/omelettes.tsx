@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useTranslation } from "react-i18next";
-import { FaWhatsapp, FaPlane } from "react-icons/fa";
+import { FaWhatsapp, FaStar  } from "react-icons/fa";
 import Loading from "@/components/loading";
 import DefaultLayout from "@/layouts/default";
 import { addToast } from "@heroui/toast";
@@ -20,6 +20,7 @@ interface Product {
   Image?: string;
   Phone?: string;
   Logo?: string;
+   Rating?: number; //
   Images?: {
     image_meain?: string | null;
     image_1?: string | null;
@@ -69,6 +70,7 @@ export default function Omellets() {
             Phone: p.Phone || "",
             Logo: p.logo || "",
             Images: p.Images || {},
+             Rating: Math.min(5, Math.max(0, Number(p.Rating) || 4)),
           }));
           setEntries(mapped);
           addToast({
@@ -278,22 +280,33 @@ export default function Omellets() {
 
 
                       {/* Content */}
-                      <div className="flex flex-col flex-1 p-5">
-                        {/* Name & Logo */}
-                        <h3 className="text-xl font-bold text-[#0d7a68] dark:text-white flex items-center gap-3">
-                          {entry.Logo ? (
-                            <Image
-                              isBlurred
-                              src={entry.Logo}
-                              alt={`${entry.Name} logo`}
-                              className="w-16 h-16 object-contain bg-transparent rounded-fulldark:bg-white rounded-lg"
+                       <div className="flex flex-col flex-1 p-5">
+                        {/* Name + Price */}
+                        <div className="flex justify-between items-center">
+                          <h3 className="text-xl font-bold text-[#0d7a68] dark:text-white">
+                            {entry.Name}
+                          </h3>
+                          <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                            {entry["Final Selling Price"].toLocaleString()} ₭
+                          </span>
+                        </div>
+                         {/* Rating */}
+                        <div className="flex items-center mt-2">
+                          {[...Array(5)].map((_, i) => (
+                            <FaStar
+                              key={i}
+                              className={
+                                i < (entry.Rating || 0)
+                                  ? "text-yellow-400"
+                                  : "text-gray-300 dark:text-gray-600"
+                              }
+                              size={14}
                             />
-                          ) : (
-                            <FaPlane className="text-sky-500" />
-                          )}
-                          <span className="text-gray-400 text-2xl font-light dark:text-gray-400">|</span>
-                          {entry.Name}
-                        </h3>
+                          ))}
+                          <span className="ml-1 text-xs text-gray-500">
+                            ({entry.Rating || 0}/5)
+                          </span>
+                        </div>
 
                         {/* Details */}
                       <p className="text-sm mt-1 text-gray-500 dark:text-gray-400">
@@ -325,7 +338,7 @@ export default function Omellets() {
 </p>
 
 {/* Price */}
-<p className="text-sm mt-2 text-gray-500 dark:text-gray-400">
+{/* <p className="text-sm mt-2 text-gray-500 dark:text-gray-400">
   {t("price")}:{" "}
   <span className="text-[#0d7a68] dark:text-white font-bold">
     {entry["Final Selling Price"].toLocaleString(undefined, {
@@ -333,14 +346,14 @@ export default function Omellets() {
       currency: "LAK",
     })}
   </span>
-</p>
+</p> */}
 
 
 
                         {/* WhatsApp Button */}
                         {/* WhatsApp Button */}
                         <a
-                          className="mt-4 inline-flex items-center justify-center gap-2 bg-[#0d7a68] text-white font-medium py-2 px-5 rounded-full hover:bg-white hover:text-white hover:transition-all shadow-md"
+                          className="mt-4 inline-flex items-center justify-center gap-2 bg-[#0d7a68] text-white font-medium py-2 px-5 rounded-full hover:bg-[#0d7a68] hover:transition-all shadow-md"
                           href={`https://wa.me/2055058028?text=${encodeURIComponent(
                             `New Order Request\n` +
                             `ID: OMS-00-00-${entry.ID}\n` +

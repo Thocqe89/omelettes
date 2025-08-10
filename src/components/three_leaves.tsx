@@ -59,7 +59,7 @@ export default function ClothingStore() {
             Material: p.Material || "Cotton blend",
             Rating: Math.min(5, Math.max(0, Number(p.Rating) || 4)),
           }));
-          
+
           setProducts(processedProducts);
           addToast({
             title: t("loaded_successfully"),
@@ -91,7 +91,7 @@ export default function ClothingStore() {
       const imageUrls = Object.values(product.Images)
         .filter(url => url && typeof url === 'string' && url.trim() !== '')
         .map(url => (url as string).trim());
-      
+
       if (imageUrls.length > 0) {
         return imageUrls;
       }
@@ -141,11 +141,11 @@ export default function ClothingStore() {
     const matchesSearch = Object.values(product).some((v) =>
       String(v).toLowerCase().includes(searchTerm.toLowerCase())
     );
-    
+
     // Filter by category
-    const matchesCategory = selectedCategory === "all" || 
+    const matchesCategory = selectedCategory === "all" ||
       product.Type.toLowerCase() === selectedCategory;
-    
+
     return matchesSearch && matchesCategory;
   });
 
@@ -176,23 +176,22 @@ export default function ClothingStore() {
                     aria-label={t("search") || "Search products"}
                   />
                 </div>
-               <div className="w-full overflow-x-auto pb-2">
-  <div className="flex space-x-2 min-w-max">
-    {categories.map(category => (
-      <button
-        key={category}
-        onClick={() => setSelectedCategory(category)}
-        className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
-          selectedCategory === category
-            ? 'bg-black text-white shadow-md'
-            : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-        }`}
-      >
-        {category}
-      </button>
-    ))}
-  </div>
-</div>
+                <div className="w-full overflow-x-auto pb-2">
+                  <div className="flex space-x-2 min-w-max">
+                    {categories.map(category => (
+                      <button
+                        key={category}
+                        onClick={() => setSelectedCategory(category)}
+                        className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${selectedCategory === category
+                            ? 'bg-black text-white shadow-md'
+                            : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                          }`}
+                      >
+                        {category}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -224,12 +223,12 @@ export default function ClothingStore() {
                           className="absolute top-3 right-3 z-10 p-2 bg-white dark:bg-gray-800 rounded-full shadow-md hover:bg-gray-200 dark:hover:bg-gray-700 transition"
                           aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
                         >
-                          <AiOutlineHeart 
-                            size={20} 
-                            className={isFavorite ? "text-red-500 fill-current" : "text-gray-500"} 
+                          <AiOutlineHeart
+                            size={20}
+                            className={isFavorite ? "text-red-500 fill-current" : "text-gray-500"}
                           />
                         </button>
-                        
+
                         {/* Product Image - with fallback handling */}
                         {images.length > 0 ? (
                           <>
@@ -248,7 +247,7 @@ export default function ClothingStore() {
                                 }
                               }}
                             />
-                            
+
                             {/* Image Navigation */}
                             {images.length > 1 && (
                               <>
@@ -274,7 +273,7 @@ export default function ClothingStore() {
                             <span className="text-gray-500 dark:text-gray-400">No image available</span>
                           </div>
                         )}
-                        
+
                         {/* Status Badge */}
                         {product.Status && product.Status.toLowerCase() !== "available" && (
                           <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
@@ -293,14 +292,14 @@ export default function ClothingStore() {
                             {product["Final Selling Price"].toLocaleString()} ₭
                           </p>
                         </div>
-                        
+
                         {/* Rating */}
                         <div className="flex items-center mb-3">
                           {[...Array(5)].map((_, i) => (
                             <FaStar
                               key={i}
-                              className={`${i < (product.Rating || 0) 
-                                ? 'text-yellow-400' 
+                              className={`${i < (product.Rating || 0)
+                                ? 'text-yellow-400'
                                 : 'text-gray-300 dark:text-gray-600'}`}
                               size={14}
                             />
@@ -309,7 +308,7 @@ export default function ClothingStore() {
                             ({product.Rating || 0}/5)
                           </span>
                         </div>
-                        
+
                         {/* Quick Info */}
                         <div className="flex flex-wrap gap-2 mb-3">
                           {product.Type && (
@@ -363,27 +362,28 @@ export default function ClothingStore() {
                             <p>
                               <span className="font-medium">In stock:</span> {product["Qty Bought"]}
                             </p>
-                            
+
                             {/* Action Buttons */}
                             <div className="flex gap-2 mt-4">
-                               <a
-  className="mt-4 inline-flex items-center justify-center gap-2 bg-green-700 text-white font-medium py-2 px-5 rounded-full hover:bg-green-800 transition-all shadow-md"
-  href={`https://wa.me/${product.Phone?.replace(/\D/g, "") || "2055058028"}?text=${encodeURIComponent(
-    `I'm interested in purchasing:\n\n` +
-    `*Product Name:* ${product.Name}\n` +
-    `*Type:* ${product.Type}\n` +
-    `*Size:* ${product.Size}\n` +
-    `*Price:* ${product["Final Selling Price"].toLocaleString()} ₭\n\n` +
-    `Please let me know about availability and payment options.`
-  )}`}
-  target="_blank"
-  rel="noopener noreferrer"
-  aria-label={`${t("order_now") || "Order Now"} - ${product.Name}`}
->
-  <FaWhatsapp size={20} />
-  {t("order_now") || "Order Now"}
-</a>
-                             
+                              <a
+                                className="mt-4 inline-flex items-center justify-center gap-2 bg-green-700 text-white font-medium py-2 px-5 rounded-full hover:bg-green-800 transition-all shadow-md"
+                                href={`https://wa.me/${product.Phone?.replace(/\D/g, "") || "2055058028"}?text=${encodeURIComponent(
+                                  `I'm interested in purchasing:\n\n` +
+                                  `*Product ID:*OMS-00-00-${product.ID}\n` +
+                                  `*Product Name:* ${product.Name}\n` +
+                                  `*Type:* ${product.Type}\n` +
+                                  `*Size:* ${product.Size}\n` +
+                                  `*Price:* ${product["Final Selling Price"].toLocaleString()} ₭\n\n` +
+                                  `Please let me know about availability and payment options.`
+                                )}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label={`${t("order_now") || "Order Now"} - ${product.Name}`}
+                              >
+                                <FaWhatsapp size={20} />
+                                {t("order") || "Order Now"}
+                              </a>
+
                             </div>
                           </div>
                         )}

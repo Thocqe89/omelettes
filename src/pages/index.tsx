@@ -4,62 +4,106 @@ import { Image } from "@heroui/image";
 import { useTranslation } from "react-i18next";
 import "aos/dist/aos.css";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-
 import DefaultLayout from "@/layouts/default";
+
+interface Product {
+  ID: string;
+  Name: string;
+  Images?: {
+    image_meain?: string | null;
+    image_1?: string | null;
+    image_2?: string | null;
+    image_3?: string | null;
+    [key: string]: string | null | undefined;
+  };
+  Logo?: string;
+}
 
 export default function IndexPage() {
   const { t } = useTranslation();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentC919Index, setCurrentC919Index] = useState(0);
 
-  const imageList = [
-    "/image/home/1.png",
-    "/image/home/2.png",
-    "/image/home/4.png",
-    "/image/home/3.png",
-    "/image/home/5.png",
-    "/image/home/6.png",
-    "/image/home/7.png",
-    "/image/home/8.png",
-    "/image/home/9.png",
-    "/image/home/10.png",
-    "/image/home/12.png",
-    "/image/home/13.png",
-    "/image/home/14.png",
-    "/image/home/15.png",
-    "/image/home/17.png",
-    "/image/home/18.png",
-    "/image/home/19.png",
-    "/image/home/20.png",
-    "/image/home/21.png",
-    "/image/home/22.png",
-    "/image/home/23.png",
-    "/image/home/24.png",
-    "/image/home/25.png",
-    "/image/home/26.png",
-    "/image/home/27.png",
-    "/image/home/28.png",
-    "/image/home/29.png",
-    "/image/home/30.png",
-    "/image/home/31.png",
-    "/image/home/32.png",
-    "/image/home/33.png",
-    "/image/home/34.png",
-    "/image/home/35.png",
-    "/image/home/36.png",
-    "/image/home/37.png",
-    "/image/home/38.png",
-    "/image/home/39.png",
-    "/image/home/40.png",
-    "/image/home/41.png",
-    "/image/home/42.png",
-    "/image/home/43.png",
-    "/image/home/44.png",
-    "/image/home/45.png",
-    "/image/home/46.png",
-    "/image/home/47.png",
-    "/image/home/11.png",
-  ];
+  const API_URL = import.meta.env.VITE_PRODUCT_DETAILS_API;
 
-  const c919Images = [
+  // Fetch products from API
+  useEffect(() => {
+    fetch(`${API_URL}?nocache=${Date.now()}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.products)) {
+          const mapped = data.products.map((p: any) => ({
+            ID: p.ID || "N/A",
+            Name: p.Name || "N/A",
+            Images: p.Images || {},
+            Logo: p.logo || "",
+          }));
+          setProducts(mapped);
+        }
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  // Get all valid images from a product with logo information
+  function getAllImagesWithLogo(product: Product): Array<{ src: string; logo?: string }> {
+    const images: Array<{ src: string; logo?: string }> = [];
+    if (!product.Images) return images;
+
+    const imageKeys = [
+      "image_meain",
+      "image_1",
+      "image_2",
+      "image_3",
+      "image_4",
+      "image_5",
+      "image_6",
+      "image_7",
+      "image_8",
+      "image_9",
+      "image_10",
+      "image_11",
+      "image_12",
+      "image_13",
+      "image_14",
+      "image_15",
+    ];
+
+    imageKeys.forEach((key) => {
+      const url = product.Images?.[key];
+      if (url && url.trim() !== "") {
+        images.push({
+          src: url.trim(),
+          logo: product.Logo || undefined
+        });
+      }
+    });
+
+    return images;
+  }
+
+  // Get random products with images and randomly decide which ones should show logo
+  function getRandomProductsWithImages(count: number): Array<{ src: string; showLogo: boolean; logo?: string }> {
+    const allImages: Array<{ src: string; logo?: string }> = [];
+    
+    products.forEach((product) => {
+      const productImages = getAllImagesWithLogo(product);
+      allImages.push(...productImages);
+    });
+
+    // Shuffle and select random images
+    const shuffled = [...allImages].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count).map(item => ({
+      ...item,
+      showLogo: Math.random() < 0.3 && !!item.logo // 30% chance to show logo if available
+    }));
+  }
+
+  // C919 images
+   const c919Images = [
     "https://res.cloudinary.com/deahgtn57/image/upload/v1749979263/omelett%27s/public/c919/109_sqz5zm.png",
     "https://res.cloudinary.com/deahgtn57/image/upload/v1749978988/omelett%27s/public/c919/104_kukfrn.png",
     "https://res.cloudinary.com/deahgtn57/image/upload/v1749978988/omelett%27s/public/c919/102_ifefam.png",
@@ -73,57 +117,24 @@ export default function IndexPage() {
     "https://res.cloudinary.com/deahgtn57/image/upload/v1749978992/omelett%27s/public/c919/118_vrp2nx.png",
     "https://res.cloudinary.com/deahgtn57/image/upload/v1749978991/omelett%27s/public/c919/119_xdasto.png",
   ];
+  // Generate random image list from API products
+  const imageList = loading ? [] : getRandomProductsWithImages(12);
 
-  const free = [
-    {
-      src: "https://res.cloudinary.com/deahgtn57/image/upload/v1749979221/omelett%27s/public/image/free/1_t9cqju.png",
-    },
-    {
-      src: "https://res.cloudinary.com/deahgtn57/image/upload/v1749979221/omelett%27s/public/image/free/2_vwhyiw.png",
-    },
-    {
-      src: "https://res.cloudinary.com/deahgtn57/image/upload/v1749979221/omelett%27s/public/image/free/3_jgef5j.png",
-    },
-    {
-      src: "https://res.cloudinary.com/deahgtn57/image/upload/v1749979221/omelett%27s/public/image/free/4_mnjgw2.png",
-    },
-    {
-      src: "https://res.cloudinary.com/deahgtn57/image/upload/v1749979221/omelett%27s/public/image/free/5_bojuth.png",
-    },
-    {
-      src: "https://res.cloudinary.com/deahgtn57/image/upload/v1749979221/omelett%27s/public/image/free/6_zdhxux.png",
-    },
-    {
-      src: "https://res.cloudinary.com/deahgtn57/image/upload/v1749979221/omelett%27s/public/image/free/7_ovuf58.png",
-    },
-  ];
-
-  const [currentC919Index, setCurrentC919Index] = useState(0);
-  const [currentFreeIndex, setCurrentFreeIndex] = useState(0); // Added missing state
-
-  // Auto-slide for free images
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentFreeIndex((prevIndex: number) => (prevIndex + 1) % free.length);
-    }, 3800);
-
-    return () => clearInterval(interval);
-  }, [free.length]);
-
-  // Manual sliding functions for C919 images (with looping)
+  // Manual sliding functions for C919 images
   const nextC919Slide = () => {
-    setCurrentC919Index((prevIndex: number) => (prevIndex + 1) % c919Images.length);
+    setCurrentC919Index((prevIndex) => (prevIndex + 1) % c919Images.length);
   };
 
   const prevC919Slide = () => {
-    setCurrentC919Index(
-      (prevIndex: number) => (prevIndex - 1 + c919Images.length) % c919Images.length,
+    setCurrentC919Index((prevIndex) => 
+      (prevIndex - 1 + c919Images.length) % c919Images.length
     );
   };
 
   return (
     <DefaultLayout>
-      <div className="relative w-full h-[400px] md:h-[400px] lg:h-[600px] rounded-lg overflow-hidden">
+      {/* Hero Video Section */}
+       <div className="relative w-full h-[400px] md:h-[400px] lg:h-[600px] rounded-lg overflow-hidden">
         <video
           autoPlay
           loop
@@ -166,42 +177,66 @@ export default function IndexPage() {
           <FaChevronRight className="text-green-700" />
         </button>
       </div>
-
-      <section className="flex flex-col items-center justify-center gap-4 py-12 md:py-12">
+      {/* Main Content Section */}
+      <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-12 px-4">
         <div className="inline-block max-w-lg text-center justify-center">
-          <p className="text-default-500">{t("premium_airplane_models")}</p>
+          <p className="text-default-500 text-sm md:text-base">{t("premium_airplane_models")}</p>
         </div>
+        
         <div data-aos="zoom-in">
-          <div className="h-1 w-80 mx-8 justify-center border-b-3 border-green-700" />
+          <div className="h-1 w-40 sm:w-60 md:w-80 mx-auto border-b-3 border-green-700" />
         </div>
 
         <div data-aos="zoom-out">
-          <p className="text-gray-500 mt-2 text-sm md:text-base">
+          <p className="text-gray-500 mt-2 text-xs sm:text-sm md:text-base text-center px-4">
             {t("authentic_image")}
           </p>
         </div>
 
-        <div className="w-full flex justify-center">
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-1 sm:gap-10 md:gap-12 place-items-center">
-            {imageList.map((src, idx) => (
-              <div key={idx} data-aos="zoom-in-up">
-                <Link href="#">
-                  <Image
-                    isBlurred
-                    isZoomed
-                    alt={`Company Model ${idx + 1}`}
-                    className="border border-green-700 w-full h-auto"
-                    src={src}
-                    width={500}
-                  />
-                </Link>
-              </div>
-            ))}
+        {/* Image Gallery */}
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-700"></div>
           </div>
-        </div>
+        ) : (
+          <div className="w-full max-w-7xl mx-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-2 sm:gap-4 md:gap-6 px-2 sm:px-4">
+              {imageList.map((item, idx) => (
+                <div 
+                  key={`${item.src}-${idx}`}
+                  data-aos="zoom-in-up"
+                  data-aos-delay={(idx % 4) * 100}
+                  className="transition-transform duration-300 hover:scale-[1.03] aspect-square relative"
+                >
+                  <Link href="/omelettes">
+                    <Image
+                      isBlurred
+                      isZoomed
+                      alt={`Airplane Model ${idx + 1}`}
+                      className="border border-green-700 w-full h-full object-cover rounded-lg"
+                      src={item.src}
+                      width={300}
+                      height={300}
+                      loading={idx < 6 ? "eager" : "lazy"}
+                    />
+                    {item.showLogo && item.logo && (
+                      <div className="absolute bottom-2 right-2 w-8 h-8 md:w-10 md:h-10 bg-white bg-opacity-80 rounded-full p-1 flex items-center justify-center">
+                        <img 
+                          src={item.logo} 
+                          alt="Brand Logo" 
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                    )}
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
-        <div data-aos="zoom-in">
-          <div className="h-1 w-80 mx-8 justify-center border-b-3 border-green-700" />
+        <div data-aos="zoom-in" className="w-full max-w-7xl mx-auto">
+          <div className="h-1 w-40 sm:w-60 md:w-80 mx-auto border-b-3 border-green-700 mt-8 md:mt-12" />
         </div>
       </section>
     </DefaultLayout>
