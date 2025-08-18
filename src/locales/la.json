@@ -65,21 +65,6 @@
   "feature_secure_packaging": "ການຫຸ້ມຫໍ່ທີ່ປອດໄພສຳລັບການຈັດສົ່ງ",
   "feature_customer_support": "ການສະໜັບສະໜູນລູກຄ້າໂດຍສະເພາະ",
 
-  "product_comac_c919_name": "Comac C919",
-  "product_comac_c919_description": "ໂມເດວຈຳລອງທີ່ສ້າງຂຶ້ນຢ່າງລະອຽດຂອງເຮືອບິນໂດຍສານລຳຕົວແຄບທີ່ຜະລິດພາຍໃນປະເທດຈີນ, Comac C919. ເໝາະສຳລັບຜູ້ທີ່ມັກການບິນ ແລະ ນັກສະສົມ.",
-  "price_comac": "600,000 ກີບ",
-
-  "product_qatar_777_name": "Qatar Airways Boeing 777 FIFA World Cup Livery",
-  "product_qatar_777_description": "ຮ່ວມສະເຫຼີມສະຫຼອງຈິດວິນຍານຂອງບານເຕະດ້ວຍໂມເດວ Boeing 777 ລຸ້ນພິເສດນີ້ ທີ່ມາພ້ອມກັບລາຍການພິເສດຂອງ Qatar Airways FIFA World Cup. ສິ່ງທີ່ຕ້ອງມີສຳລັບແຟນກິລາ ແລະ ການບິນ.",
-  "price_qatar": "600,000 ກີບ",
-
-  "product_antonov_an225_name": "Antonov An-225 Mriya (ຄວາມຝັນ)",
-  "product_antonov_an225_description": "ເປັນເຈົ້າຂອງສ່ວນໜຶ່ງຂອງປະຫວັດສາດການບິນດ້ວຍໂມເດວເຮືອບິນທີ່ໃຫຍ່ທີ່ສຸດໃນໂລກ, Antonov An-225 Mriya ທີ່ຍິ່ງໃຫຍ່. ເປັນຈຸດໃຈກາງທີ່ແທ້ຈິງຂອງທຸກຄໍເລັກຊັນ.",
-  "price_antonov": "600,000 ກີບ",
-
-  "product_china_eastern_c919_name": "China Eastern Airline Comac C919",
-  "product_china_eastern_c919_description": "ໂມເດວລະອຽດຂອງ Comac C919 ໃນສີສັນສັນຍາລັກຂອງ China Eastern Airlines. ເປັນຕົວແທນຂອງຍຸກໃໝ່ຂອງການບິນຈີນ.",
-  "price_china_eastern": "600,000 ກີບ",
 
   "whatsapp_order_greeting": "ສະບາຍດີ, ຂ້ອຍຂໍຢືນຢັນການສັ່ງຊື້ໂມເດວ:",
   "whatsapp_order_id": "ເລກທີສັ່ງຊື້:",

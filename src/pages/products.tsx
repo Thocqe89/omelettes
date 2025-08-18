@@ -164,9 +164,7 @@ export default function ProductsPage() {
       <DefaultLayout>
         <div className="flex flex-col items-center justify-center h-screen gap-4 bg-white dark:bg-gray-900">
           <Loading />
-          <p className="text-green-700 dark:text-green-300 animate-pulse">
-            {t("loading_products")}
-          </p>
+         
         </div>
       </DefaultLayout>
     );

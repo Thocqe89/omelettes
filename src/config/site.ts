@@ -12,6 +12,10 @@ export const siteConfig = {
       label: "product",
       href: "/product",
     },
+    {
+      label: "logistics",
+      href: "/dataCheck" ,
+    },
     // {
     //   label: "store",
     //   href: "/store",
@@ -34,10 +38,7 @@ export const siteConfig = {
       label: "product",
       href: "/product",
     },
-    // {
-    //   label: "store",
-    //   href: "/omelletes",
-    // },
+    
     // {
     //   label: "omelette",
     //   href: "/omelettes",

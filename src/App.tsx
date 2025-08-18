@@ -16,6 +16,7 @@ import AboutPage from "@/pages/about";
 import IndexPage from "@/pages/index";
 import ThreeLeaves from "./components/three_leaves";
 import Omellets from "./components/omelettes";
+import Bank from "./components/bank";
 
 function App() {
   return (
@@ -28,7 +29,7 @@ function App() {
           <Route element={<Omellets />} path="/omelettes" /> 
          <Route element={<AboutPage />} path="/about" /> 
         <Route element={<Logistics />} path="/logistics" />
-        {/* <Route element={<Logistics_dashboard />} path="/logistics_dashboard" /> */}
+        <Route element={<Bank />} path="/BankPage" />
         <Route element={<DataCheck />} path="/dataCheck" />
         <Route element={<Logistics_status />} path="/logistics_status" />
       </Routes>

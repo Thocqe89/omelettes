@@ -1,11 +1,9 @@
 import * as React from "react";
 import { useTranslation } from "react-i18next";
-import { FaWhatsapp, FaStar  } from "react-icons/fa";
+import { FaWhatsapp, FaStar, FaTimes } from "react-icons/fa";
 import Loading from "@/components/loading";
 import DefaultLayout from "@/layouts/default";
 import { addToast } from "@heroui/toast";
-
-import { Image } from "@heroui/image";
 import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
 
 interface Product {
@@ -20,25 +18,8 @@ interface Product {
   Image?: string;
   Phone?: string;
   Logo?: string;
-   Rating?: number; //
-  Images?: {
-    image_meain?: string | null;
-    image_1?: string | null;
-    image_2?: string | null;
-    image_3?: string | null;
-    image_4?: string | null;
-    image_5?: string | null;
-    image_6?: string | null;
-    image_7?: string | null;
-    image_8?: string | null;
-    image_9?: string | null;
-    image_10?: string | null;
-    image_11?: string | null;
-    image_12?: string | null;
-    image_13?: string | null;
-    image_14?: string | null;
-    image_15?: string | null;
-  };
+  Rating?: number;
+  Images?: Record<string, string | null>;
 }
 
 const API_URL = import.meta.env.VITE_PRODUCT_DETAILS_API;
@@ -48,9 +29,12 @@ export default function Omellets() {
   const [entries, setEntries] = React.useState<Product[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [searchTerm, setSearchTerm] = React.useState("");
-
-  // Track current image index per product by ID
   const [imageIndexes, setImageIndexes] = React.useState<Record<string, number>>({});
+
+  // Lightbox state
+  const [lightboxOpen, setLightboxOpen] = React.useState(false);
+  const [selectedProductImages, setSelectedProductImages] = React.useState<string[]>([]);
+  const [selectedImageIndex, setSelectedImageIndex] = React.useState(0);
 
   React.useEffect(() => {
     fetch(`${API_URL}?nocache=${Date.now()}`)
@@ -70,7 +54,7 @@ export default function Omellets() {
             Phone: p.Phone || "",
             Logo: p.logo || "",
             Images: p.Images || {},
-             Rating: Math.min(5, Math.max(0, Number(p.Rating) || 4)),
+            Rating: Math.min(5, Math.max(0, Number(p.Rating) || 4)),
           }));
           setEntries(mapped);
           addToast({
@@ -97,39 +81,21 @@ export default function Omellets() {
       });
   }, [t]);
 
-  // Helper: Get all valid images from Images object or fallbacks
   function getAllImages(product: Product): string[] {
     const images: string[] = [];
     const keys = [
-      "image_meain",
-      "image_1",
-      "image_2",
-      "image_3",
-      "image_4",
-      "image_5",
-      "image_6",
-      "image_7",
-      "image_8",
-      "image_9",
-      "image_10",
-      "image_11",
-      "image_12",
-      "image_13",
-      "image_14",
-      "image_15",
-
+      "image_meain", "image_1", "image_2", "image_3", "image_4", "image_5",
+      "image_6", "image_7", "image_8", "image_9", "image_10", "image_11",
+      "image_12", "image_13", "image_14", "image_15",
     ] as const;
 
     if (product.Images) {
       keys.forEach((key) => {
         const url = product.Images?.[key];
-        if (url && url.trim() !== "") {
-          images.push(url.trim());
-        }
+        if (url && url.trim() !== "") images.push(url.trim());
       });
     }
 
-    // Fallback images if none found
     if (images.length === 0) {
       if (product.Image && product.Image.trim() !== "") images.push(product.Image.trim());
       else if (product.Logo && product.Logo.trim() !== "") images.push(product.Logo.trim());
@@ -139,7 +105,6 @@ export default function Omellets() {
     return images;
   }
 
-  // Handler: Next image index for a product
   function handleNextImage(productId: string, totalImages: number) {
     setImageIndexes((prev) => {
       const current = prev[productId] ?? 0;
@@ -147,6 +112,7 @@ export default function Omellets() {
       return { ...prev, [productId]: next };
     });
   }
+
   function handlePrevImage(productId: string, totalImages: number) {
     setImageIndexes((prev) => {
       const current = prev[productId] ?? 0;
@@ -167,19 +133,18 @@ export default function Omellets() {
         <Loading />
       ) : (
         <section className="min-h-screen bg-gray-50 dark:bg-gray-900">
-          {/* Hero */}
           <div className="bg-gradient-to-r from-gray-300 to-[#0d7a68] text-white py-12 px-4 text-center shadow-md">
             <h1 className="text-5xl font-extrabold tracking-wide drop-shadow-md">
-              {t("omellets") || "Omellet’s Airplane Models"}
+              <p >Omellet<span className="text-[#E43636]">'</span>s</p>
             </h1>
-            <p className="mt-3 text-lg opacity-95">
-              {t("premium_model_aircraft") ||
-                "Premium Model Aircraft • Collectors & Enthusiasts"}
-            </p>
+     <p className="mt-2 text-[16px] sm:text-[18px] md:text-[22px] lg:text-[28px] opacity-95 text-[#013e34]">
+  
+  {t("premium_airplane_models") || "Premium Model Aircraft • Collectors & Enthusiasts"}
+</p>
+
           </div>
 
           <div className="max-w-7xl mx-auto py-10 px-4 space-y-8">
-            {/* Search */}
             <div className="flex justify-center">
               <input
                 className="w-full max-w-lg px-5 py-3 rounded-full border border-[#0d7a68] focus:outline-none focus:ring-2 focus:ring-green-800 dark:bg-gray-800 dark:border-white dark:text-white shadow-sm"
@@ -205,10 +170,15 @@ export default function Omellets() {
                       key={entry.ID}
                       className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col hover:shadow-xl transition-shadow"
                     >
-
-                      {/* Image with Next button */}
-
-                      <div className="relative h-[250px] flex items-center justify-center rounded-lg overflow-hidden">
+                      {/* Image section */}
+                      <div
+                        className="relative h-[250px] flex items-center justify-center rounded-lg overflow-hidden cursor-zoom-in"
+                        onClick={() => {
+                          setSelectedProductImages(images);
+                          setSelectedImageIndex(currentImageIndex);
+                          setLightboxOpen(true);
+                        }}
+                      >
                         {/* Blurred Background */}
                         <div
                           className="absolute inset-0 bg-cover bg-center filter blur-xl scale-110"
@@ -224,7 +194,7 @@ export default function Omellets() {
                         <img
                           src={images[currentImageIndex]}
                           alt={`${entry.Name} image ${currentImageIndex + 1}`}
-                          className="relative max-h-full max-w-full object-contain z-10 "
+                          className="relative max-h-full max-w-full object-contain z-10"
                           loading="lazy"
                         />
 
@@ -232,7 +202,10 @@ export default function Omellets() {
                           <>
                             {/* Left button */}
                             <button
-                              onClick={() => handlePrevImage(entry.ID, images.length)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handlePrevImage(entry.ID, images.length);
+                              }}
                               className="absolute top-1/2 left-4 -translate-y-1/2 text-2xl text-white hover:text-gray-200 z-20 transition"
                               aria-label={`Previous image of ${entry.Name}`}
                             >
@@ -241,7 +214,10 @@ export default function Omellets() {
 
                             {/* Right button */}
                             <button
-                              onClick={() => handleNextImage(entry.ID, images.length)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleNextImage(entry.ID, images.length);
+                              }}
                               className="absolute top-1/2 right-4 -translate-y-1/2 text-2xl text-white hover:text-gray-200 z-20 transition"
                               aria-label={`Next image of ${entry.Name}`}
                             >
@@ -252,35 +228,7 @@ export default function Omellets() {
                       </div>
 
                       {/* Content */}
-                      {/* <div className="flex flex-col flex-1 p-5"> */}
-                      {/* Name & Logo */}
-                      {/* <h3 className="text-xl font-bold text-[#0d7a68] dark:text-[#0d7a68] flex items-center gap-3">
-    {entry.Logo ? (
-      <Image
-        isBlurred
-        src={entry.Logo}
-        alt={`${entry.Name} logo`}
-        className="w-16 h-16 object-contain bg-transparent"
-      />
-    ) : (
-      <FaPlane className="text-sky-500" />
-    )}
-    <span className="text-gray-400 text-2xl font-light">|</span>
-    {entry.Name}
-  </h3> */}
-
-                      {/* Details */}
-                      {/* <p className="text-sm mt-1 text-gray-700 dark:text-gray-300">
-    {t("id")}: <span className="text-[#0d7a68] dark:text-[#0d7a68]">
-      OMS-00-00-{entry.ID}
-    </span>
-  </p> */}
-                      {/* </div> */}
-
-
-
-                      {/* Content */}
-                       <div className="flex flex-col flex-1 p-5">
+                      <div className="flex flex-col flex-1 p-5">
                         {/* Name + Price */}
                         <div className="flex justify-between items-center">
                           <h3 className="text-xl font-bold text-[#0d7a68] dark:text-white">
@@ -290,7 +238,8 @@ export default function Omellets() {
                             {entry["Final Selling Price"].toLocaleString()} ₭
                           </span>
                         </div>
-                         {/* Rating */}
+
+                        {/* Rating */}
                         <div className="flex items-center mt-2">
                           {[...Array(5)].map((_, i) => (
                             <FaStar
@@ -309,48 +258,34 @@ export default function Omellets() {
                         </div>
 
                         {/* Details */}
-                      <p className="text-sm mt-1 text-gray-500 dark:text-gray-400">
-  {t("id")}:{" "}
-  <span className="text-[#0d7a68] dark:text-white font-bold">
-    OMS-00-00-{entry.ID}
-  </span>
-</p>
+                        <p className="text-sm mt-1 text-gray-500 dark:text-gray-400">
+                          {t("id")}:{" "}
+                          <span className="text-[#0d7a68] dark:text-white font-bold">
+                            OMS-00-00-{entry.ID}
+                          </span>
+                        </p>
 
-<p className="text-sm mt-1 text-gray-500 dark:text-gray-400">
-  {t("type")}:{" "}
-  <span className="text-[#0d7a68] dark:text-white font-bold">
-    {entry.Type}
-  </span>
-</p>
+                        <p className="text-sm mt-1 text-gray-500 dark:text-gray-400">
+                          {t("type")}:{" "}
+                          <span className="text-[#0d7a68] dark:text-white font-bold">
+                            {entry.Type}
+                          </span>
+                        </p>
 
-<p className="text-sm mt-1 text-gray-500 dark:text-gray-400">
-  {t("size")}:{" "}
-  <span className="text-[#0d7a68] dark:text-white font-bold">
-    {entry.Size}
-  </span>
-</p>
+                        <p className="text-sm mt-1 text-gray-500 dark:text-gray-400">
+                          {t("size")}:{" "}
+                          <span className="text-[#0d7a68] dark:text-white font-bold">
+                            {entry.Size}
+                          </span>
+                        </p>
 
-<p className="text-sm mt-1 text-gray-500 dark:text-gray-400">
-  {t("quantity")}:{" "}
-  <span className="text-[#0d7a68] dark:text-white font-bold">
-    {entry["Qty Bought"]}
-  </span>
-</p>
+                        <p className="text-sm mt-1 text-gray-500 dark:text-gray-400">
+                          {t("quantity")}:{" "}
+                          <span className="text-[#0d7a68] dark:text-white font-bold">
+                            {entry["Qty Bought"]}
+                          </span>
+                        </p>
 
-{/* Price */}
-{/* <p className="text-sm mt-2 text-gray-500 dark:text-gray-400">
-  {t("price")}:{" "}
-  <span className="text-[#0d7a68] dark:text-white font-bold">
-    {entry["Final Selling Price"].toLocaleString(undefined, {
-      style: "currency",
-      currency: "LAK",
-    })}
-  </span>
-</p> */}
-
-
-
-                        {/* WhatsApp Button */}
                         {/* WhatsApp Button */}
                         <a
                           className="mt-4 inline-flex items-center justify-center gap-2 bg-[#0d7a68] text-white font-medium py-2 px-5 rounded-full hover:bg-[#0d7a68] hover:transition-all shadow-md"
@@ -360,21 +295,17 @@ export default function Omellets() {
                             `Name: ${entry.Name}\n` +
                             `Type: ${entry.Type}\n` +
                             `Size: ${entry.Size}\n` +
-                            `Price: ${entry["Final Selling Price"].toLocaleString(undefined, {
-                              style: "currency",
-                              currency: "LAK",
-                            })}\n` +
+                            `Price: ${entry["Final Selling Price"].toLocaleString()} ₭\n` +
                             `Please confirm availability.`
                           )}`}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
                           <FaWhatsapp size={20} />
-                          <span className="hidden sm:inline">
+                          <span className="hidden sm:inline hover:decoration-white hover:underline">
                             {t("shop_now") || "Order Now"}
                           </span>
                         </a>
-
                       </div>
                     </div>
                   );
@@ -387,6 +318,60 @@ export default function Omellets() {
             </div>
           </div>
         </section>
+      )}
+
+      {/* Simplified Lightbox Modal with one-tap closing */}
+      {lightboxOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4"
+          onClick={() => setLightboxOpen(false)}
+        >
+          {/* Image container with navigation arrows */}
+          <div className="relative max-w-full max-h-full">
+            {/* Navigation Arrows - only show if multiple images */}
+            {selectedProductImages.length > 1 && (
+              <>
+                <button
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-4xl z-10"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedImageIndex(
+                      (prev) => (prev - 1 + selectedProductImages.length) % selectedProductImages.length
+                    );
+                  }}
+                  aria-label="Previous image"
+                >
+                  <AiOutlineLeft />
+                </button>
+                <button
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white text-4xl z-10"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedImageIndex((prev) => (prev + 1) % selectedProductImages.length);
+                  }}
+                  aria-label="Next image"
+                >
+                  <AiOutlineRight />
+                </button>
+              </>
+            )}
+
+            {/* Main Image */}
+            <img
+              src={selectedProductImages[selectedImageIndex]}
+              alt={`Fullscreen view ${selectedImageIndex + 1}`}
+              className="max-w-full max-h-[90vh] object-contain cursor-pointer"
+            />
+
+
+          </div>
+          {/* Image Counter */}
+          {selectedProductImages.length > 1 && (
+            <div className="absolute bottom-8 left-0 right-0 text-center text-white text-sm">
+              {selectedImageIndex + 1} / {selectedProductImages.length}
+            </div>
+          )}
+        </div>
       )}
     </DefaultLayout>
   );

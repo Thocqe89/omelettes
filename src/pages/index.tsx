@@ -24,6 +24,8 @@ export default function IndexPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentC919Index, setCurrentC919Index] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [currentLightboxImage, setCurrentLightboxImage] = useState("");
 
   const API_URL = import.meta.env.VITE_PRODUCT_DETAILS_API;
 
@@ -103,7 +105,7 @@ export default function IndexPage() {
   }
 
   // C919 images
-   const c919Images = [
+  const c919Images = [
     "https://res.cloudinary.com/deahgtn57/image/upload/v1749979263/omelett%27s/public/c919/109_sqz5zm.png",
     "https://res.cloudinary.com/deahgtn57/image/upload/v1749978988/omelett%27s/public/c919/104_kukfrn.png",
     "https://res.cloudinary.com/deahgtn57/image/upload/v1749978988/omelett%27s/public/c919/102_ifefam.png",
@@ -117,6 +119,7 @@ export default function IndexPage() {
     "https://res.cloudinary.com/deahgtn57/image/upload/v1749978992/omelett%27s/public/c919/118_vrp2nx.png",
     "https://res.cloudinary.com/deahgtn57/image/upload/v1749978991/omelett%27s/public/c919/119_xdasto.png",
   ];
+
   // Generate random image list from API products
   const imageList = loading ? [] : getRandomProductsWithImages(12);
 
@@ -131,10 +134,33 @@ export default function IndexPage() {
     );
   };
 
+  // Open image in lightbox
+  const openLightbox = (src: string) => {
+    setCurrentLightboxImage(src);
+    setLightboxOpen(true);
+  };
+
   return (
     <DefaultLayout>
+      {/* Lightbox Modal */}
+      {lightboxOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4"
+          onClick={() => setLightboxOpen(false)}
+        >
+          <div className="relative max-w-full max-h-full">
+            <img
+              src={currentLightboxImage}
+              alt="Fullscreen view"
+              className="max-w-full max-h-[90vh] object-contain cursor-pointer"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Hero Video Section */}
-       <div className="relative w-full h-[400px] md:h-[400px] lg:h-[600px] rounded-lg overflow-hidden">
+      <div className="relative w-full h-[400px] md:h-[400px] lg:h-[600px] rounded-lg overflow-hidden">
         <video
           autoPlay
           loop
@@ -143,7 +169,6 @@ export default function IndexPage() {
           className="absolute inset-0 w-full h-full object-cover z-0"
         >
           <source src="https://res.cloudinary.com/deahgtn57/video/upload/v1749978822/omelett%27s/20_qpukka.mp4" />
-         
         </video>
         <div
           className="relative z-10 flex h-full w-full items-center justify-center"
@@ -177,6 +202,7 @@ export default function IndexPage() {
           <FaChevronRight className="text-green-700" />
         </button>
       </div>
+
       {/* Main Content Section */}
       <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-12 px-4">
         <div className="inline-block max-w-lg text-center justify-center">
@@ -208,7 +234,16 @@ export default function IndexPage() {
                   data-aos-delay={(idx % 4) * 100}
                   className="transition-transform duration-300 hover:scale-[1.03] aspect-square relative"
                 >
-                  <Link href="/omelettes">
+                  <div onClick={() => openLightbox(item.src)} className="cursor-zoom-in">
+                      {item.showLogo && item.logo && (
+                      <div className="absolute bottom-2 right-2 w-8 h-8 md:w-10 md:h-10 bg-white bg-opacity-80 rounded-full p-1 flex items-center justify-center">
+                        <img 
+                          src={item.logo} 
+                          alt="Brand Logo" 
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                    )}
                     <Image
                       isBlurred
                       isZoomed
@@ -219,16 +254,8 @@ export default function IndexPage() {
                       height={300}
                       loading={idx < 6 ? "eager" : "lazy"}
                     />
-                    {item.showLogo && item.logo && (
-                      <div className="absolute bottom-2 right-2 w-8 h-8 md:w-10 md:h-10 bg-white bg-opacity-80 rounded-full p-1 flex items-center justify-center">
-                        <img 
-                          src={item.logo} 
-                          alt="Brand Logo" 
-                          className="w-full h-full object-contain"
-                        />
-                      </div>
-                    )}
-                  </Link>
+                  
+                  </div>
                 </div>
               ))}
             </div>

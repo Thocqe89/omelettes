@@ -116,7 +116,7 @@ export const Navbar = () => {
       
 <div className="hidden md:flex lg:gap-6 ml-4 flex-wrap items-center">
   {siteConfig.navItems.map((item) => (
-    <NavbarItem key={item.href} className="whitespace-nowrap">
+    <NavbarItem key={item.href} className="whitespace-nowrap ">
       <Link
         className={clsx(
           linkStyles({ color: "foreground" }),
@@ -127,8 +127,8 @@ export const Navbar = () => {
         href={item.href}
       >
         <div
-          className="hidden md:inline-block h-5 w-1 mr-2 rounded"
-          style={{ backgroundColor: "#1D6B3F" }}
+          className="hidden md:inline-block h-5 w-1 mr-2 rounded "
+          style={{ backgroundColor: "#1D6B3F " }}
         />
         {t(item.label)}
       </Link>
@@ -175,10 +175,10 @@ export const Navbar = () => {
           className="inline-block mr-2 w-5 h-5"
           src="/image/menu/om.png"
         />
-        {t("omelettes")}
+         <p >Omellet<span className="text-[#E43636]">'</span>s</p>
       </Link>
       <Link
-        href="/thee_eaves"
+        href="/BankPage"
         className="flex items-center px-4 py-2 text-default-500 hover:bg-green-100 dark:hover:bg-green-900"
       >
         <Image
@@ -187,7 +187,7 @@ export const Navbar = () => {
           className="inline-block mr-2 w-5 h-5"
           src="/image/menu/th.png"
         />
-        {t("thee_eaves")}
+      <p><span className="text-[#e5da02]">3 </span><span className="text-[#0d7a68]">|</span>Thee Leaves</p>
       </Link>
     </div>
   )}
@@ -372,10 +372,10 @@ export const Navbar = () => {
                       className="inline-block mr-2 w-5 h-5"
                       src="/image/menu/om.png"
                     />
-                    {t("omelettes")}
+                    <p >Omellet<span className="text-[#E43636]">'</span>s</p>
                   </Link>
                   <Link
-                    href="/thee_eaves"
+                    href="/BankPage"
                     className="text-default-500 hover:text-[#0d7a68] text-base font-normal"
                   >
                     <Image
@@ -384,7 +384,7 @@ export const Navbar = () => {
                       className="inline-block mr-2 w-5 h-5"
                       src="/image/menu/th.png"
                     />
-                    {t("thee_eaves")}
+                     <p><span className="text-[#e5da02]">3 </span><span className="text-[#0d7a68]">|</span>Thee Leaves</p>
                   </Link>
                 </div>
               )}
