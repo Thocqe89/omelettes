@@ -178,7 +178,7 @@ export const Navbar = () => {
          <p >Omellet<span className="text-[#E43636]">'</span>s</p>
       </Link>
       <Link
-        href="/BankPage"
+        href="/BlankPage"
         className="flex items-center px-4 py-2 text-default-500 hover:bg-green-100 dark:hover:bg-green-900"
       >
         <Image
@@ -375,7 +375,7 @@ export const Navbar = () => {
                     <p >Omellet<span className="text-[#E43636]">'</span>s</p>
                   </Link>
                   <Link
-                    href="/BankPage"
+                    href="/BlankPage"
                     className="text-default-500 hover:text-[#0d7a68] text-base font-normal"
                   >
                     <Image

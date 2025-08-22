@@ -1,10 +1,24 @@
 import * as React from "react";
 import { useTranslation } from "react-i18next";
-import { FaWhatsapp, FaStar, FaTimes } from "react-icons/fa";
+import { FaWhatsapp, FaStar, FaTruck, FaExternalLinkAlt } from "react-icons/fa";
 import Loading from "@/components/loading";
 import DefaultLayout from "@/layouts/default";
 import { addToast } from "@heroui/toast";
+import { FiShoppingCart } from "react-icons/fi";
 import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
+import { motion } from "framer-motion";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+  Input,
+  Textarea,
+  Checkbox,
+  Link
+} from "@heroui/react";
 
 interface Product {
   ID: string;
@@ -22,7 +36,55 @@ interface Product {
   Images?: Record<string, string | null>;
 }
 
+interface OrderDetails {
+  productId: string;
+  productName: string;
+  price: number;
+  quantity: number;
+  customerName: string;
+  phone: string;
+  address: string;
+  notes: string;
+  includeLogistics: boolean;
+}
+
 const API_URL = import.meta.env.VITE_PRODUCT_DETAILS_API;
+
+const AnimatedPrice = ({ price }: { price: number }) => {
+  const [displayPrice, setDisplayPrice] = React.useState(0);
+
+  React.useEffect(() => {
+    const duration = 1500;
+    const frameDuration = 1000 / 60;
+    const totalFrames = Math.round(duration / frameDuration);
+    let frame = 0;
+
+    const counter = setInterval(() => {
+      frame++;
+      const progress = frame / totalFrames;
+      const currentPrice = Math.round(price * progress);
+      setDisplayPrice(currentPrice);
+
+      if (frame === totalFrames) {
+        clearInterval(counter);
+        setDisplayPrice(price);
+      }
+    }, frameDuration);
+
+    return () => clearInterval(counter);
+  }, [price]);
+
+  return (
+    <motion.span
+      className="text-lg font-bold text-red-600 dark:text-red-400"
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      {displayPrice.toLocaleString()} ₭
+    </motion.span>
+  );
+};
 
 export default function Omellets() {
   const { t } = useTranslation();
@@ -30,6 +92,19 @@ export default function Omellets() {
   const [loading, setLoading] = React.useState(true);
   const [searchTerm, setSearchTerm] = React.useState("");
   const [imageIndexes, setImageIndexes] = React.useState<Record<string, number>>({});
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [selectedProduct, setSelectedProduct] = React.useState<Product | null>(null);
+  const [orderDetails, setOrderDetails] = React.useState<OrderDetails>({
+    productId: "",
+    productName: "",
+    price: 0,
+    quantity: 1,
+    customerName: "",
+    phone: "",
+    address: "",
+    notes: "",
+    includeLogistics: false
+  });
 
   // Lightbox state
   const [lightboxOpen, setLightboxOpen] = React.useState(false);
@@ -57,29 +132,61 @@ export default function Omellets() {
             Rating: Math.min(5, Math.max(0, Number(p.Rating) || 4)),
           }));
           setEntries(mapped);
-          addToast({
-            title: t("loaded_successfully"),
-            description: t("products_have_been_loaded"),
-            color: "success",
-          });
-        } else {
-          addToast({
-            title: t("error"),
-            description: t("invalid_data"),
-            color: "danger",
-          });
         }
         setLoading(false);
       })
       .catch(() => {
         setLoading(false);
-        addToast({
-          title: t("error"),
-          description: t("error_fetching"),
-          color: "danger",
-        });
       });
   }, [t]);
+
+  const openOrderModal = (product: Product) => {
+    setSelectedProduct(product);
+    setOrderDetails({
+      productId: product.ID,
+      productName: product.Name,
+      price: product["Final Selling Price"],
+      quantity: 1,
+      customerName: "",
+      phone: "",
+      address: "",
+      notes: "",
+      includeLogistics: false
+    });
+    onOpen();
+  };
+
+  const handleOrderSubmit = () => {
+    // Get current date and time
+    const now = new Date();
+    const formattedDate = now.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    const formattedTime = now.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    
+    const message = `🛒 New Order Request | ${formattedDate} at ${formattedTime}\n
+Product Details | 
+ID: OMS-00-00-${orderDetails.productId}
+Name: ${orderDetails.productName}
+Type: ${selectedProduct?.Type}
+Size: ${selectedProduct?.Size}
+Price: ${orderDetails.price.toLocaleString()} ₭
+Quantity: ${orderDetails.quantity}
+{*Logistics services provided free of charge }
+___________________________________________
+${orderDetails.includeLogistics ? 'I will  pickup.(T2 bannakham, sekhodthabong distick Vietaine proviece lao) ':'Please include logistics/delivery service.' }`;
+
+
+    // Fixed WhatsApp URL with proper country code
+    const whatsappUrl = `https://wa.me/8562055058028?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+    onOpenChange();
+  };
 
   function getAllImages(product: Product): string[] {
     const images: string[] = [];
@@ -135,13 +242,11 @@ export default function Omellets() {
         <section className="min-h-screen bg-gray-50 dark:bg-gray-900">
           <div className="bg-gradient-to-r from-gray-300 to-[#0d7a68] text-white py-12 px-4 text-center shadow-md">
             <h1 className="text-5xl font-extrabold tracking-wide drop-shadow-md">
-              <p >Omellet<span className="text-[#E43636]">'</span>s</p>
+              <p>Omellet<span className="text-[#E43636]">'</span>s</p>
             </h1>
-     <p className="mt-2 text-[16px] sm:text-[18px] md:text-[22px] lg:text-[28px] opacity-95 text-[#013e34]">
-  
-  {t("premium_airplane_models") || "Premium Model Aircraft • Collectors & Enthusiasts"}
-</p>
-
+            <p className="mt-2 text-[16px] sm:text-[18px] md:text-[22px] lg:text-[28px] opacity-95 text-[#013e34]">
+              {t("premium_airplane_models") || "Premium Model Aircraft • Collectors & Enthusiasts"}
+            </p>
           </div>
 
           <div className="max-w-7xl mx-auto py-10 px-4 space-y-8">
@@ -166,9 +271,12 @@ export default function Omellets() {
                   const currentImageIndex = imageIndexes[entry.ID] ?? 0;
 
                   return (
-                    <div
+                    <motion.div
                       key={entry.ID}
                       className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col hover:shadow-xl transition-shadow"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5 }}
                     >
                       {/* Image section */}
                       <div
@@ -234,9 +342,7 @@ export default function Omellets() {
                           <h3 className="text-xl font-bold text-[#0d7a68] dark:text-white">
                             {entry.Name}
                           </h3>
-                          <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                            {entry["Final Selling Price"].toLocaleString()} ₭
-                          </span>
+                          <AnimatedPrice price={entry["Final Selling Price"]} />
                         </div>
 
                         {/* Rating */}
@@ -286,28 +392,18 @@ export default function Omellets() {
                           </span>
                         </p>
 
-                        {/* WhatsApp Button */}
-                        <a
-                          className="mt-4 inline-flex items-center justify-center gap-2 bg-[#0d7a68] text-white font-medium py-2 px-5 rounded-full hover:bg-[#0d7a68] hover:transition-all shadow-md"
-                          href={`https://wa.me/2055058028?text=${encodeURIComponent(
-                            `New Order Request\n` +
-                            `ID: OMS-00-00-${entry.ID}\n` +
-                            `Name: ${entry.Name}\n` +
-                            `Type: ${entry.Type}\n` +
-                            `Size: ${entry.Size}\n` +
-                            `Price: ${entry["Final Selling Price"].toLocaleString()} ₭\n` +
-                            `Please confirm availability.`
-                          )}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                        {/* Order Now Button */}
+                        <button
+                          onClick={() => openOrderModal(entry)}
+                          className="mt-4 inline-flex items-center justify-center gap-2 bg-[#0d7a68] text-white font-medium py-2 px-5 rounded-full hover:bg-[#0b6a5a] transition-all shadow-md"
                         >
                           <FaWhatsapp size={20} />
-                          <span className="hidden sm:inline hover:decoration-white hover:underline">
+                          <span className="hidden sm:inline">
                             {t("shop_now") || "Order Now"}
                           </span>
-                        </a>
+                        </button>
                       </div>
-                    </div>
+                    </motion.div>
                   );
                 })}
               </div>
@@ -320,15 +416,99 @@ export default function Omellets() {
         </section>
       )}
 
-      {/* Simplified Lightbox Modal with one-tap closing */}
+      {/* Order Modal */}
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl">
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                 <FiShoppingCart className="text-green-900" />
+                 {t("shop_now")} : {selectedProduct?.Name}
+                </div>
+              </ModalHeader>
+              <ModalBody className="space-y-4">
+                <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
+                  <h4 className=" font-semibold mb-2">Order Summary</h4>
+                  <p>{t("id")}: OMS-00-00-{selectedProduct?.ID}</p>
+                  <p>{t("name")}: {selectedProduct?.Name}</p>
+                  <p>{t("size")}: {selectedProduct?.Size}</p>
+                  <p>{t("type")}: {selectedProduct?.Type}</p>
+                  <p>{t("price")}: {selectedProduct?.["Final Selling Price"].toLocaleString()} ₭</p>
+                  
+                   <p className="text-[#e80501] ">*Logistics services provided free of charge</p>
+                  {orderDetails.includeLogistics && (
+                    <p className="text-[#0d7a68] ">+ Delivery Address: {orderDetails.address}</p>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    isSelected={orderDetails.includeLogistics}
+                    onValueChange={(checked) => setOrderDetails({ ...orderDetails, includeLogistics: checked })}
+                  />
+                  <span className="text-sm">Include logistics/delivery service</span>
+                  <FaTruck className="text-[#0d7a68]  ml-2" />
+                </div>
+
+                {/* {orderDetails.includeLogistics && (
+                   <Textarea
+                    label="Delivery Address"
+                    placeholder="Enter your complete address for delivery"
+                    value={orderDetails.address}
+                    onChange={(e) => setOrderDetails({...orderDetails, address: e.target.value})}
+                    minRows={3}
+                  />
+                )}
+
+                <Textarea
+                  label="Additional Notes (Optional)"
+                  placeholder="Any special requests or notes..."
+                  value={orderDetails.notes}
+                  onChange={(e) => setOrderDetails({...orderDetails, notes: e.target.value})}
+                  minRows={2}
+                /> */}
+
+                {/* Logistics Page Link */}
+                <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-700">
+                  <div className="flex items-center gap-2 text-sm text-blue-700 dark:text-blue-300">
+                    <FaTruck className="flex-shrink-0" />
+                    <span>Need to arrange logistics separately?</span>
+                  </div>
+                  <Link
+                    href="#"
+                    className="text-blue-600 dark:text-blue-400 hover:underline text-sm mt-1 inline-flex items-center gap-1"
+                    showAnchorIcon
+                    anchorIcon={<FaExternalLinkAlt size={12} />}
+                  >
+                    Visit our logistics page
+                  </Link>
+                </div>
+
+
+              </ModalBody>
+              <ModalFooter>
+                <button onClick={onClose} className="px-4 py-2 text-gray-600 hover:text-gray-800">
+                  Cancel
+                </button>
+                <button
+                  onClick={handleOrderSubmit}
+                  className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 flex items-center gap-2"
+                >
+                  <FaWhatsapp />
+                  Send via WhatsApp
+                </button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
+      {/* Lightbox Modal */}
       {lightboxOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4"
-          onClick={() => setLightboxOpen(false)}
-        >
-          {/* Image container with navigation arrows */}
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4"
+          onClick={() => setLightboxOpen(false)}>
           <div className="relative max-w-full max-h-full">
-            {/* Navigation Arrows - only show if multiple images */}
             {selectedProductImages.length > 1 && (
               <>
                 <button
@@ -339,7 +519,6 @@ export default function Omellets() {
                       (prev) => (prev - 1 + selectedProductImages.length) % selectedProductImages.length
                     );
                   }}
-                  aria-label="Previous image"
                 >
                   <AiOutlineLeft />
                 </button>
@@ -349,28 +528,22 @@ export default function Omellets() {
                     e.stopPropagation();
                     setSelectedImageIndex((prev) => (prev + 1) % selectedProductImages.length);
                   }}
-                  aria-label="Next image"
                 >
                   <AiOutlineRight />
                 </button>
               </>
             )}
-
-            {/* Main Image */}
             <img
               src={selectedProductImages[selectedImageIndex]}
               alt={`Fullscreen view ${selectedImageIndex + 1}`}
               className="max-w-full max-h-[90vh] object-contain cursor-pointer"
             />
-
-
+            {selectedProductImages.length > 1 && (
+              <div className="absolute bottom-8 left-0 right-0 text-center text-white text-sm">
+                {selectedImageIndex + 1} / {selectedProductImages.length}
+              </div>
+            )}
           </div>
-          {/* Image Counter */}
-          {selectedProductImages.length > 1 && (
-            <div className="absolute bottom-8 left-0 right-0 text-center text-white text-sm">
-              {selectedImageIndex + 1} / {selectedProductImages.length}
-            </div>
-          )}
         </div>
       )}
     </DefaultLayout>

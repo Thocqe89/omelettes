@@ -17,6 +17,7 @@ import IndexPage from "@/pages/index";
 import ThreeLeaves from "./components/three_leaves";
 import Omellets from "./components/omelettes";
 import Bank from "./components/bank";
+import Testpage from "./components/test";
 
 function App() {
   return (
@@ -29,7 +30,8 @@ function App() {
           <Route element={<Omellets />} path="/omelettes" /> 
          <Route element={<AboutPage />} path="/about" /> 
         <Route element={<Logistics />} path="/logistics" />
-        <Route element={<Bank />} path="/BankPage" />
+        <Route element={<Bank />} path="/BlankPage" />
+         <Route element={<Testpage />} path="/Testpage" />
         <Route element={<DataCheck />} path="/dataCheck" />
         <Route element={<Logistics_status />} path="/logistics_status" />
       </Routes>

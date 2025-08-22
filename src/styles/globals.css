@@ -79,6 +79,7 @@ body {
   }
 }
 
+
 @keyframes fadeInScale {
   from {
     opacity: 0;
@@ -107,4 +108,39 @@ body {
 
 .animate-slideInUp {
   animation: slideInUp 0.8s ease-out forwards;
+}
+
+@keyframes logo-slide {
+  0% {
+    transform: translateX(-100px);
+  }
+  100% {
+    transform: translateX(calc(100vw + 100px));
+  }
+}
+
+.animate-logo-slide {
+  animation: logo-slide linear infinite;
+  will-change: transform; /* For smoother animation */
+}
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(3deg);
+  }
+}
+
+/* Reduced motion alternative */
+@media (prefers-reduced-motion) {
+  .motion-transform, [style*="animation"] {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Add these if using framer-motion */
+.motion-transform {
+  will-change: transform, opacity;
 }

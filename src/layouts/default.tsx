@@ -50,7 +50,7 @@ export default function DefaultLayout({
   return (
     <div className="relative flex flex-col min-h-screen">
       
-      <Navbar />
+      <Navbar   />
        {/* <ToastProvider placement="top-right" toastOffset={60} /> */}
       <main className="flex-grow pb-8">
         {" "}

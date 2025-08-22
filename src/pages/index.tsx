@@ -225,41 +225,45 @@ export default function IndexPage() {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-700"></div>
           </div>
         ) : (
-          <div className="w-full max-w-7xl mx-auto">
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-2 sm:gap-4 md:gap-6 px-2 sm:px-4">
-              {imageList.map((item, idx) => (
-                <div 
-                  key={`${item.src}-${idx}`}
-                  data-aos="zoom-in-up"
-                  data-aos-delay={(idx % 4) * 100}
-                  className="transition-transform duration-300 hover:scale-[1.03] aspect-square relative"
-                >
-                  <div onClick={() => openLightbox(item.src)} className="cursor-zoom-in">
-                      {item.showLogo && item.logo && (
-                      <div className="absolute bottom-2 right-2 w-8 h-8 md:w-10 md:h-10 bg-white bg-opacity-80 rounded-full p-1 flex items-center justify-center">
-                        <img 
-                          src={item.logo} 
-                          alt="Brand Logo" 
-                          className="w-full h-full object-contain"
-                        />
-                      </div>
-                    )}
-                    <Image
-                      isBlurred
-                      isZoomed
-                      alt={`Airplane Model ${idx + 1}`}
-                      className="border border-green-700 w-full h-full object-cover rounded-lg"
-                      src={item.src}
-                      width={300}
-                      height={300}
-                      loading={idx < 6 ? "eager" : "lazy"}
-                    />
-                  
-                  </div>
-                </div>
-              ))}
+         <div className="w-full max-w-7xl mx-auto">
+  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-4 px-2 sm:px-4">
+    {imageList.map((item, idx) => (
+      <div 
+        key={`${item.src}-${idx}`}
+        className="aspect-square relative overflow-hidden"
+      >
+        <div onClick={() => openLightbox(item.src)} className="cursor-zoom-in h-full">
+          {item.showLogo && item.logo && (
+            <div className="absolute bottom-2 right-2 w-8 h-8 md:w-10 md:h-10 bg-white bg-opacity-80 rounded-full p-1 flex items-center justify-center z-10">
+              <img 
+                src={item.logo} 
+                alt="Brand Logo" 
+                className="w-full h-full object-contain"
+              />
             </div>
-          </div>
+          )}
+          <Image
+            isBlurred
+            isZoomed
+            alt={`Airplane Model ${idx + 1}`}
+            className="border border-green-700 w-full h-full object-cover rounded-lg hover:scale-105 transition-transform duration-300"
+            src={item.src}
+            width={0}
+            height={0}
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            loading={idx < 6 ? "eager" : "lazy"}
+            style={{
+              width: '100%',
+              height: '100%',
+              minWidth: '100%',
+              minHeight: '100%'
+            }}
+          />
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
         )}
 
         <div data-aos="zoom-in" className="w-full max-w-7xl mx-auto">
