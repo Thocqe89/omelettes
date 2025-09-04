@@ -1,294 +1,644 @@
+import * as React from "react";
+import {CalendarDate} from "@internationalized/date";
+import {Button} from "@heroui/button";
+import {Card, CardBody, CardHeader, CardFooter} from "@heroui/card";
+import {Chip} from "@heroui/chip";
+import {Input} from "@heroui/input";
+import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter} from "@heroui/modal";
+import {DatePicker} from "@heroui/date-picker";
+import {Pagination} from "@heroui/pagination";
 
-import { useTranslation } from "react-i18next";
-import { motion } from "framer-motion";
-import DefaultLayout from "@/layouts/default";
-import { 
-  FaCreditCard, 
-  FaMoneyBillWave, 
-  FaShieldAlt, 
-  FaChartLine,
-  FaMobileAlt,
-  FaGlobe,
-  FaPiggyBank,
-  FaUniversity
+import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem} from "@heroui/dropdown";
+import {Tooltip} from "@heroui/tooltip";
+import {Switch} from "@heroui/switch";
+import {Spinner} from "@heroui/spinner";
+import {
+  FaPlus, FaSearch, FaSyncAlt, FaEdit, FaTrash, FaCheck, FaPlane, FaBus, FaShip, FaHotel, FaWalking,
+  FaMoneyBillWave, FaMapMarkerAlt, FaClock, FaCheckCircle, FaListUl, FaTable, FaLayerGroup,
+  FaUmbrellaBeach, FaReceipt, FaMoneyCheckAlt, FaGlobeAsia
 } from "react-icons/fa";
+import { Tabs, Tab } from "@heroui/react";
 
-export default function Testpage() {
-  const { t } = useTranslation();
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3
-      }
+
+
+const WEB_APP_URL = import.meta.env.VITE_THAILAND_TRIPS_API as string;
+
+// ---------- Types ----------
+export type Entry = {
+  id?: number | string;
+  date?: string;
+  time?: string;
+  activity?: string;
+  location?: string;
+  transportation?: string;
+  costTHB?: string | number;
+  costLAK?: string | number;
+  paymentStatus?: "yes" | "no";
+  checkedIn?: "yes" | "no";
+  remarks?: string;
+  updatedBy?: string;
+  updatedAt?: string;
+  [key: string]: any;
+};
+
+// ---------- Helpers ----------
+const toNum = (v: any) => {
+  const n = parseFloat(String(v ?? "").replace(/,/g, ""));
+  return Number.isFinite(n) ? n : 0;
+};
+
+const ddmmyyyyToISO = (d?: string) => {
+  if (!d) return "";
+  const m = d.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (!m) return d;
+  const [, dd, mm, yyyy] = m;
+  return `${yyyy}-${String(mm).padStart(2, "0")}-${String(dd).padStart(2, "0")}`;
+};
+
+const normalize = (row: any): Entry => {
+  const e: Entry = {
+    id: row.id ?? row.ID ?? row.Id ?? row["ID"],
+    date: row.date ?? row.Date,
+    time: row.time ?? row.Time,
+    activity: row.activity ?? row.Activity,
+    location: row.location ?? row.Location,
+    transportation: row.transportation ?? row.Transportation,
+    costTHB: row.costTHB ?? row.costTHB,
+    costLAK: row.costLAK ?? row.costLAK,
+    paymentStatus: row.paymentStatus ?? row["Payment Status"] ?? "no",
+    checkedIn: row.checkedIn ?? row["Checked In"] ?? "no",
+    remarks: row.remarks ?? row.Remarks,
+    updatedBy: row.updatedBy ?? row["Updated By"],
+    updatedAt: row.updatedAt ?? row["Updated At"],
+  };
+  return e;
+};
+
+const toSheetPayload = (e: Entry) => ({
+  id: e.id,
+  date: e.date,
+  time: e.time,
+  activity: e.activity,
+  location: e.location,
+  transportation: e.transportation,
+  costTHB: e.costTHB,
+  costLAK: e.costLAK,
+  paymentStatus: e.paymentStatus,
+  checkedIn: e.checkedIn,
+  remarks: e.remarks,
+  updatedBy: e.updatedBy || "Unknown User",
+});
+
+const TransportIcon: React.FC<{ name?: string }> = ({name}) => {
+  const t = (name || "").toLowerCase();
+  if (/(plane|flight|air)/.test(t)) return <FaPlane className="text-blue-500"/>;
+  if (/bus/.test(t)) return <FaBus className="text-green-500"/>;
+  if (/(ship|ferry)/.test(t)) return <FaShip className="text-indigo-500"/>;
+  if (/(hotel|stay)/.test(t)) return <FaHotel className="text-amber-500"/>;
+  if (/(walk|on foot)/.test(t)) return <FaWalking className="text-gray-500"/>;
+  return <FaLayerGroup className="text-purple-500"/>;
+};
+
+// ---------- Main Component ----------
+export default function ThailandTripApp() {
+  const [entries, setEntries] = React.useState<Entry[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [query, setQuery] = React.useState("");
+  const [status, setStatus] = React.useState<"all" | "paid" | "pending" | "checkedin">("all");
+  const [view, setView] = React.useState<"cards" | "table" | "board">("cards");
+  const [page, setPage] = React.useState(1);
+  const [perPage, setPerPage] = React.useState(10);
+  const [modalOpen, setModalOpen] = React.useState(false);
+  const [editing, setEditing] = React.useState<Entry | null>(null);
+  const [date, setDate] = React.useState<CalendarDate | null>(null);
+  const [timeRange, setTimeRange] = React.useState("");
+  const [dark, setDark] = React.useState(false);
+  const [costTHB, setCostTHB] = React.useState("");
+  const [costLAK, setCostLAK] = React.useState("");
+
+  const fetchEntries = React.useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(WEB_APP_URL);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      const list = Array.isArray(json) ? json : [];
+      setEntries(list.map(normalize));
+    } catch (e) {
+      console.error(e);
+      setEntries([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    fetchEntries();
+  }, [fetchEntries]);
+
+  const stats = React.useMemo(() => {
+    const totalTHB = entries.reduce((s, r) => s + toNum(r.costTHB), 0);
+    const totalLAK = entries.reduce((s, r) => s + toNum(r.costLAK), 0);
+    const paid = entries.filter(r => r.paymentStatus === "yes").length;
+    const pend = entries.filter(r => r.paymentStatus !== "yes").length;
+    const checked = entries.filter(r => r.checkedIn === "yes").length;
+    return {totalTHB, totalLAK, paid, pend, checked, count: entries.length};
+  }, [entries]);
+
+  const filtered = React.useMemo(() => {
+    const q = query.trim().toLowerCase();
+    let data = entries.filter(e => {
+      if (status === "paid" && e.paymentStatus !== "yes") return false;
+      if (status === "pending" && e.paymentStatus === "yes") return false;
+      if (status === "checkedin" && e.checkedIn !== "yes") return false;
+      if (!q) return true;
+      const hay = [e.activity, e.location, e.remarks, e.transportation, e.time, e.date]
+        .map(v => String(v ?? "").toLowerCase())
+        .join("\n");
+      return hay.includes(q);
+    });
+    return data;
+  }, [entries, query, status]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
+  const pageItems = filtered.slice((page - 1) * perPage, page * perPage);
+
+  const openForm = (entry?: Entry) => {
+    const e: Entry = entry ? {...entry} : {paymentStatus: "no", checkedIn: "no"};
+    setEditing(e);
+    const d = e.date ? ddmmyyyyToISO(e.date) : new Date().toISOString().slice(0,10);
+    const js = new Date(d);
+    setDate(new CalendarDate(js.getFullYear(), js.getMonth() + 1, js.getDate()));
+    setTimeRange(e.time || "");
+    setCostTHB(String(e.costTHB || ""));
+    setCostLAK(String(e.costLAK || ""));
+    setModalOpen(true);
+  };
+
+  const save = async () => {
+    if (!editing) return;
+    const d = date ? `${date.year}-${String(date.month).padStart(2, "0")}-${String(date.day).padStart(2, "0")}` : "";
+    const payload = toSheetPayload({
+      ...editing, 
+      date: d, 
+      time: timeRange,
+      costTHB: costTHB,
+      costLAK: costLAK
+    });
+    
+    const action = editing.id ? "update" : "add";
+    try {
+      const res = await fetch(WEB_APP_URL, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({action, ...payload}),
+      });
+      const out = await res.json();
+      if (String(out.status || out.Status).toLowerCase() !== "success") throw new Error(out.message || "Save failed");
+      setModalOpen(false);
+      setEditing(null);
+      await fetchEntries();
+    } catch (e) {
+      console.error(e);
+      alert("Failed to save. Check console.");
     }
   };
 
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut"
-      }
+  const remove = async (id?: number | string) => {
+    if (!id) return;
+    if (!confirm("Delete this entry?")) return;
+    try {
+      const res = await fetch(WEB_APP_URL, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({action: "delete", id}),
+      });
+      const out = await res.json();
+      if (String(out.status || out.Status).toLowerCase() !== "success") throw new Error(out.message || "Delete failed");
+      await fetchEntries();
+    } catch (e) {
+      console.error(e);
+      alert("Failed to delete. Check console.");
     }
   };
 
-  // Banking services data
-  const bankingServices = [
-    {
-      icon: <FaCreditCard className="text-blue-600 text-2xl" />,
-      title: "Credit Cards",
-      description: "Premium credit cards with exclusive benefits and rewards",
-      features: ["Cashback", "Travel Rewards", "No Annual Fee"]
-    },
-    {
-      icon: <FaMoneyBillWave className="text-green-600 text-2xl" />,
-      title: "Loans & Financing",
-      description: "Flexible loan options for your needs",
-      features: ["Home Loans", "Auto Loans", "Personal Loans"]
-    },
-    {
-      icon: <FaShieldAlt className="text-red-600 text-2xl" />,
-      title: "Insurance",
-      description: "Comprehensive protection for your assets",
-      features: ["Life Insurance", "Health Insurance", "Property Insurance"]
-    },
-    {
-      icon: <FaChartLine className="text-purple-600 text-2xl" />,
-      title: "Investments",
-      description: "Grow your wealth with smart investments",
-      features: ["Stocks", "Mutual Funds", "Retirement Plans"]
-    },
-    {
-      icon: <FaMobileAlt className="text-orange-600 text-2xl" />,
-      title: "Mobile Banking",
-      description: "Bank anytime, anywhere with our app",
-      features: ["24/7 Access", "Mobile Deposits", "Bill Pay"]
-    },
-    {
-      icon: <FaGlobe className="text-cyan-600 text-2xl" />,
-      title: "International Banking",
-      description: "Global banking solutions",
-      features: ["Wire Transfers", "Multi-Currency", "Global Accounts"]
+  const checkin = async (e: Entry) => {
+    try {
+      const res = await fetch(WEB_APP_URL, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({action: "update", ...toSheetPayload({...e, checkedIn: "yes"})}),
+      });
+      const out = await res.json();
+      if (String(out.status || out.Status).toLowerCase() !== "success") throw new Error(out.message || "Check-in failed");
+      await fetchEntries();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to check in.");
     }
-  ];
+  };
 
-  const stats = [
-    { number: "50,000+", label: "Happy Customers" },
-    { number: "₭2.5B+", label: "Assets Managed" },
-    { number: "99.9%", label: "Uptime Guarantee" },
-    { number: "24/7", label: "Customer Support" }
-  ];
+  const StatCard: React.FC<{icon: React.ReactNode; label: string; value: string | number; color: string}> = ({icon, label, value, color}) => (
+    <Card className="border-0 shadow-lg rounded-2xl bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900">
+      <CardBody className="flex items-center gap-4 p-5">
+        <div className={`rounded-xl p-3 ${color} text-white text-xl`}>
+          {icon}
+        </div>
+        <div>
+          <div className="text-sm text-foreground-500 font-medium">{label}</div>
+          <div className="text-2xl font-bold text-foreground">{value}</div>
+        </div>
+      </CardBody>
+    </Card>
+  );
+
+  const CardView: React.FC = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+      {pageItems.map((e) => (
+        <Card key={String(e.id)} className="rounded-2xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 overflow-hidden">
+          <div className={`h-2 ${e.paymentStatus === "yes" ? "bg-green-500" : "bg-amber-500"}`}></div>
+          <CardHeader className="flex items-start justify-between gap-3 pb-2">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 text-lg font-bold text-foreground">
+                <TransportIcon name={e.transportation}/>
+                <span className="truncate">{e.activity}</span>
+              </div>
+              <div className="flex items-center gap-1 text-sm text-foreground-500 mt-1">
+                <FaMapMarkerAlt className="text-xs"/>
+                <span className="truncate">{e.location}</span>
+              </div>
+            </div>
+            <div className="flex flex-col items-end gap-1">
+              <Chip size="sm" color={e.paymentStatus === "yes" ? "success" : "warning"} variant="flat">
+                {e.paymentStatus === "yes" ? "Paid" : "Pending"}
+              </Chip>
+              {e.checkedIn === "yes" && (
+                <Chip size="sm" color="primary" variant="flat" className="text-xs">Checked In</Chip>
+              )}
+            </div>
+          </CardHeader>
+          <CardBody className="py-3">
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="space-y-1">
+                <div className="text-foreground-500 font-medium">Date & Time</div>
+                <div className="font-semibold">{e.date} • {e.time}</div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-foreground-500 font-medium">Cost</div>
+                <div className="font-semibold">
+                  {e.costTHB ? `${Number(e.costTHB).toLocaleString()} THB` : ''} 
+                  {e.costLAK ? `${Number(e.costLAK).toLocaleString()} LAK` : ''}
+                </div>
+              </div>
+            </div>
+            {e.remarks && (
+              <div className="mt-3 p-2 bg-content2 rounded-lg">
+                <div className="text-xs text-foreground-500 font-medium">Remarks</div>
+                <div className="text-sm text-foreground-600">{e.remarks}</div>
+              </div>
+            )}
+          </CardBody>
+          <CardFooter className="flex items-center justify-between pt-0">
+            <div className="flex gap-2">
+              <Tooltip content="Edit">
+                <Button isIconOnly variant="flat" size="sm" onPress={() => openForm(e)} className="bg-blue-100 text-blue-600 dark:bg-blue-800 dark:text-blue-200">
+                  <FaEdit/>
+                </Button>
+              </Tooltip>
+              <Tooltip content="Delete" color="danger">
+                <Button isIconOnly variant="flat" color="danger" size="sm" onPress={() => remove(e.id)}>
+                  <FaTrash/>
+                </Button>
+              </Tooltip>
+            </div>
+            {e.checkedIn !== "yes" && (
+              <Button size="sm" color="primary" variant="solid" startContent={<FaCheck/>} onPress={() => checkin(e)}>
+                Check In
+              </Button>
+            )}
+          </CardFooter>
+        </Card>
+      ))}
+    </div>
+  );
+
+  const TableView: React.FC = () => (
+    <Card className="border-0 rounded-2xl shadow-lg overflow-hidden bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900">
+      <CardHeader className="bg-gradient-to-r from-amber-500 to-orange-500 text-white py-4">
+        <div className="text-lg font-bold flex items-center gap-2">
+          <FaUmbrellaBeach /> Thailand Trip Activities
+        </div>
+      </CardHeader>
+      <CardBody className="p-0">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 text-foreground-600">
+                {["Activity","Date","Time","Location","Transport","Cost","Payment","Status","Actions"].map(h => (
+                  <th key={h} className="text-left px-4 py-3 whitespace-nowrap font-semibold">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {pageItems.map((e) => (
+                <tr key={String(e.id)} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                  <td className="px-4 py-3 font-medium">{e.activity}</td>
+                  <td className="px-4 py-3">{e.date}</td>
+                  <td className="px-4 py-3">{e.time}</td>
+                  <td className="px-4 py-3">{e.location}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-1">
+                      <TransportIcon name={e.transportation}/>
+                      {e.transportation}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 font-medium">
+                    {e.costTHB ? `${Number(e.costTHB).toLocaleString()} THB` : ''} 
+                    {e.costLAK ? `${Number(e.costLAK).toLocaleString()} LAK` : ''}
+                  </td>
+                  <td className="px-4 py-3">
+                    <Chip size="sm" color={e.paymentStatus === "yes" ? "success" : "warning"} variant="flat">
+                      {e.paymentStatus === "yes" ? "Paid" : "Pending"}
+                    </Chip>
+                  </td>
+                  <td className="px-4 py-3">
+                    {e.checkedIn === "yes" ? (
+                      <Chip size="sm" color="primary" variant="flat">Checked In</Chip>
+                    ) : (
+                      <Button size="sm" variant="flat" onPress={() => checkin(e)} className="text-xs">Check In</Button>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex gap-2">
+                      <Button isIconOnly size="sm" variant="flat" onPress={() => openForm(e)} className="bg-blue-100 text-blue-600 dark:bg-blue-800 dark:text-blue-200">
+                        <FaEdit/>
+                      </Button>
+                      <Button isIconOnly size="sm" variant="flat" color="danger" onPress={() => remove(e.id)}>
+                        <FaTrash/>
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </CardBody>
+    </Card>
+  );
+
+  const BoardView: React.FC = () => {
+    const lanes = [
+      {key: "pending", title: "Pending Payment", icon: FaClock, color: "bg-amber-100 text-amber-700 dark:bg-amber-800/30 dark:text-amber-300", filter: (e: Entry) => e.paymentStatus !== "yes"},
+      {key: "paid", title: "Paid", icon: FaCheckCircle, color: "bg-green-100 text-green-700 dark:bg-green-800/30 dark:text-green-300", filter: (e: Entry) => e.paymentStatus === "yes"},
+      {key: "checked", title: "Checked In", icon: FaCheck, color: "bg-blue-100 text-blue-700 dark:bg-blue-800/30 dark:text-blue-300", filter: (e: Entry) => e.checkedIn === "yes"},
+    ] as const;
+
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {lanes.map((lane) => (
+          <Card key={lane.key} className="rounded-2xl border-0 shadow-lg overflow-hidden">
+            <CardHeader className={`flex items-center justify-between py-3 ${lane.color}`}>
+              <div className="flex items-center gap-2 font-semibold">
+                <lane.icon />
+                <span>{lane.title}</span>
+              </div>
+              <Chip size="sm" variant="flat">{filtered.filter(lane.filter).length}</Chip>
+            </CardHeader>
+            <CardBody className="flex flex-col gap-3 p-3 bg-gray-50/50 dark:bg-gray-900/50">
+              {filtered.filter(lane.filter).map((e) => (
+                <div key={`${lane.key}-${e.id}`} className="rounded-xl border border-content2 p-3 bg-white dark:bg-gray-800 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div className="font-medium flex items-center gap-2">
+                      <TransportIcon name={e.transportation}/>
+                      {e.activity}
+                    </div>
+                    <div className="text-xs text-foreground-500">{e.date}</div>
+                  </div>
+                  <div className="text-xs text-foreground-600 mt-1">{e.location}</div>
+                  <div className="mt-2 flex items-center justify-between text-sm">
+                    <div>{e.time}</div>
+                    <div className="font-semibold">
+                      {e.costTHB ? `${Number(e.costTHB).toLocaleString()} THB` : ''} 
+                      {e.costLAK ? `${Number(e.costLAK).toLocaleString()} LAK` : ''}
+                    </div>
+                  </div>
+                  <div className="mt-2 flex gap-2 justify-end">
+                    <Button size="sm" variant="flat" onPress={() => openForm(e)} startContent={<FaEdit/>}>Edit</Button>
+                    <Button size="sm" variant="flat" color="danger" onPress={() => remove(e.id)} startContent={<FaTrash/>}>Delete</Button>
+                  </div>
+                </div>
+              ))}
+            </CardBody>
+          </Card>
+        ))}
+      </div>
+    );
+  };
 
   return (
-    <DefaultLayout>
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16 sm:py-20 px-4">
-        <div className="max-w-6xl mx-auto text-center">
-          <motion.h1 
-            className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            Modern Banking for{" "}
-            <span className="bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent">
-              Modern Life
-            </span>
-          </motion.h1>
-          
-          <motion.p 
-            className="text-xl sm:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            Secure, innovative financial solutions designed for today's world. 
-            Experience banking that works as hard as you do.
-          </motion.p>
-
-          <motion.div 
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-          >
-            <button className="bg-white text-blue-600 px-8 py-4 rounded-full font-semibold hover:bg-gray-100 transition-colors text-lg">
-              Open Account
-            </button>
-            <button className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold hover:bg-white hover:text-blue-600 transition-colors text-lg">
-              Learn More
-            </button>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-12 sm:py-16 bg-gray-50 dark:bg-gray-800">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
-            {stats.map((stat, index) => (
-              <motion.div
-                key={index}
-                className="text-center p-6 bg-white dark:bg-gray-700 rounded-xl shadow-lg"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-              >
-                <div className="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-                  {stat.number}
-                </div>
-                <div className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">
-                  {stat.label}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Services Section */}
-      <section className="py-16 sm:py-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <motion.div 
-            className="text-center mb-12 sm:mb-16"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-              Comprehensive Banking Services
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Everything you need for your financial journey, all in one place
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {bankingServices.map((service, index) => (
-              <motion.div
-                key={index}
-                className="bg-white dark:bg-gray-700 p-6 sm:p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow border border-gray-100 dark:border-gray-600"
-                variants={itemVariants}
-                initial="hidden"
-                animate="visible"
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ y: -5 }}
-              >
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
-                    {service.icon}
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                    {service.title}
-                  </h3>
-                </div>
-                
-                <p className="text-gray-600 dark:text-gray-300 mb-4">
-                  {service.description}
-                </p>
-                
-                <ul className="space-y-2">
-                  {service.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                      <span className="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-                
-                <button className="mt-6 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold text-sm">
-                  Learn More →
-                </button>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Security Section */}
-      <section className="py-16 sm:py-20 bg-gradient-to-r from-gray-900 to-blue-900 text-white">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <h2 className="text-3xl sm:text-4xl font-bold mb-6">
-                Your Security is Our Priority
-              </h2>
-              <p className="text-xl text-blue-200 mb-8">
-                We use military-grade encryption and advanced security measures to protect your financial data 24/7.
-              </p>
-              
-              <div className="space-y-4">
-                {[
-                  "256-bit SSL Encryption",
-                  "Multi-Factor Authentication",
-                  "Real-Time Fraud Monitoring",
-                  "FDIC Insurance"
-                ].map((feature, index) => (
-                  <div key={index} className="flex items-center gap-3">
-                    <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm">✓</span>
-                    </div>
-                    <span className="text-lg">{feature}</span>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-
-            <motion.div
-              className="relative"
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
-                <FaShieldAlt className="text-6xl text-green-400 mx-auto mb-6" />
-                <h3 className="text-2xl font-bold text-center mb-4">Bank-Level Security</h3>
-                <p className="text-blue-200 text-center">
-                  Your funds and personal information are protected with the highest security standards in the industry.
-                </p>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-16 sm:py-20 bg-white dark:bg-gray-800">
-        <div className="max-w-4xl mx-auto text-center px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              Ready to Get Started?
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-              Join thousands of satisfied customers who trust us with their financial needs.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-blue-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-blue-700 transition-colors text-lg">
-                Open Your Account
-              </button>
-              <button className="border-2 border-blue-600 text-blue-600 dark:text-blue-400 px-8 py-4 rounded-full font-semibold hover:bg-blue-600 hover:text-white transition-colors text-lg">
-                Contact Us
-              </button>
+    <div className={dark ? "dark" : ""}>
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-6">
+        <div className="container mx-auto px-4 max-w-7xl">
+          {/* Header */}
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold text-foreground flex items-center gap-2">
+                <FaUmbrellaBeach className="text-amber-600" /> 
+                Thailand Trip Planner
+              </h1>
+              <p className="text-foreground-500 mt-1">Plan and track your Thailand adventures with ease</p>
             </div>
-          </motion.div>
+            <div className="flex items-center gap-3">
+              <Switch
+                isSelected={dark}
+                onValueChange={setDark}
+                size="sm"
+              >Dark Mode</Switch>
+              <Button 
+                color="primary" 
+                startContent={<FaPlus/>} 
+                onPress={() => openForm()} 
+                className="bg-gradient-to-r from-amber-500 to-orange-500 border-0 text-white shadow-lg"
+              >
+                Add Activity
+              </Button>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-5 mb-8">
+            <StatCard 
+              icon={<FaMoneyBillWave/>} 
+              label="Total Cost (THB)" 
+              value={`${stats.totalTHB.toLocaleString()}`} 
+              color="bg-gradient-to-r from-amber-500 to-amber-600"
+            />
+            <StatCard 
+              icon={<FaMoneyCheckAlt/>} 
+              label="Total Cost (LAK)" 
+              value={`${stats.totalLAK.toLocaleString()}`} 
+              color="bg-gradient-to-r from-green-500 to-green-600"
+            />
+            <StatCard 
+              icon={<FaMapMarkerAlt/>} 
+              label="Activities" 
+              value={stats.count} 
+              color="bg-gradient-to-r from-blue-500 to-blue-600"
+            />
+            <StatCard 
+              icon={<FaReceipt/>} 
+              label="Paid" 
+              value={stats.paid} 
+              color="bg-gradient-to-r from-green-500 to-green-600"
+            />
+            <StatCard 
+              icon={<FaCheckCircle/>} 
+              label="Checked In" 
+              value={stats.checked} 
+              color="bg-gradient-to-r from-purple-500 to-purple-600"
+            />
+          </div>
+
+          {/* Controls */}
+          <Card className="border-0 rounded-2xl shadow-lg mb-8 bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900">
+            <CardBody className="flex flex-col md:flex-row gap-4 md:items-center p-5">
+              <Input
+                placeholder="Search activities, locations, remarks..."
+                startContent={<FaSearch className="text-foreground-400"/>}
+                value={query}
+                onChange={(e) => {setPage(1); setQuery(e.target.value);}}
+                className="w-full md:max-w-md"
+                variant="flat"
+              />
+              <div className="flex flex-wrap gap-2">
+                <Chip onClick={() => setStatus("all")} color={status === "all" ? "primary" : "default"} variant={status === "all" ? "solid" : "flat"} className="cursor-pointer">All</Chip>
+                <Chip onClick={() => setStatus("paid")} color={status === "paid" ? "success" : "default"} variant={status === "paid" ? "solid" : "flat"} className="cursor-pointer">Paid</Chip>
+                <Chip onClick={() => setStatus("pending")} color={status === "pending" ? "warning" : "default"} variant={status === "pending" ? "solid" : "flat"} className="cursor-pointer">Pending</Chip>
+                <Chip onClick={() => setStatus("checkedin")} color={status === "checkedin" ? "primary" : "default"} variant={status === "checkedin" ? "solid" : "flat"} className="cursor-pointer">Checked In</Chip>
+              </div>
+              <div className="flex items-center gap-3 ml-auto">
+               {/* <Tabs
+  selectedKey={view}
+  onSelectionChange={(key) => {
+    setView(key as "cards" | "table" | "board");
+  }}
+  aria-label="View switcher"
+  size="md"
+  color="primary"
+  variant="bordered"
+>
+  <Tab 
+    key="cards" 
+    title={<span className="flex items-center gap-2"><FaLayerGroup/> Cards</span>} 
+  />
+  <Tab 
+    key="table" 
+    title={<span className="flex items-center gap-2"><FaTable/> Table</span>} 
+  />
+  <Tab 
+    key="board" 
+    title={<span className="flex items-center gap-2"><FaListUl/> Board</span>} 
+  />
+</Tabs> */}
+
+                <Button variant="flat" startContent={<FaSyncAlt/>} onPress={fetchEntries} className="hidden md:flex">Refresh</Button>
+                <Dropdown>
+                  <DropdownTrigger>
+                    <Button variant="flat" className="hidden md:flex">Show: {perPage}</Button>
+                  </DropdownTrigger>
+                  <DropdownMenu aria-label="Per page">
+                    {[10, 20, 30, 50].map(n => (
+                      <DropdownItem key={n} onPress={() => {setPerPage(n); setPage(1);}}>{n}</DropdownItem>
+                    ))}
+                  </DropdownMenu>
+                </Dropdown>
+              </div>
+            </CardBody>
+          </Card>
+
+          {/* Content */}
+          {loading ? (
+            <div className="py-16 grid place-items-center">
+              <Spinner size="lg" className="text-amber-500" />
+            </div>
+          ) : filtered.length === 0 ? (
+            <Card className="border-0 rounded-2xl shadow-md bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900">
+              <CardBody className="py-16 text-center">
+                <FaGlobeAsia className="text-4xl text-amber-400 mx-auto mb-3" />
+                <div className="text-foreground-500 text-lg">No activities found</div>
+                <p className="text-foreground-400 mt-1">Try adjusting your filters or add a new activity</p>
+                <Button color="primary" className="mt-4 bg-amber-500" onPress={() => openForm()}>
+                  Add Your First Activity
+                </Button>
+              </CardBody>
+            </Card>
+          ) : (
+            <>
+              {view === "cards" && <CardView/>}
+              {view === "table" && <TableView/>}
+              {view === "board" && <BoardView/>}
+
+              <div className="flex justify-center mt-8">
+                <Pagination 
+                  total={totalPages} 
+                  page={page} 
+                  onChange={setPage} 
+                  variant="flat" 
+                  color="primary"
+                  className="shadow-md rounded-full"
+                />
+              </div>
+            </>
+          )}
         </div>
-      </section>
-    </DefaultLayout>
+      </div>
+
+      {/* Modal Form */}
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} size="2xl">
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="bg-gradient-to-r from-amber-500 to-orange-500 text-white">
+                {editing?.id ? "Edit Activity" : "Add New Activity"}
+              </ModalHeader>
+              <ModalBody className="mt-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Input label="Activity" value={editing?.activity || ""} onChange={(e) => setEditing(prev => ({...(prev as Entry), activity: e.target.value}))} isRequired/>
+                  <Input label="Location" value={editing?.location || ""} onChange={(e) => setEditing(prev => ({...(prev as Entry), location: e.target.value}))} isRequired/>
+                  <DatePicker label="Date" value={date} onChange={setDate} isRequired/>
+                  <Input label="Time Range (e.g., 8:00 AM - 10:00 AM)" value={timeRange} onChange={(e) => setTimeRange(e.target.value)} isRequired/>
+                  <Input label="Transportation" value={editing?.transportation || ""} onChange={(e) => setEditing(prev => ({...(prev as Entry), transportation: e.target.value}))}/>
+                  <Input label="Cost (THB)" type="number" value={costTHB} onChange={(e) => setCostTHB(e.target.value)}/>
+                  <Input label="Cost (LAK)" type="number" value={costLAK} onChange={(e) => setCostLAK(e.target.value)}/>
+                  <Input label="Remarks" value={editing?.remarks || ""} onChange={(e) => setEditing(prev => ({...(prev as Entry), remarks: e.target.value}))}/>
+                </div>
+                <div className="mt-4 flex gap-3">
+                  <Chip
+                    onClick={() => setEditing(prev => ({...(prev as Entry), paymentStatus: "yes"}))}
+                    color={editing?.paymentStatus === "yes" ? "success" : "default"}
+                    variant={editing?.paymentStatus === "yes" ? "solid" : "flat"}
+                    className="cursor-pointer"
+                  >Paid</Chip>
+                  <Chip
+                    onClick={() => setEditing(prev => ({...(prev as Entry), paymentStatus: "no"}))}
+                    color={editing?.paymentStatus === "no" ? "warning" : "default"}
+                    variant={editing?.paymentStatus === "no" ? "solid" : "flat"}
+                    className="cursor-pointer"
+                  >Pending</Chip>
+                </div>
+              </ModalBody>
+              <ModalFooter>
+                <Button variant="light" onPress={onClose}>Cancel</Button>
+                <Button color="primary" onPress={save} className="bg-gradient-to-r from-amber-500 to-orange-500">
+                  {editing?.id ? "Update" : "Create"} Activity
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    </div>
   );
 }

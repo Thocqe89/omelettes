@@ -39,10 +39,10 @@ export const siteConfig = {
       href: "/product",
     },
     
-    // {
-    //   label: "omelette",
-    //   href: "/omelettes",
-    // },
+    {
+      label: "teTestpage",
+      href: "/Testpage",
+    },
     {
       label: "about_us",
       href: "/about",

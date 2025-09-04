@@ -96,7 +96,7 @@ export default function DefaultLayout({
           title="Omelette's"
         >
           <span className="text-wihite">Powered by</span>
-          <p className="text-wihite">Omelette&apos;s</p>
+          <p >Omellet<span className="text-[#E43636]">'</span>s</p>
         </Link>
         <span className="mx-1 text-white">|</span>
         <span className="text-white">Copyright © 2023-2025 </span>

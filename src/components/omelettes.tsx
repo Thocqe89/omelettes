@@ -242,7 +242,7 @@ ${orderDetails.includeLogistics ? 'I will  pickup.(T2 bannakham, sekhodthabong d
         <section className="min-h-screen bg-gray-50 dark:bg-gray-900">
           <div className="bg-gradient-to-r from-gray-300 to-[#0d7a68] text-white py-12 px-4 text-center shadow-md">
             <h1 className="text-5xl font-extrabold tracking-wide drop-shadow-md">
-              <p>Omellet<span className="text-[#E43636]">'</span>s</p>
+              <p >Omellet<span className="text-[#E43636]">'</span>s</p>
             </h1>
             <p className="mt-2 text-[16px] sm:text-[18px] md:text-[22px] lg:text-[28px] opacity-95 text-[#013e34]">
               {t("premium_airplane_models") || "Premium Model Aircraft • Collectors & Enthusiasts"}
