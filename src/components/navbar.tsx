@@ -58,15 +58,15 @@ export const Navbar = () => {
   const getLanguageFlag = () => {
     switch (language) {
       case "en":
-        return "/image/united-kingdom.png";
+        return "https://res.cloudinary.com/deahgtn57/image/upload/v1757089546/omelett%27s/public/logo/flage/united-kingdom_uwbrwr.png";
       case "la":
-        return "/image/laos.png";
+        return "https://res.cloudinary.com/deahgtn57/image/upload/v1757089414/omelett%27s/public/logo/flage/laos_dewgms.png";
       case "zh":
-        return "/image/china.png";
+        return "https://res.cloudinary.com/deahgtn57/image/upload/v1757089559/omelett%27s/public/logo/flage/china_wdpui0.png";
       case "th":
-        return "/image/thailand.png";
+        return "https://res.cloudinary.com/deahgtn57/image/upload/v1757089545/omelett%27s/public/logo/flage/thailand_vfbs1y.png";
       default:
-        return "/image/united-kingdom.png";
+        return "https://res.cloudinary.com/deahgtn57/image/upload/v1757089546/omelett%27s/public/logo/flage/united-kingdom_uwbrwr.png";
     }
   };
 
@@ -179,7 +179,8 @@ export const Navbar = () => {
       </Link>
       <Link
         href="/BlankPage"
-        className="flex items-center px-4 py-2 text-default-500 hover:bg-green-100 dark:hover:bg-green-900"
+        className="flex items-center px-4 py-2 text-default-500 hover:bg-[#e5da02] dark:hover:bg-green-900"
+        
       >
         <Image
           isBlurred
@@ -189,6 +190,18 @@ export const Navbar = () => {
         />
       <p><span className="text-[#e5da02]">3 </span><span className="text-[#0d7a68]">|</span>Thee Leaves</p>
       </Link>
+        <Link
+                    href="/OMS-T"
+                     className="flex items-center px-4 py-2 text-default-500 hover:bg-[#a503c2] dark:hover:bg-green-900"
+                  >
+                    <Image
+                      isBlurred
+                      alt="Thee Eaves"
+                      className="inline-block mr-2 w-5 h-5"
+                      src="/image/oms-t/oms-t.png"
+                    />
+                     <p ><span>OMS </span><span className="text-[#301934]">-</span>Tirp<span className="text-[#301934]">-</span>Tracker</p>
+                  </Link>
     </div>
   )}
 </div>
@@ -385,6 +398,18 @@ export const Navbar = () => {
                       src="/image/menu/th.png"
                     />
                      <p><span className="text-[#e5da02]">3 </span><span className="text-[#0d7a68]">|</span>Thee Leaves</p>
+                  </Link>
+                   <Link
+                    href="/OMS-T"
+                    className="text-default-500 hover:text-[#0d7a68] text-base font-normal"
+                  >
+                    <Image
+                      isBlurred
+                      alt="Thee Eaves"
+                      className="inline-block mr-2 w-5 h-5"
+                      src="/image/oms-t/oms-t.png"
+                    />
+                      <p ><span>OMS </span><span className="text-[#301934]">-</span>Tirp<span className="text-[#301934]">-</span>Tracker</p>
                   </Link>
                 </div>
               )}

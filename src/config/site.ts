@@ -8,13 +8,14 @@ export const siteConfig = {
       label: "home",
       href: "/",
     },
+
     // {
-    //   label: "product",
-    //   href: "/product",
+    //   label: "dashboard",
+    //   href: "/oms-dashboard",
     // },
     {
       label: "logistics",
-      href: "/dataCheck" ,
+      href: "/dataCheck",
     },
     // {
     //   label: "store",
@@ -38,14 +39,18 @@ export const siteConfig = {
       label: "product",
       href: "/product",
     },
-    
-    {
-      label: "teTestpage",
-      href: "/Testpage",
-    },
+
+    // {
+    //   label: "OMS-Tirp-Tracker",
+    //   href: "/OMS-Tirp-Tracker",
+    // },
     {
       label: "about_us",
       href: "/about",
+    },
+     {
+      label: "My Member Card",
+      href: "/OMS_Special_Customers",
     },
     {
       label: "Facebook",

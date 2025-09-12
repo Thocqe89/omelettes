@@ -2,7 +2,7 @@ const CACHE_NAME = 'omelettes-v1';
 const ASSETS = [
   '/',
   '/index.html',
-  '/image/logo01.png',
+  'https://res.cloudinary.com/deahgtn57/image/upload/v1756960044/omelett%27s/public/logo/logo.png',
   '/styles/main.css',
   '/scripts/app.js'
 ];

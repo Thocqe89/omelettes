@@ -5,7 +5,8 @@ import Loading from "@/components/loading";
 import DefaultLayout from "@/layouts/default";
 import { addToast } from "@heroui/toast";
 import { FiShoppingCart } from "react-icons/fi";
-import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
+import { HiShoppingCart } from "react-icons/hi2";
+import { AiOutlineLeft, AiOutlineRight, AiOutlineShoppingCart } from "react-icons/ai";
 import { motion } from "framer-motion";
 import {
   Modal,
@@ -19,6 +20,7 @@ import {
   Checkbox,
   Link
 } from "@heroui/react";
+import { IoClose } from "react-icons/io5";
 
 interface Product {
   ID: string;
@@ -168,7 +170,7 @@ export default function Omellets() {
       hour: '2-digit',
       minute: '2-digit'
     });
-    
+
     const message = `🛒 New Order Request | ${formattedDate} at ${formattedTime}\n
 Product Details | 
 ID: OMS-00-00-${orderDetails.productId}
@@ -177,11 +179,15 @@ Type: ${selectedProduct?.Type}
 Size: ${selectedProduct?.Size}
 Price: ${orderDetails.price.toLocaleString()} ₭
 Quantity: ${orderDetails.quantity}
-{*Logistics services provided free of charge }
-___________________________________________
-${orderDetails.includeLogistics ? 'I will  pickup.(T2 bannakham, sekhodthabong distick Vietaine proviece lao) ':'Please include logistics/delivery service.' }`;
-
-
+${orderDetails.includeLogistics ?
+        `Pickup Time: ${orderDetails.address}` :
+        ''}
+Additional Notes: ${orderDetails.notes || 'None'}
+*Logistics services provided free of charge 
+____________________________
+${orderDetails.includeLogistics ?
+        ' Pickup at T2 bannakham, sekhodthabong district, Vientiane province, Laos' :
+        ''}`;
     // Fixed WhatsApp URL with proper country code
     const whatsappUrl = `https://wa.me/8562055058028?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
@@ -206,7 +212,7 @@ ${orderDetails.includeLogistics ? 'I will  pickup.(T2 bannakham, sekhodthabong d
     if (images.length === 0) {
       if (product.Image && product.Image.trim() !== "") images.push(product.Image.trim());
       else if (product.Logo && product.Logo.trim() !== "") images.push(product.Logo.trim());
-      else images.push("/image/fly.png");
+      else images.push("https://res.cloudinary.com/deahgtn57/image/upload/v1757573548/omelett%27s/public/image/fly_h2va9e.png");
     }
 
     return images;
@@ -251,14 +257,34 @@ ${orderDetails.includeLogistics ? 'I will  pickup.(T2 bannakham, sekhodthabong d
 
           <div className="max-w-7xl mx-auto py-10 px-4 space-y-8">
             <div className="flex justify-center">
-              <input
-                className="w-full max-w-lg px-5 py-3 rounded-full border border-[#0d7a68] focus:outline-none focus:ring-2 focus:ring-green-800 dark:bg-gray-800 dark:border-white dark:text-white shadow-sm"
-                placeholder={t("search") || "Search airplane models..."}
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+
+              <div className="relative w-full max-w-lg">
+                <input
+                  className="w-full px-5 py-3 pr-10 rounded-full border border-[#0d7a68] 
+               text-[#0d7a68] placeholder-gray-400 
+               focus:outline-none focus:ring-2 focus:ring-green-800 
+               dark:bg-gray-800 dark:border-white dark:text-white shadow-sm"
+                  placeholder={t("search") || "Search airplane models..."}
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+
+                {searchTerm && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchTerm("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 
+                 text-gray-500 hover:text-red-500 transition"
+                    aria-label="Clear search"
+                  >
+                    <IoClose className="w-6 h-6" />
+                  </button>
+                )}
+              </div>
+
             </div>
+
 
             {filteredEntries.length === 0 ? (
               <p className="text-center text-red-500 font-medium">
@@ -397,7 +423,7 @@ ${orderDetails.includeLogistics ? 'I will  pickup.(T2 bannakham, sekhodthabong d
                           onClick={() => openOrderModal(entry)}
                           className="mt-4 inline-flex items-center justify-center gap-2 bg-[#0d7a68] text-white font-medium py-2 px-5 rounded-full hover:bg-[#0b6a5a] transition-all shadow-md"
                         >
-                          <FaWhatsapp size={20} />
+                          <AiOutlineShoppingCart size={20} />
                           <span className="hidden sm:inline">
                             {t("shop_now") || "Order Now"}
                           </span>
@@ -423,72 +449,87 @@ ${orderDetails.includeLogistics ? 'I will  pickup.(T2 bannakham, sekhodthabong d
             <>
               <ModalHeader className="flex flex-col gap-1">
                 <div className="flex items-center gap-2">
-                 <FiShoppingCart className="text-green-900" />
-                 {t("shop_now")} : {selectedProduct?.Name}
+                  <HiShoppingCart className="text-green-900 size-4" />
+                  {t("shop_now")} : {selectedProduct?.Name}
                 </div>
               </ModalHeader>
               <ModalBody className="space-y-4">
                 <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
-                  <h4 className=" font-semibold mb-2">Order Summary</h4>
-                  <p>{t("id")}: OMS-00-00-{selectedProduct?.ID}</p>
+                  <h4 className=" font-semibold mb-2">{t("order_summary")} | </h4>
+                  <p className="">{t("id")}: OMS-00-00-{selectedProduct?.ID}</p>
                   <p>{t("name")}: {selectedProduct?.Name}</p>
                   <p>{t("size")}: {selectedProduct?.Size}</p>
                   <p>{t("type")}: {selectedProduct?.Type}</p>
                   <p>{t("price")}: {selectedProduct?.["Final Selling Price"].toLocaleString()} ₭</p>
-                  
-                   <p className="text-[#e80501] ">*Logistics services provided free of charge</p>
+
+
                   {orderDetails.includeLogistics && (
-                    <p className="text-[#0d7a68] ">+ Delivery Address: {orderDetails.address}</p>
+                    <p className=" ">{t("time")}: {orderDetails.address}</p>
                   )}
+                  <p className="text-[#ca0303] ">*{t("free_logistics_info")}</p>
                 </div>
+
+
+                {/* Improved logistics link button */}
+                <Link
+                  href="/logistics"
+                  className="inline-flex items-center gap-1 px-4 py-2 rounded-lg bg-gradient-to-r from-[#0d7a68] to-[#0b6a5a] text-white font-medium hover:from-[#0b6a5a] hover:to-[#094c41] transition-all duration-300 shadow-md hover:shadow-lg"
+                >
+                  <FaTruck className="text-sm" />
+                  <span>{t("Logistics ervice")}?</span>
+                  <FaExternalLinkAlt className="text-xs opacity-80" />
+                </Link>
+
+
+
 
                 <div className="flex items-center gap-2">
                   <Checkbox
                     isSelected={orderDetails.includeLogistics}
                     onValueChange={(checked) => setOrderDetails({ ...orderDetails, includeLogistics: checked })}
                   />
-                  <span className="text-sm">Include logistics/delivery service</span>
+                  <span className="text-sm">{t("i_will_pick_up")}</span>
                   <FaTruck className="text-[#0d7a68]  ml-2" />
                 </div>
 
-                {/* {orderDetails.includeLogistics && (
-                   <Textarea
-                    label="Delivery Address"
-                    placeholder="Enter your complete address for delivery"
+                {orderDetails.includeLogistics && (
+                  <Textarea
+                    label={t("location-text") || "Location"}
+                    placeholder={t("pickup_time_instruction") || "Enter the time you will pick up yourself "}
                     value={orderDetails.address}
-                    onChange={(e) => setOrderDetails({...orderDetails, address: e.target.value})}
+                    onChange={(e) => setOrderDetails({ ...orderDetails, address: e.target.value })}
                     minRows={3}
                   />
                 )}
 
                 <Textarea
-                  label="Additional Notes (Optional)"
-                  placeholder="Any special requests or notes..."
+                  label={t("additional_notes") || "Additional Notes (Optional)"}
+                  placeholder={t("any_special_requests") || "Any special requests or notes..."}
                   value={orderDetails.notes}
-                  onChange={(e) => setOrderDetails({...orderDetails, notes: e.target.value})}
+                  onChange={(e) => setOrderDetails({ ...orderDetails, notes: e.target.value })}
                   minRows={2}
-                /> */}
+                />
 
                 {/* Logistics Page Link */}
-                <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-700">
+                {/* <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-700">
                   <div className="flex items-center gap-2 text-sm text-blue-700 dark:text-blue-300">
                     <FaTruck className="flex-shrink-0" />
                     <span>Need to arrange logistics separately?</span>
                   </div>
                   <Link
-                    href="#"
+                    href=""
                     className="text-blue-600 dark:text-blue-400 hover:underline text-sm mt-1 inline-flex items-center gap-1"
                     showAnchorIcon
                     anchorIcon={<FaExternalLinkAlt size={12} />}
                   >
                     Visit our logistics page
                   </Link>
-                </div>
+                </div> */}
 
 
               </ModalBody>
               <ModalFooter>
-                <button onClick={onClose} className="px-4 py-2 text-gray-600 hover:text-gray-800">
+                <button onClick={onClose} className="px-4 py-2 text-gray-500 hover:text-gray-100">
                   Cancel
                 </button>
                 <button

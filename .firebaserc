@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "qr-code-ecc53"
-  }
+    "default": "omelettes-997c3"
+  },
+  "targets": {},
+  "etags": {}
 }

@@ -102,5 +102,13 @@
   "quantity": "Total",
     "final_selling_price": "Price",
     
-        "notes": "Notes"
+        "notes": "Notes",
+        "order_summary": "Order Summary",
+        "free_logistics_info": "Logistics services provided free of charge",
+        "additional_notes": "Additional Notes (Optional)",
+        "any_special_requests": "Any special requests or notes...",
+        "i_will_pick_up": "I will pick up  at time...",
+        "location-text": "ban Namkham (T2), Sikhottabong District, Vientiane, Laos",
+        "pickup_time_instruction": "Enter the time you will pick up yourself (Ex: 9:00 AM)",
+        "time_label": "Time"
 }

@@ -75,7 +75,7 @@
   "show_details": "ສະແດງລາຍລະອຽດ",
   "show_less": "ສະແດງໜ້ອຍລົງ",
     "logistic_name": "ຊື່ບໍລິສັດຂົນສົ່ງ",
-  "logistic_address": "ທີ່ຢູ່ຈັດສົ່ງ",
+  "logistic_address": "ສາຂາຂົນສົ່ງ",
  
     "logistic_phone": "ເບີໂທລະສັບຂົນສົ່ງ",
     "matched_entry": "ຂໍ້ມູນລາຍການທີ່ກົງກັນ",
@@ -96,6 +96,20 @@
         "quantity": "ຈຳນວນ",
         "final_selling_price": "ລາຄາ",
      
-        "notes": "ບັນທຶກ"
+        "notes": "ບັນທຶກ",
+        "order_summary": "ສະຫຼຸບຄຳສັ່ງຊື້",
+           "free_logistics_info": "ສົ່ງຟຣີທົ່ວປະເທດ ບໍ່ໄດ້ເກັບຄ່າຂົນສົ່ງເພີ່ມ",
+           "additional_notes": "ຫມາຍເຫດເພີ່ມເຕີມ (ບໍ່ຈຳເປັນຕ້ອງໃສ່)",
+             "any_special_requests": "ມີຄຳຂໍພິເສດ ຫຼື ຫມາຍເຫດເພີ່ມເຕີມບໍ...",
+              "i_will_pick_up": "ຂ້ອຍຈະມາຮັບເອງ ເວລາ...",
+               "location-text": "ບ້ານນາຄຳ (T2) , ເມືອງສີໂຄດຕະບອງ , ນະຄອນວຽງຈັນ , ລາວ",
+              
+
+  "pickup_time_instruction": "ໃສ່ເວລາທີ່ທ່ານຈະມາຮັບດ້ວຍຕົນເອງ (Ex: 9:00 AM)",
+   "time_label": "ເວລາ"
+
+
+
+
 
 }

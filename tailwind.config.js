@@ -60,12 +60,16 @@ module.exports = {
       animation: {
         'float-y-subtle': 'float-y-subtle 4s ease-in-out infinite', // Animation name, duration, timing, and loop
       },
+        animation: {
+        jump: 'jump 1s ease-in-out infinite',
+      },
       // Ensure custom border widths are included if you use `border-b-3`
       borderWidth: {
         '3': '3px',
       }
     },
   },
+  
   plugins: [
     
   ],

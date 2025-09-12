@@ -6,7 +6,8 @@ import { useEffect, useState } from "react";
 import { Navbar } from "@/components/navbar";
 import Loading from "@/components/loading";
 import { MobileFooter } from "@/components/MobileFooter";
-// import { ToastProvider } from "@heroui/toast";
+import { ToastProvider } from "@heroui/toast";
+import OMS_Loading from "@/components/oms_loading";
 
 export default function DefaultLayout({
   children,
@@ -49,16 +50,26 @@ export default function DefaultLayout({
 
   return (
     <div className="relative flex flex-col min-h-screen">
-      
+       {/* <ToastProvider placement="bottom-right" toastOffset={60} /> */}
       <Navbar   />
-       {/* <ToastProvider placement="top-right" toastOffset={60} /> */}
+      
       <main className="flex-grow pb-8">
         {" "}
         {/* Add this padding-bottom */}
        
-        <div className="w-full overflow-x-hidden">
-          {isLoading ? <Loading /> : children}
-        </div>
+     <div className="w-full overflow-x-hidden">
+  {isLoading ? (
+    <>
+      <Loading />
+      <OMS_Loading />
+    </>
+  ) : (
+    children
+  )}
+</div>
+
+
+
         
         {showScrollTop && (
           <button

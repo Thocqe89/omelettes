@@ -144,3 +144,33 @@ body {
 .motion-transform {
   will-change: transform, opacity;
 }
+.loader {
+  width: 120px;
+  height: 120px;
+  border: 5px solid #301934; /* deep purple */
+  border-radius: 50%;
+  position: absolute;
+  box-sizing: border-box;
+  animation: pulse 1s linear infinite;
+  z-index: 0; /* stays behind the logo */
+}
+.loader:after {
+  content: '';
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border: 5px solid #C084FC; /* lighter purple */
+  border-radius: 50%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  animation: scaleUp 1s linear infinite;
+}
+@keyframes scaleUp {
+  0% { transform: translate(-50%, -50%) scale(0) }
+  60%, 100% { transform: translate(-50%, -50%) scale(1) }
+}
+@keyframes pulse {
+  0%, 60%, 100% { transform: scale(1) }
+  80% { transform: scale(1.2) }
+}

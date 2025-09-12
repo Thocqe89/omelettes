@@ -3,12 +3,12 @@
   "short_name": "Omelette's",
   "icons": [
     {
-      "src": "/image/logo01.png",
+      "src": "https://res.cloudinary.com/deahgtn57/image/upload/v1756960044/omelett%27s/public/logo/logo.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/image/logo01.png",
+      "src": "https://res.cloudinary.com/deahgtn57/image/upload/v1756960044/omelett%27s/public/logo/logo.png",
       "type": "image/png",
       "sizes": "512x512"
     }

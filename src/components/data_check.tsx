@@ -38,16 +38,6 @@ export default function DataCheck() {
     const visiblePart = phone.slice(-3);
     return '*'.repeat(phone.length - 3) + visiblePart;
   };
-const handlePhoneInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const input = e.target.value;
-  const numbersOnly = input.replace(/\D/g, "");
-
-  // Update real value
-  setPhoneSearch(numbersOnly);
-
-  // Mask each digit with "*"
-  setDisplayPhoneSearch("*".repeat(numbersOnly.length));
-};
 
 
 
@@ -264,8 +254,8 @@ const handlePhoneInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                 <div data-aos="zoom-in-right">
                   <img
                     alt={t("no_data_illustration") || "No data found illustration"}
-                    className="max-w-xs h-auto"
-                    src={`/image/fly.png`}
+                    className="max-w-xs h-auto bg-transparent"
+                    src={`https://res.cloudinary.com/deahgtn57/image/upload/v1757573548/omelett%27s/public/image/fly_h2va9e.png`}
                   />
                 </div>
                 <h1 className="text-2xl font-bold text-center text-[#0d7a68]">

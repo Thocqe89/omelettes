@@ -89,7 +89,7 @@
    "show_details": "แสดงรายละเอียด",
   "show_less": "แสดงน้อยลง",
    "logistic_name": "ชื่อบริษัทขนส่ง",
-  "logistic_address": "ที่อยู่จัดส่ง",
+  "logistic_address": "สาขาขนส่ง",
  
     "logistic_phone": "เบอร์โทรศัพท์ขนส่ง",
     "matched_entry": "รายการที่ตรงกัน",
@@ -109,5 +109,15 @@
         "quantity": "จำนวน",
         "final_selling_price": "ราคา",
   
-        "notes": "บันทึก"
+        "notes": "บันทึก",
+        "order_summary": "สรุปคำสั่งซื้อ",
+        "free_logistics_info":"จัดส่งฟรีทั่วประเทศ ไม่มีค่าจัดส่งเพิ่มเติม",
+        "additional_notes": "หมายเหตุเพิ่มเติม (ไม่จำเป็นต้องใส่)",
+          "any_special_requests": "มีคำขอเฉพาะหรือหมายเหตุเพิ่มเติมไหม...",
+           "i_will_pick_up": "ฉันจะมารับเอง เวลา...",
+            "location-text": "บ้านนาคำ (T2), แขวงศรีโคตรบอง,เวียงจันทน์, ลาว",
+            
+  "pickup_time_instruction": "ใส่เวลาที่คุณจะมารับด้วยตัวเอง (Ex: 9:00 AM)",
+   "time_label": "เวลา"
+
 }

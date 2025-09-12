@@ -148,17 +148,7 @@ export default function Logistics() {
                   placeholder={t("enter_village") || "Enter village"}
                   type="text"
                 />
-
-                <Input
-                  isRequired
-                  label={t("logistic_unit")}
-                  labelPlacement="inside"
-                  name="logistic_unit"
-                  placeholder={t("enter_logistic_unit") || "Enter hall unit"}
-                  type="text"
-                />
-
-                {/* New logistic info fields */}
+  {/* New logistic info fields */}
                 <Input
                   isRequired
                   label={t("logistic_name")}
@@ -172,6 +162,17 @@ export default function Logistics() {
 
                 <Input
                   isRequired
+                  label={t("logistic_unit")}
+                  labelPlacement="inside"
+                  name="logistic_unit"
+                  placeholder={t("enter_logistic_unit") || "Enter hall unit"}
+                  type="text"
+                />
+
+              
+
+                {/* <Input
+                  isRequired
                   label={t("logistic_address")}
                   labelPlacement="inside"
                   name="logistic_address"
@@ -179,7 +180,7 @@ export default function Logistics() {
                     t("enter_logistic_address") || "Enter logistic address"
                   }
                   type="text"
-                />
+                /> */}
 
                 <Input
                   isRequired
@@ -271,14 +272,14 @@ export default function Logistics() {
                       {submittedData.logistic_name}
                     </span>
                   </li>
-                  <li className="flex justify-between items-start">
+                  {/* <li className="flex justify-between items-start">
                     <span className="font-semibold">
                       {t("logistic_address")}:{" "}
                     </span>
                     <span className="text-right break-words max-w-[60%]">
                       {submittedData.logistic_address}
                     </span>
-                  </li>
+                  </li> */}
                   <li className="flex justify-between items-start">
                     <span className="font-semibold">
                       {t("logistic_phone")}:{" "}
@@ -363,7 +364,7 @@ export default function Logistics() {
                       />
                       <img
                         alt="Logo"
-                        src="/image/logo01.png"
+                        src="https://res.cloudinary.com/deahgtn57/image/upload/v1756960044/omelett%27s/public/logo/logo.png"
                         style={{
                           position: "absolute",
                           top: "50%",

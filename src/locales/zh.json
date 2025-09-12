@@ -90,7 +90,7 @@
   "show_details": "显示详情",
   "show_less": "显示更少",
    "logistic_name": "物流名称",
-  "logistic_address": "物流地址",
+  "logistic_address": "交通分公司",
  
     "logistic_phone": "物流电话",
     "matched_entry": "匹配条目",
@@ -110,5 +110,16 @@
       "quantity": "数量",
       "final_selling_price": "价格",
    
-      "notes": "备注"
+      "notes": "备注",
+      "order_summary": "订单摘要",
+      "free_logistics_info": "全国范围内免费送货。无需额外运费",
+      "additional_notes": "附加备注 (选填)",
+        "any_special_requests": "有任何特殊要求或备注吗...",
+         "i_will_pick_up": "我将在...时间自己来取",
+       
+  "location-text": "纳姆康村 (T2) , 西科达崩县 , 万象市 , 老挝",
+ 
+  "pickup_time_instruction": "添加您前来自取的时间 (例如: 9:00 AM)",
+  "time_label": "时间"
+
 }
