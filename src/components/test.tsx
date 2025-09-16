@@ -256,7 +256,12 @@ const MobileTableRow: React.FC<{ entry: OMS_TripEntry; onEdit: (entry: OMS_TripE
   const categoryColor = categoryColors[entry.category] || categoryColors.Miscellaneous;
   const [showSharedDetails, setShowSharedDetails] = React.useState(false);
   
-  const sharedDetails = entry.sharedDetails ? JSON.parse(entry.sharedDetails) : null;
+  let sharedDetails = null;
+  try {
+    sharedDetails = entry.sharedDetails ? JSON.parse(entry.sharedDetails) : null;
+  } catch (e) {
+    console.error("Error parsing shared details:", e);
+  }
 
   return (
     <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm mb-3 border border-gray-100 dark:border-gray-700">
@@ -702,7 +707,12 @@ export default function OMSDashboard() {
     });
     
     if (entry.sharedDetails) {
-      setSharedExpense(JSON.parse(entry.sharedDetails));
+      try {
+        setSharedExpense(JSON.parse(entry.sharedDetails));
+      } catch (e) {
+        console.error("Error parsing shared details:", e);
+        setSharedExpense(null);
+      }
     }
     
     setEditId(entry.id);
@@ -1116,7 +1126,12 @@ export default function OMSDashboard() {
                         <TableBody>
                           {paginatedEntries.map((e) => {
                             const categoryColor = categoryColors[e.category] || categoryColors.Miscellaneous;
-                            const sharedDetails = e.sharedDetails ? JSON.parse(e.sharedDetails) : null;
+                            let sharedDetails = null;
+                            try {
+                              sharedDetails = e.sharedDetails ? JSON.parse(e.sharedDetails) : null;
+                            } catch (error) {
+                              console.error("Error parsing shared details:", error);
+                            }
                             
                             return (
                               <TableRow key={e.id} className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
@@ -1147,7 +1162,7 @@ export default function OMSDashboard() {
                                     </div>
                                   )}
                                   {e.costLAK && (
-                                                                        <div className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-1">
+                                    <div className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-1">
                                       <CountUp end={parseFloat(e.costLAK)} duration={1.2} separator="," />
                                       <span className="text-[#0d7a68]">₭</span>
                                     </div>
