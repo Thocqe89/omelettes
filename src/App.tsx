@@ -28,7 +28,7 @@ function App() {
       <Routes>
         <Route element={<IndexPage />} path="/" />
         <Route element={<ProductsPage />} path="/product" />
-        <Route element={<Omellets />} path="/omelettes" />
+        <Route element={<Omellets />} path="/omelette's" />
         <Route element={<ThreeLeaves />} path="/three_leaves" />
         <Route element={<AboutPage />} path="/about" />
         <Route element={<Logistics />} path="/logistics" />

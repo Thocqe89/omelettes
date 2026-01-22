@@ -48,7 +48,7 @@ export const MobileFooter = () => {
     const path = window.location.pathname;
   if (path === "/") setActiveTab("home");
   else if (path.startsWith("/store")) setActiveTab("store");
-  else if (path.startsWith("/omelettes")) setActiveTab("omelettes");
+  else if (path.startsWith("/omelette's")) setActiveTab("omelette's");
   else if (path.startsWith("/dataCheck")) setActiveTab("dataCheck");
   else if (path.startsWith("/anouncement")) setActiveTab("anouncement");
   else setActiveTab(""); // fallback
@@ -81,12 +81,12 @@ export const MobileFooter = () => {
       </Link>
 
       <Link
-        className={navItemClass("omelettes")}
-        href="/omelettes"
-        onClick={() => setActiveTab("omelettes")}
+        className={navItemClass("omelette's")}
+        href="/omelette's"
+        onClick={() => setActiveTab("omelette's")}
       >
         <AiOutlineShopping size={24} />
-        <p className={textClass("omelettes")}>{t("store")}</p>
+        <p className={textClass("omelette's")}>{t("store")}</p>
       </Link>
 
       <Link
