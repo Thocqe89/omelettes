@@ -223,8 +223,10 @@ export default function IndexPage() {
               </div>
 
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-                <span className="block">Omelette<span className="text-[#E43636]">'</span>s</span>
+                <span className="block">Omelette<span className="text-[#E43636]">'</span>s</span> 
               </h1>
+
+             
 
               <Divider className="my-8 bg-white/20 w-24" />
 
