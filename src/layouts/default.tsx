@@ -56,7 +56,7 @@ export default function DefaultLayout({
           {isLoading ? (
             <>
               <Loading />
-              <OMS_Loading />
+              {/* <OMS_Loading /> */}
             </>
           ) : (
             children

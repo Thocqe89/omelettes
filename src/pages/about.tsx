@@ -638,12 +638,12 @@ export default function AboutPage() {
             </div>
 
             {/* Right Image - Fixed with proper constraints */}
-            <motion.div 
+            {/* <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.5 }}
               className="w-full lg:w-1/2 relative mt-8 lg:mt-0 overflow-guard"
-            >
+            > */}
               <div className="relative group overflow-guard">
                 {/* <motion.div 
                   animate={{ rotate: [0, 360] }}
@@ -662,11 +662,11 @@ export default function AboutPage() {
                   </div>
                 </div>
                 {/* Optional floating element */}
-                <motion.div
+                {/* <motion.div
                   animate={{ y: [0, -10, 0] }}
                   transition={{ duration: 2, repeat: Infinity }}
                   className="absolute -bottom-2 -right-2 sm:-bottom-4 sm:-right-4 bg-gradient-to-br from-[#0d7a68] to-[#A3D9A5] text-white p-2 sm:p-4 rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl"
-                >
+                > */}
                   {/* <div className="flex items-center gap-1 sm:gap-2">
                     <MdWorkspacePremium className="text-lg sm:text-2xl" />
                     <div>
@@ -674,9 +674,9 @@ export default function AboutPage() {
                       <p className="text-[10px] sm:text-xs opacity-90">Since 2023</p>
                     </div>
                   </div> */}
-                </motion.div>
+                {/* </motion.div> */}
               </div>
-            </motion.div>
+            {/* </motion.div> */}
           </div>
         </div>
       </section>
