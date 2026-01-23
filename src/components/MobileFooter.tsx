@@ -6,7 +6,7 @@ import { FiTruck } from "react-icons/fi";
 // import { Modal, ModalContent, ModalHeader, ModalBody } from "@heroui/modal";
 // import { Image } from "@heroui/image";
 import { useTranslation } from "react-i18next";
-import { AiOutlineHome, AiOutlineShopping } from "react-icons/ai";
+import { AiOutlineHome, AiOutlineInfoCircle, AiOutlineShopping, AiOutlineUser } from "react-icons/ai";
 // import i18n from "@/i18n";
 // import { SiGnuprivacyguard } from "react-icons/si";
 
@@ -88,14 +88,22 @@ export const MobileFooter = () => {
         <AiOutlineShopping size={24} />
         <p className={textClass("omelette's")}>{t("store")}</p>
       </Link>
+      <Link
+        className={navItemClass("about_us")}
+        href="/about"
+        onClick={() => setActiveTab("about_us")}
+      >
+        <AiOutlineInfoCircle size={24} />
+        <p className={textClass("about_us")}>{t("about_us")}</p>
+      </Link>
 
       <Link
-        className={navItemClass("dataCheck")}
-        href="/dataCheck"
-        onClick={() => setActiveTab("dataCheck")}
+        className={navItemClass("help")}
+        href="/help"
+        onClick={() => setActiveTab("help")}
       >
-        <FiTruck size={24} />
-        <p className={textClass("dataCheck")}>{t("logistics")}</p>
+        <AiOutlineUser size={24} />
+        <p className={textClass("help")}>{t("help")}</p>
       </Link>
       {/* Modal
       <Link
@@ -109,16 +117,7 @@ export const MobileFooter = () => {
         <p className={textClass("saved")}>{t("anouncement")}</p>
       </Link>   */}
 
-      <Link
-        className={navItemClass("help")}
-        href="https://wa.me/2055058028?text=Hi,%20I%20need%20help%20with%20your%20services.%20Can%20an%20assistant%20assist%20me?%20%0A%0Aສະບາຍດີ,%20ຂ້ອຍມີຄຳຖາມ%20?"
-        rel="noopener noreferrer"
-        target="_blank"
-        onClick={() => setActiveTab("help")}
-      >
-        <FaWhatsapp size={24} />
-        <p className={textClass("help")}>{t("help")}</p>
-      </Link>
+    
 
       {/* Modal */}
       {/* <Modal isOpen={isOpen} onOpenChange={onOpenChange}>

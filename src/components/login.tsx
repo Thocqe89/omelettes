@@ -1,6 +1,7 @@
 import { motion, Variants } from "framer-motion";
 import { useState } from "react";
-import { FaEye, FaEyeSlash, FaLock, FaEnvelope, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaLock, FaEnvelope, FaChevronDown, FaChevronUp, FaTimes, FaUserFriends, FaEnvelopeOpen, FaArrowLeft } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -10,6 +11,7 @@ export default function LoginPage() {
   });
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
+  const [showSignupPopup, setShowSignupPopup] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -64,8 +66,36 @@ export default function LoginPage() {
     }
   };
 
+  const popupVariants: Variants = {
+    hidden: { opacity: 0, scale: 0.9 },
+    visible: { 
+      opacity: 1, 
+      scale: 1,
+      transition: {
+        duration: 0.3,
+        ease: "easeOut"
+      }
+    },
+    exit: {
+      opacity: 0,
+      scale: 0.9,
+      transition: {
+        duration: 0.2
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-white">
+      {/* Back to Home Button */}
+      {/* <Link 
+        to="/" 
+        className="fixed top-4 left-4 z-50 flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 text-gray-700 hover:text-[#0d7a68] border border-gray-200"
+      >
+        <FaArrowLeft />
+        <span>Back to Home</span>
+      </Link> */}
+
       {/* Left Side - Logo and Branding - Hidden on mobile */}
       <motion.div 
         className="hidden md:flex md:w-2/5 bg-white flex-col items-center justify-center p-8 relative overflow-hidden"
@@ -110,6 +140,26 @@ export default function LoginPage() {
           >
             Sign in to access your exclusive account and manage your special customer benefits.
           </motion.p>
+          
+          {/* Exclusive Membership Info */}
+          {/* <motion.div 
+            className="mt-8 p-6 bg-gradient-to-r from-[#0d7a68]/10 to-[#0a5d4f]/10 rounded-xl border border-[#0d7a68]/20"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.8 }}
+          >
+            <div className="flex items-start gap-3">
+              <div className="bg-[#0d7a68] p-2 rounded-lg">
+                <FaUserFriends className="text-white text-lg" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-800 mb-2">Exclusive Access Only</h3>
+                <p className="text-sm text-gray-600">
+                  OMS membership is by invitation only. To create an account, you need an invitation from an existing member.
+                </p>
+              </div>
+            </div>
+          </motion.div> */}
         </div>
       </motion.div>
 
@@ -163,9 +213,9 @@ export default function LoginPage() {
                 </svg>
               </div>
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-yellow-800">Important Notice</h3>
+                <h3 className="text-sm font-medium text-yellow-800">Exclusive Platform</h3>
                 <div className="mt-2 text-sm text-yellow-700">
-                  <p>By logging in or creating an account, you agree to our Terms of Service and Privacy Policy.</p>
+                  <p>This platform is exclusively for invited OMS members. Membership requires an invitation.</p>
                 </div>
               </div>
             </div>
@@ -187,7 +237,7 @@ export default function LoginPage() {
                   value={formData.email}
                   onChange={handleInputChange}
                   className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0d7a68] focus:border-transparent transition-colors"
-                  placeholder="Enter your email"
+                  placeholder="Enter your invited email"
                   required
                 />
               </div>
@@ -244,17 +294,17 @@ export default function LoginPage() {
                   className="mt-3 p-4 bg-gray-50 rounded-lg overflow-hidden"
                 >
                   <div className="text-xs text-gray-600 max-h-40 overflow-y-auto">
-                    <h4 className="font-bold mb-2">1. Acceptance of Terms</h4>
-                    <p className="mb-3">By accessing or using our services, you agree to be bound by these Terms and Conditions.</p>
+                    <h4 className="font-bold mb-2">1. Exclusive Membership</h4>
+                    <p className="mb-3">OMS membership is by invitation only. Access is restricted to invited members.</p>
                     
-                    <h4 className="font-bold mb-2">2. Privacy Policy</h4>
-                    <p className="mb-3">Your privacy is important to us. Our Privacy Policy explains how we collect, use, and protect your personal information.</p>
+                    <h4 className="font-bold mb-2">2. Invitation Required</h4>
+                    <p className="mb-3">To create an OMS account, you must receive a valid invitation from an existing member.</p>
                     
                     <h4 className="font-bold mb-2">3. Account Security</h4>
-                    <p className="mb-3">You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.</p>
+                    <p className="mb-3">You are responsible for maintaining the confidentiality of your account credentials.</p>
                     
-                    <h4 className="font-bold mb-2">4. User Conduct</h4>
-                    <p>You agree to use our services only for lawful purposes and in a way that does not infringe the rights of others.</p>
+                    <h4 className="font-bold mb-2">4. Exclusive Content</h4>
+                    <p>All content within OMS is confidential and intended for members only.</p>
                   </div>
                 </motion.div>
               )}
@@ -269,7 +319,7 @@ export default function LoginPage() {
                 className="h-4 w-4 text-[#0d7a68] focus:ring-[#0d7a68] border-gray-300 rounded"
               />
               <label htmlFor="acceptTerms" className="ml-2 block text-sm text-gray-700">
-                I accept the Terms and Conditions
+                I confirm I have received an OMS invitation
               </label>
             </motion.div>
 
@@ -292,13 +342,161 @@ export default function LoginPage() {
           <motion.div className="mt-6 text-center" variants={itemVariants}>
             <p className="text-sm text-gray-600">
               Don't have an account?{" "}
-              <a href="#" className="font-medium text-[#0d7a68] hover:text-[#0a5d4f] transition-colors">
+              <button 
+                onClick={() => setShowSignupPopup(true)}
+                className="font-medium text-[#0d7a68] hover:text-[#0a5d4f] transition-colors underline"
+              >
                 Sign up
-              </a>
+              </button>
+            </p>
+            <p className="text-xs text-gray-500 mt-2">
+              Membership is exclusive and requires invitation
             </p>
           </motion.div>
         </motion.div>
       </motion.div>
+
+      {/* Signup Popup/Modal */}
+      {showSignupPopup && (
+        <motion.div 
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => setShowSignupPopup(false)}
+        >
+          <motion.div 
+            className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden"
+            variants={popupVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Popup Header */}
+            <div className="bg-gradient-to-r from-[#0d7a68] to-[#0a5d4f] p-6 text-white relative">
+              <button
+                onClick={() => setShowSignupPopup(false)}
+                className="absolute top-4 right-4 text-white hover:text-gray-200 transition-colors"
+              >
+                <FaTimes className="text-xl" />
+              </button>
+              
+              <div className="flex items-center gap-4">
+                <div className="bg-white/20 p-3 rounded-xl">
+                  <FaUserFriends className="text-2xl" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold">OMS Membership</h3>
+                  <p className="text-white/80 text-sm">Invitation Required</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Popup Content */}
+            <div className="p-6 overflow-y-auto max-h-[60vh]">
+              <div className="text-center mb-6">
+                <div className="w-20 h-20 bg-gradient-to-br from-[#0d7a68]/20 to-[#0a5d4f]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <FaEnvelopeOpen className="text-3xl text-[#0d7a68]" />
+                </div>
+                <h4 className="text-lg font-bold text-gray-800 mb-2">Exclusive Membership Access</h4>
+                <p className="text-gray-600 mb-4">
+                  OMS is an exclusive platform for special members only
+                </p>
+              </div>
+
+              <div className="space-y-4 mb-6">
+                <div className="flex items-start gap-3 p-4 bg-blue-50 rounded-lg">
+                  <div className="bg-blue-100 p-2 rounded-lg">
+                    <FaUserFriends className="text-blue-600" />
+                  </div>
+                  <div>
+                    <h5 className="font-semibold text-gray-800 mb-1">Invitation-Only</h5>
+                    <p className="text-sm text-gray-600">
+                      OMS membership is exclusively by invitation. You cannot create an account without an invitation from an existing member.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg">
+                  <div className="bg-green-100 p-2 rounded-lg">
+                    <FaEnvelope className="text-green-600" />
+                  </div>
+                  <div>
+                    <h5 className="font-semibold text-gray-800 mb-1">How to Get Invited</h5>
+                    <p className="text-sm text-gray-600">
+                      Contact an existing OMS member and request an invitation. They will send you an invitation email with registration instructions.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-4 bg-purple-50 rounded-lg">
+                  <div className="bg-purple-100 p-2 rounded-lg">
+                    <FaLock className="text-purple-600" />
+                  </div>
+                  <div>
+                    <h5 className="font-semibold text-gray-800 mb-1">Secure & Private</h5>
+                    <p className="text-sm text-gray-600">
+                      OMS maintains strict privacy and security standards. All members are verified through our invitation system.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                <div className="flex items-start">
+                  <svg className="h-5 w-5 text-yellow-400 mt-0.5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                  <div className="ml-3">
+                    <h5 className="text-sm font-medium text-yellow-800">Important Notice</h5>
+                    <p className="text-sm text-yellow-700 mt-1">
+                      If you haven't received an invitation, you cannot create an account. Please contact an OMS member for assistance.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Popup Footer */}
+            <div className="p-6 border-t border-gray-200 bg-gray-50">
+              <div className="flex flex-col sm:flex-row gap-3">
+                {/* <button
+                  onClick={() => setShowSignupPopup(false)}
+                  className="px-4 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors flex-1"
+                >
+                  Close
+                </button> */}
+              <button
+  onClick={() => {
+    setShowSignupPopup(false);
+    window.location.href = '/help'; // Redirects the whole page
+  }}
+  className="px-4 py-3 bg-gradient-to-r from-[#0d7a68] to-[#0a5d4f] text-white rounded-lg hover:opacity-90 transition-opacity flex-1 flex items-center justify-center gap-2"
+>
+  <FaEnvelopeOpen />
+  Request Invitation Help
+</button>
+              </div>
+              
+              <p className="text-xs text-gray-500 text-center mt-4">
+                OMS - Exclusive Membership Platform
+              </p>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+
+      {/* Mobile Back Button */}
+      {/* <div className="md:hidden fixed bottom-4 left-1/2 transform -translate-x-1/2 z-40">
+        <Link 
+          to="/" 
+          className="flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 text-gray-700 hover:text-[#0d7a68] border border-gray-200"
+        >
+          <FaArrowLeft />
+          <span>Back to Home</span>
+        </Link>
+      </div> */}
     </div>
   );
 }

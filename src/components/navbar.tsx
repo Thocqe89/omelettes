@@ -55,7 +55,7 @@ export const Navbar = () => {
     if (path === "/") setActiveNav("home");
     else if (path.startsWith("/about")) setActiveNav("about_us");
     else if (path.startsWith("/Omelette's")) setActiveNav("product");
-    else if (path.startsWith("/dataCheck")) setActiveNav("myorder");
+    else if (path.startsWith("/help")) setActiveNav("help");
     else setActiveNav("");
 
     // Add scroll effect for navbar
@@ -77,7 +77,7 @@ export const Navbar = () => {
     if (path === "/") setActiveNav("home");
     else if (path.startsWith("/about")) setActiveNav("about_us");
     else if (path.startsWith("/Omelette's")) setActiveNav("product");
-    else if (path.startsWith("/dataCheck")) setActiveNav("myorder");
+    else if (path.startsWith("/help")) setActiveNav("help");
     else setActiveNav("");
   }, [location]);
 
@@ -112,7 +112,7 @@ export const Navbar = () => {
   const navItems = [
     { href: "/", label: "home", icon: <AiOutlineHome /> },
     { href: "/about", label: "about_us", icon: <AiOutlineInfoCircle /> },
-    { href: "/dataCheck", label: "myorder", icon: <AiOutlineIdcard /> },
+    { href: "/help", label: "help", icon: <AiOutlineIdcard /> },
     { href: "/Omelette's", label: "product", icon: <AiOutlineShopping /> },
   ];
 
@@ -403,7 +403,7 @@ export const Navbar = () => {
             <NavbarItem>
               <Button
                 as={Link}
-                to="OMS_Login"
+                to="/OMS_Login"
                 className="bg-[#0d7a68] hover:bg-[#0b6a5a] text-white font-medium px-6"
                 startContent={<AiOutlineUser />}
                 onClick={() => window.scrollTo(0, 0)}
@@ -555,7 +555,7 @@ export const Navbar = () => {
               {/* Social Links */}
               <div className="mb-6">
                 <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
-                  {t("connect_with_us") || "Connect"}
+                  {t("contact_us") || "Connect"}
                 </h3>
                 <div className="flex gap-2 mb-4">
                   <Button
