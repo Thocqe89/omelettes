@@ -450,7 +450,7 @@ ${orderDetails.includeLogistics ?
               <ModalHeader className="flex flex-col gap-1">
                 <div className="flex items-center gap-2">
                   <HiShoppingCart className="text-green-900 size-4" />
-                  {t("shop_now")} : {selectedProduct?.Name}
+                  {t("models")} | {selectedProduct?.Name}
                 </div>
               </ModalHeader>
               <ModalBody className="space-y-4">
@@ -471,14 +471,14 @@ ${orderDetails.includeLogistics ?
 
 
                 {/* Improved logistics link button */}
-                <Link
+                {/* <Link
                   href="/logistics"
                   className="inline-flex items-center gap-1 px-4 py-2 rounded-lg bg-gradient-to-r from-[#0d7a68] to-[#0b6a5a] text-white font-medium hover:from-[#0b6a5a] hover:to-[#094c41] transition-all duration-300 shadow-md hover:shadow-lg"
                 >
                   <FaTruck className="text-sm" />
                   <span>{t("Logistics ervice")}?</span>
                   <FaExternalLinkAlt className="text-xs opacity-80" />
-                </Link>
+                </Link> */}
 
 
 
