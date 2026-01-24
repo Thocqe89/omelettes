@@ -172,7 +172,8 @@
   "Artisan Detailing": "Artisan Detailing",
   "Hand-finished by master craftsmen": "Hand-finished by master craftsmen",
   "Certified Authenticity": "Certified Authenticity",
-  "Documented provenance for each piece": "Documented provenance for each piece",
+ "Documented provenance for each piece": "Individually verified via our internal ID registration system"
+,
   "learnMoreAboutProcess": "Learn more about our process",
   "beginYourCollection": "Begin Your Collection",
   "joinCollectorsWorldwide": "Join collectors worldwide who trust Omelette's for premium aircraft models that become treasured heirlooms.",
@@ -181,5 +182,7 @@
   "freeShipping": "Free Shipping",
   "authenticityGuarantee": "Authenticity Guarantee",
   "securePayment": "Secure Payment",
-  "support247": "24/7 Support"
+  "support247": "24/7 Support",
+  "login": "Login",
+  "size": "Size"
 }

@@ -97,12 +97,12 @@ export default function IndexPage() {
   }, [statsTriggered]);
 
   // Handle WhatsApp consultation
-  const handleWhatsAppConsultation = () => {
-    const message = `Hello! I'm interested in Omelette's Aerospace products and would like to request a consultation.`;
-    const encodedMessage = encodeURIComponent(message);
-    const phoneNumber = "+8562055058028";
-    window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
-  };
+  // const handleWhatsAppConsultation = () => {
+  //   const message = `Hello! I'm interested in Omelette's Aerospace products and would like to request a consultation.`;
+  //   const encodedMessage = encodeURIComponent(message);
+  //   const phoneNumber = "+8562055058028";
+  //   window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+  // };
 
   // Handle image click to open modal
   const handleImageClick = (index: number) => {
@@ -174,28 +174,28 @@ export default function IndexPage() {
     {
       title: "Restaurant & Café Tables",
       description: "Enhances dining experience with aviation elegance",
-      image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800",
+      image: "https://res.cloudinary.com/deahgtn57/image/upload/v1768898745/omelett%27s/public/index%20page/Gemini_Generated_Image_9yzxph9yzxph9yzx_qddg29.png",
       color: "from-emerald-50 to-teal-50",
       features: ["Unique table centerpiece", "Enhances dining atmosphere", "Memorable customer experience"]
     },
     {
       title: "Home Library & Study",
       description: "Adds sophistication to personal collections",
-      image: "https://images.unsplash.com/photo-1589998059171-988d887df646?auto=format&fit=crop&w=800",
+      image: "https://res.cloudinary.com/deahgtn57/image/upload/v1768898745/omelett%27s/public/index%20page/Gemini_Generated_Image_5x190o5x190o5x19_jsfors.png",
       color: "from-purple-50 to-violet-50",
       features: ["Personal collection showcase", "Intellectual ambiance", "Conversation starter"]
     },
     {
       title: "Conference Room Centerpiece",
       description: "Elevates business meetings and presentations",
-      image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=800",
+      image: "https://res.cloudinary.com/deahgtn57/image/upload/v1768899031/omelett%27s/public/index%20page/Gemini_Generated_Image_nq65ulnq65ulnq65_wggw70.png",
       color: "from-rose-50 to-pink-50",
       features: ["Professional meeting ambiance", "Inspires innovation", "Project success symbol"]
     },
     {
       title: "Luxury Gift",
       description: "The perfect premium gift for aviation enthusiasts",
-      image: "https://res.cloudinary.com/deahgtn57/image/upload/v1768752521/omelett%27s/public/index%20page/Gemini_Generated_Image_o0id8io0id8io0id-removebg-preview_unaqdn.png",
+      image: "https://res.cloudinary.com/deahgtn57/image/upload/v1768899543/omelett%27s/public/index%20page/Gemini_Generated_Image_s2daccs2daccs2da_vgtpw1.png",
       color: "from-rose-50 to-pink-50",
       features: ["Premium gift packaging", "Elegant presentation", "Memorable for any occasion"]
     }
@@ -310,12 +310,12 @@ export default function IndexPage() {
                           {products.map((product, index) => (
                             <Card
                               key={product.ID}
-                              className="border-none bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group"
+                              className="border-none bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group h-full flex flex-col"
                               isHoverable
                               onMouseEnter={() => setHoveredCard(index)}
                               onMouseLeave={() => setHoveredCard(null)}
                             >
-                              <CardBody className="p-0">
+                              <CardBody className="p-0 flex flex-col h-full">
                                 <div className="relative overflow-hidden aspect-square">
                                   <Image
                                     isBlurred
@@ -338,7 +338,7 @@ export default function IndexPage() {
                                   </div>
                                 </div>
             
-                                <div className="p-6">
+                                <div className="p-6 flex-grow">
                                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 line-clamp-1">
                                     {product.Name}
                                   </h3>
@@ -346,7 +346,7 @@ export default function IndexPage() {
                                     {t('premiumScaleModel')}
                                   </p>
                                   
-                                  <div className="flex items-center justify-between">
+                                  <div className="flex items-center justify-between mt-auto">
                                     <Chip
                                       size="sm"
                                       variant="flat"
@@ -379,7 +379,7 @@ export default function IndexPage() {
                     </div>
                   </section>
             
-                  {/* Display Settings Section with Image Modal - UPDATED */}
+                  {/* Display Settings Section with Image Modal - FIXED for square images */}
                   <section className="py-24 bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900">
                     <div className="max-w-7xl mx-auto px-4">
                       <div className="text-center mb-16">
@@ -397,89 +397,86 @@ export default function IndexPage() {
                         </p>
                       </div>
             
-                      {/* Updated grid with consistent card heights */}
-                      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 auto-rows-fr">
+                      {/* Fixed grid with equal square images */}
+                      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {displaySettings.map((setting, index) => (
                           <div 
                             key={index}
-                            className={`bg-gradient-to-br ${setting.color} dark:from-gray-800 dark:to-gray-700 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 group cursor-pointer flex flex-col h-full`}
+                            className={`bg-gradient-to-br ${setting.color} dark:from-gray-800 dark:to-gray-700 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer flex flex-col h-full`}
                             onClick={() => handleImageClick(index)}
                           >
-                            {/* Consistent image container with fixed aspect ratio */}
-                            <div className="relative overflow-hidden aspect-video flex-shrink-0">
+                            {/* Square image container (1:1 aspect ratio) */}
+                            <div className="relative overflow-hidden aspect-square">
                               <Image
                                 isBlurred
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                 src={setting.image}
                                 alt={setting.title}
                               />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                              {/* Add a click overlay with hint */}
-                              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20">
-                                <div className="bg-white/90 backdrop-blur-sm rounded-full p-3 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                                  <span className="text-sm font-medium text-gray-700">{t('clickToView')}</span>
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/10">
+                                <div className="bg-white/90 backdrop-blur-sm rounded-full px-3 py-1.5">
+                                  <span className="text-xs font-medium text-gray-700">{t('clickToView') || 'Click to view'}</span>
                                 </div>
                               </div>
                             </div>
-                            <div className="p-6 flex-grow flex flex-col">
-                              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 line-clamp-1">
+                            <div className="p-4 flex flex-col flex-grow">
+                              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-1">
                                 {t(setting.title)}
                               </h3>
-                              <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2 flex-grow">
+                              <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2 flex-grow">
                                 {t(setting.description)}
                               </p>
                               <Chip
                                 size="sm"
                                 variant="flat"
-                                className="bg-white/50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300 self-start mt-auto"
+                                className="bg-white/50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300 self-start text-xs"
                               >
-                                {t('idealDisplay')}
+                                {t('idealDisplay') || 'Ideal Display'}
                               </Chip>
                             </div>
                           </div>
                         ))}
                       </div>
             
-                      {/* Gift Packaging Section - UPDATED */}
-                      <div className="mt-16 bg-gradient-to-r from-[#0d7a68]/10 to-[#0a6455]/10 dark:from-[#0d7a68]/20 dark:to-[#0a6455]/20 rounded-2xl p-8">
-                        <div className="grid lg:grid-cols-2 gap-8 items-center">
+                      {/* Gift Packaging Section */}
+                      <div className="mt-12 bg-gradient-to-r from-[#0d7a68]/10 to-[#0a6455]/10 dark:from-[#0d7a68]/20 dark:to-[#0a6455]/20 rounded-xl p-6">
+                        <div className="grid lg:grid-cols-2 gap-6 items-center">
                           <div>
                             <Chip
                               variant="flat"
-                              className="bg-[#0d7a68]/20 text-[#0d7a68] mb-6"
+                              className="bg-[#0d7a68]/20 text-[#0d7a68] mb-4"
                             >
                               {t('perfectGiftPackaging')}
                             </Chip>
-                            <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
                               {t('premiumGiftPresentation')}
                             </h3>
-                            <p className="text-gray-600 dark:text-gray-300 mb-6">
+                            <p className="text-gray-600 dark:text-gray-300 mb-4">
                               {t('eachAircraftModelComes')}
                             </p>
-                            <div className="flex items-center gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                               <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                                <div className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0"></div>
                                 <span className="text-sm text-gray-600 dark:text-gray-300">{t('premiumGiftBox')}</span>
                               </div>
                               <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                                <div className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0"></div>
                                 <span className="text-sm text-gray-600 dark:text-gray-300">{t('personalizedCard')}</span>
                               </div>
                               <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-amber-500"></div>
+                                <div className="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"></div>
                                 <span className="text-sm text-gray-600 dark:text-gray-300">{t('elegantPackaging')}</span>
                               </div>
                             </div>
                           </div>
                           <div className="relative">
-                            <div className="bg-gradient-to-br from-[#0d7a68] to-[#0a6455] rounded-xl p-2">
-                              <div className="relative h-80 w-full rounded-lg overflow-hidden flex items-center justify-center bg-white dark:bg-gray-800 p-4">
+                            <div className="bg-gradient-to-br from-[#0d7a68] to-[#0a6455] rounded-lg p-2">
+                              <div className="relative aspect-square rounded-lg overflow-hidden flex items-center justify-center bg-white dark:bg-gray-800 p-4">
                                 <Image
-                                  isZoomed
-                                  width={350}
-                                  height={350}
-                                  className="w-50 h-50 object-contain"
-                                  src="https://res.cloudinary.com/deahgtn57/image/upload/v1768752521/omelett%27s/public/index%20page/Gemini_Generated_Image_o0id8io0id8io0id-removebg-preview_unaqdn.png"
+                                 
+                                  className="w-full h-full object-contain"
+                                  src="https://res.cloudinary.com/deahgtn57/image/upload/v1769274064/omelett%27s/public/index%20page/WhatsApp_Image_2026-01-24_at_23.39.01_1_p6ptma.jpg"
                                   alt={t('premiumGiftPackaging')}
                                 />
                               </div>
@@ -490,120 +487,127 @@ export default function IndexPage() {
                     </div>
                   </section>
             
-                  {/* Custom Modal Implementation - UPDATED */}
-                  {isModalOpen && (
+                  {/* SIMPLE MODAL - FIXED SIZE FOR ALL DEVICES - SQUARE IMAGE FOCUS */}
+                  {isModalOpen && selectedImage !== null && (
                     <>
-                      {/* Backdrop - respects theme opacity */}
+                      {/* Backdrop */}
                       <div 
-                        className="fixed inset-0 bg-black/70 dark:bg-black/90 backdrop-blur-sm z-[9998] animate-fade-in"
+                        className="fixed inset-0 bg-black/90 dark:bg-black/95 backdrop-blur-sm z-[9998] animate-fade-in"
                         onClick={handleCloseModal}
                       />
                       
-                      {/* Modal Content */}
-                      <div className="fixed inset-0 z-[9999] overflow-hidden">
-                        <div className="relative w-full h-full">
-                          {/* Close button */}
+                      {/* Modal Container */}
+                      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+                        <div className="relative w-full max-w-4xl max-h-[90vh] bg-white dark:bg-gray-900 rounded-xl shadow-2xl overflow-hidden flex flex-col">
+                          
+                          {/* Close Button - Top Right */}
                           <button
                             onClick={handleCloseModal}
-                            className="absolute top-4 md:top-6 right-4 md:right-6 z-50 text-gray-800 dark:text-white bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-700 backdrop-blur-sm rounded-full p-2 md:p-3 transition-all shadow-lg hover:shadow-xl"
+                            className="absolute top-4 right-4 z-50 bg-red-500 text-white hover:bg-red-600 rounded-full p-2 transition-all shadow-lg hover:scale-110"
+                            aria-label="Close modal"
                           >
-                            <AiOutlineClose size={20} />
+                            <AiOutlineClose className="w-5 h-5" />
                           </button>
-            
-                          {/* Navigation buttons */}
+                          
+                          {/* Image Counter - Top Left */}
+                          <div className="absolute top-4 left-4 z-50 bg-black/70 text-white rounded-full px-3 py-1 text-sm font-medium">
+                            {selectedImage + 1} / {displaySettings.length}
+                          </div>
+                          
+                          {/* Navigation Buttons */}
                           <button
                             onClick={handlePrevImage}
-                            className="absolute left-4 md:left-6 top-1/2 transform -translate-y-1/2 z-50 text-gray-800 dark:text-white bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-700 backdrop-blur-sm rounded-full p-2 md:p-3 transition-all shadow-lg hover:shadow-xl"
+                            className="absolute left-4 top-1/2 transform -translate-y-1/2 z-50 bg-white/90 dark:bg-gray-800/90 text-gray-800 dark:text-white hover:bg-white dark:hover:bg-gray-700 rounded-full p-2 transition-all shadow-lg"
+                            aria-label="Previous image"
                           >
-                            <AiOutlineLeft size={20} />
+                            <AiOutlineLeft className="w-5 h-5" />
                           </button>
-            
+                          
                           <button
                             onClick={handleNextImage}
-                            className="absolute right-4 md:right-6 top-1/2 transform -translate-y-1/2 z-50 text-gray-800 dark:text-white bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-700 backdrop-blur-sm rounded-full p-2 md:p-3 transition-all shadow-lg hover:shadow-xl"
+                            className="absolute right-4 top-1/2 transform -translate-y-1/2 z-50 bg-white/90 dark:bg-gray-800/90 text-gray-800 dark:text-white hover:bg-white dark:hover:bg-gray-700 rounded-full p-2 transition-all shadow-lg"
+                            aria-label="Next image"
                           >
-                            <RightArrow size={20} />
+                            <RightArrow className="w-5 h-5" />
                           </button>
-            
-                          {/* Image counter */}
-                          <div className="absolute top-4 md:top-6 left-1/2 transform -translate-x-1/2 z-50 text-gray-800 dark:text-white bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full px-3 md:px-4 py-1 md:py-2 text-sm font-medium shadow-lg">
-                            {selectedImage !== null ? `${selectedImage + 1} / ${displaySettings.length}` : ''}
+                          
+                          {/* Main Image - Square Container */}
+                          <div className="flex-1 flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-800/50">
+                            <div className="relative w-full h-full max-w-md max-h-md mx-auto">
+                              <Image
+                                isBlurred
+                                className="w-full h-full object-contain"
+                                src={displaySettings[selectedImage].image}
+                                alt={t(displaySettings[selectedImage].title)}
+                              />
+                            </div>
                           </div>
-            
-                          {/* Main image and content */}
-                          {selectedImage !== null && (
-                            <div className="flex flex-col lg:flex-row h-full bg-white dark:bg-gray-900">
-                              {/* Image section */}
-                              <div className="lg:w-2/3 h-2/3 lg:h-full flex items-center justify-center p-4 lg:p-8 bg-gray-50 dark:bg-gray-800/30">
-                                <div className="relative w-full h-full max-h-[60vh] lg:max-h-[80vh]">
-                                  <Image
-                                    isBlurred
-                                    isZoomed
-                                    className="w-full h-full object-contain rounded-lg shadow-2xl"
-                                    src={displaySettings[selectedImage].image}
-                                    alt={t(displaySettings[selectedImage].title)}
-                                  />
+                          
+                          {/* Info Section */}
+                          <div className="bg-white dark:bg-gray-900 p-6 border-t border-gray-200 dark:border-gray-800">
+                            <Chip
+                              variant="flat"
+                              className="bg-[#0d7a68] text-white mb-3"
+                            >
+                              {displaySettings[selectedImage].title === "Luxury Gift" 
+                                ? (t('premiumGift') || 'Premium Gift') 
+                                : (t('displaySetting') || 'Display Setting')}
+                            </Chip>
+                            
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                              {t(displaySettings[selectedImage].title)}
+                            </h3>
+                            
+                            <p className="text-gray-600 dark:text-gray-300 mb-4">
+                              {t(displaySettings[selectedImage].description)}
+                            </p>
+                            
+                            <div className="space-y-2 mb-6">
+                              <h4 className="text-gray-900 dark:text-white font-semibold">
+                                {displaySettings[selectedImage].title === "Luxury Gift" 
+                                  ? (t('giftFeatures') || 'Gift Features') 
+                                  : (t('keyFeatures') || 'Key Features')}
+                              </h4>
+                              {displaySettings[selectedImage].features?.map((feature, index) => (
+                                <div key={index} className="flex items-start gap-2">
+                                  <div className="w-2 h-2 rounded-full bg-[#0d7a68] flex-shrink-0 mt-2"></div>
+                                  <span className="text-gray-700 dark:text-gray-300 text-sm">
+                                    {t(feature)}
+                                  </span>
                                 </div>
-                              </div>
-            
-                              {/* Info panel */}
-                              <div className="lg:w-1/3 h-1/3 lg:h-full bg-white dark:bg-gray-900 border-t lg:border-l border-gray-200 dark:border-gray-800 p-4 md:p-6 lg:p-8 flex flex-col overflow-y-auto">
-                                <Chip
-                                  variant="flat"
-                                  className="bg-[#0d7a68] text-white mb-4 lg:mb-6 self-start"
-                                >
-                                  {t(displaySettings[selectedImage].title) === "Luxury Gift" ? t('premiumGift') : t('displaySetting')}
-                                </Chip>
-                                
-                                <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white mb-3 lg:mb-4">
-                                  {t(displaySettings[selectedImage].title)}
-                                </h3>
-                                
-                                <p className="text-gray-600 dark:text-gray-300 mb-4 lg:mb-6 text-base lg:text-lg">
-                                  {t(displaySettings[selectedImage].description)}
-                                </p>
-                                
-                                <div className="space-y-3 lg:space-y-4 mb-6 lg:mb-8">
-                                  <h4 className="text-gray-900 dark:text-white font-semibold text-base lg:text-lg mb-2 lg:mb-3">
-                                    {t(displaySettings[selectedImage].title) === "Luxury Gift" ? t('giftFeatures') : t('keyFeatures')}
-                                  </h4>
-                                  {displaySettings[selectedImage].features?.map((feature, index) => (
-                                    <div key={index} className="flex items-start gap-3">
-                                      <div className="w-2 h-2 rounded-full bg-[#0d7a68] flex-shrink-0 mt-2"></div>
-                                      <span className="text-gray-700 dark:text-gray-300 text-sm lg:text-base">{t(feature)}</span>
-                                    </div>
-                                  ))}
-                                </div>
-            
-                                {/* Thumbnail navigation */}
-                                <div className="mt-auto pt-4 lg:pt-6 border-t border-gray-200 dark:border-gray-800">
-                                  <p className="text-gray-500 dark:text-gray-400 text-sm mb-2 lg:mb-3">{t('otherDisplaySettings')}</p>
-                                  <div className="grid grid-cols-3 gap-2">
-                                    {displaySettings.map((setting, index) => (
-                                      <button
-                                        key={index}
-                                        onClick={() => setSelectedImage(index)}
-                                        className={`relative rounded-lg overflow-hidden border-2 transition-all duration-300 aspect-square ${
-                                          selectedImage === index 
-                                            ? 'border-[#0d7a68] dark:border-[#0d7a68] scale-105 ring-2 ring-[#0d7a68]/30 dark:ring-[#0d7a68]/30' 
-                                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-500 hover:scale-102'
-                                        }`}
-                                      >
-                                        <Image
-                                          className="w-full h-full object-cover"
-                                          src={setting.image}
-                                          alt={t(setting.title)}
-                                        />
-                                        {selectedImage === index && (
-                                          <div className="absolute inset-0 bg-[#0d7a68]/20 dark:bg-[#0d7a68]/30"></div>
-                                        )}
-                                      </button>
-                                    ))}
-                                  </div>
-                                </div>
+                              ))}
+                            </div>
+                            
+                            {/* Thumbnail Navigation */}
+                            <div className="border-t border-gray-200 dark:border-gray-800 pt-4">
+                              <p className="text-gray-500 dark:text-gray-400 text-sm mb-2">
+                                {t('otherDisplaySettings') || 'Other Display Settings'}
+                              </p>
+                              <div className="grid grid-cols-3 sm:grid-cols-6 gap-1">
+                                {displaySettings.map((setting, index) => (
+                                  <button
+                                    key={index}
+                                    onClick={() => setSelectedImage(index)}
+                                    className={`relative rounded overflow-hidden border transition-all duration-200 aspect-square ${
+                                      selectedImage === index 
+                                        ? 'border-[#0d7a68] ring-2 ring-[#0d7a68]/30 scale-105' 
+                                        : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-500'
+                                    }`}
+                                    aria-label={`View ${t(setting.title)}`}
+                                  >
+                                    <Image
+                                      className="w-full h-full object-cover"
+                                      src={setting.image}
+                                      alt={t(setting.title)}
+                                    />
+                                    {selectedImage === index && (
+                                      <div className="absolute inset-0 bg-[#0d7a68]/20"></div>
+                                    )}
+                                  </button>
+                                ))}
                               </div>
                             </div>
-                          )}
+                          </div>
                         </div>
                       </div>
                     </>
@@ -615,18 +619,18 @@ export default function IndexPage() {
                       <div className="grid lg:grid-cols-2 gap-16 items-center">
                         <div className="relative">
                           <div className="relative z-10">
-                            <Tooltip content={t('visitThreeLeaves')} placement="top">
+                        
                               <div className="bg-gradient-to-br from-[#0d7a68] to-[#0a6455] rounded-2xl p-2">
-                                <Link href="https://www.tiktok.com/@three_leaves_89?_r=1&_t=ZS-93BGInWlcIq">
+                               
                                   <Image
                                     isBlurred
                                     className="w-full h-96 object-cover rounded-xl shadow-2xl"
                                     src="https://res.cloudinary.com/deahgtn57/image/upload/v1768759465/omelett%27s/public/index%20page/Three_Leaves_Logo_Design_vxogp4.png"
                                     alt={t('premiumCraftsmanship')}
                                   />
-                                </Link>
+                           
                               </div>
-                            </Tooltip>
+                         
                           </div>
                           
                           <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-[#0d7a68]/10 rounded-full"></div>
@@ -703,19 +707,19 @@ export default function IndexPage() {
                       </p>
             
                       <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Button
+                        {/* <Button
                           onClick={handleWhatsAppConsultation}
                           className="bg-white text-[#0d7a68] px-10 py-6 text-lg font-medium rounded-lg hover:bg-gray-50 transition-all transform hover:-translate-y-1 shadow-2xl"
                         >
                           {t('requestConsultation')}
-                        </Button>
+                        </Button> */}
                         <Button
                           as={Link}
-                          href="/catalogue"
+                          href="/help"
                           variant="bordered"
                           className="border-2 border-white text-white px-10 py-6 text-lg font-medium rounded-lg hover:bg-white/10 backdrop-blur-sm"
                         >
-                          {t('downloadCatalogue')}
+                          {t('contact_us')}
                         </Button>
                       </div>
             
@@ -742,4 +746,3 @@ export default function IndexPage() {
                 </DefaultLayout>
               );
             }
-            
