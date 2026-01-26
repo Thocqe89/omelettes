@@ -180,7 +180,7 @@ Size: ${selectedProduct?.Size}
 Price: ${orderDetails.price.toLocaleString()} ₭
 Quantity: ${orderDetails.quantity}
 ${orderDetails.includeLogistics ?
-        `Pickup Time: ${orderDetails.address}` :
+        `time_label: ${orderDetails.address}` :
         ''}
 Additional Notes: ${orderDetails.notes || 'None'}
 *Logistics services provided free of charge 
@@ -464,7 +464,7 @@ ${orderDetails.includeLogistics ?
 
 
                   {orderDetails.includeLogistics && (
-                    <p className=" ">{t("time")}: {orderDetails.address}</p>
+                    <p className=" ">{t("time_label")}: {orderDetails.address}</p>
                   )}
                   <p className="text-[#ca0303] ">*{t("free_logistics_info")}</p>
                 </div>

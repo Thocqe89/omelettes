@@ -48,6 +48,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import DefaultLayout from "@/layouts/default";
 import { Helmet } from "react-helmet-async";
+import { t } from "i18next";
 
 export default function HelpRequestPage() {
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
@@ -124,8 +125,8 @@ export default function HelpRequestPage() {
 
   // Toggle service selection
   const toggleService = (serviceId: string) => {
-    setSelectedServices(prev => 
-      prev.includes(serviceId) 
+    setSelectedServices(prev =>
+      prev.includes(serviceId)
         ? prev.filter(id => id !== serviceId)
         : [...prev, serviceId]
     );
@@ -136,7 +137,7 @@ export default function HelpRequestPage() {
 
   // Get selected service names
   const getSelectedServiceNames = () => {
-    return selectedServices.map(id => 
+    return selectedServices.map(id =>
       allServices.find(s => s.id === id)?.name || ""
     ).filter(name => name);
   };
@@ -154,7 +155,7 @@ export default function HelpRequestPage() {
     }
 
     setIsSending(true);
-    
+
     const selectedNames = getSelectedServiceNames();
     const category = serviceCategories.find(cat => cat.id === selectedCategory)?.name || "General";
 
@@ -196,7 +197,7 @@ export default function HelpRequestPage() {
     const phoneNumber = "2055058028";
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-    
+
     setTimeout(() => {
       window.open(whatsappUrl, '_blank');
       setIsSending(false);
@@ -243,22 +244,21 @@ export default function HelpRequestPage() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 py-12 w-full">
           <div className="text-center">
-            <Badge 
-              variant="flat"
-              className="bg-white/20 backdrop-blur-sm border border-white/20 text-white mb-6"
+            <h1
+              className="text-4xl md:text-5xl font-bold text-white mb-4 flex items-center justify-center"
             >
-              <FaHeadset className="mr-2" />
-              24/7 Support Available
-            </Badge>
-            
+              <FaHeadset className="mr-2" /><span className="">{t("badge") || "Customer Support"}</span>
+             
+            </h1>
+
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
               How Can We Help You?
             </h1>
-            
+
             <p className="text-lg text-white/80 mb-6 max-w-2xl mx-auto">
               Select what you need help with, and we'll connect you directly via WhatsApp
             </p>
-            
+
             <div className="flex flex-wrap justify-center gap-4">
               <div className="flex items-center gap-2">
                 <FaClock className="text-white" />
@@ -319,7 +319,7 @@ export default function HelpRequestPage() {
                     <FaInfoCircle className="text-[#0d7a68]" />
                     Step 1: Select Help Category
                   </h2>
-                  
+
                   <Select
                     label="What do you need help with?"
                     placeholder="Choose a category"
@@ -362,36 +362,33 @@ export default function HelpRequestPage() {
                           <FaClipboardList className="text-[#0d7a68]" />
                           Step 2: Select Services
                         </h2>
-                        
+
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           {serviceCategories
                             .find(cat => cat.id === selectedCategory)
                             ?.services.map((service) => {
                               const isSelected = selectedServices.includes(service.id);
-                              
+
                               return (
                                 <button
                                   key={service.id}
                                   onClick={() => toggleService(service.id)}
-                                  className={`p-4 rounded-lg border-2 transition-all text-left ${
-                                    isSelected
+                                  className={`p-4 rounded-lg border-2 transition-all text-left ${isSelected
                                       ? 'border-[#0d7a68] bg-[#0d7a68]/10'
                                       : 'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-500'
-                                  }`}
+                                    }`}
                                 >
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                      <div className={`p-2 rounded ${
-                                        isSelected
+                                      <div className={`p-2 rounded ${isSelected
                                           ? 'bg-[#0d7a68] text-white'
                                           : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
-                                      }`}>
+                                        }`}>
                                         {service.icon}
                                       </div>
                                       <div>
-                                        <div className={`font-medium ${
-                                          isSelected ? 'text-[#0d7a68]' : 'text-gray-900 dark:text-white'
-                                        }`}>
+                                        <div className={`font-medium ${isSelected ? 'text-[#0d7a68]' : 'text-gray-900 dark:text-white'
+                                          }`}>
                                           {service.name}
                                         </div>
                                         <Chip
@@ -432,7 +429,7 @@ export default function HelpRequestPage() {
                           <FaPaperPlane className="text-[#0d7a68]" />
                           Step 3: Provide Details
                         </h2>
-                        
+
                         <div className="space-y-6">
                           {/* Order Number */}
                           {(selectedCategory === 'returns' || selectedCategory === 'orders') && (
@@ -680,7 +677,7 @@ export default function HelpRequestPage() {
                 Need Help Immediately?
               </h3>
               <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-2xl mx-auto">
-                Our support team typically responds within 2 hours via WhatsApp. 
+                Our support team typically responds within 2 hours via WhatsApp.
                 For urgent issues, complete the form above for priority assistance.
               </p>
             </div>
@@ -722,9 +719,9 @@ export default function HelpRequestPage() {
             </div>
           </ModalBody>
           <ModalFooter>
-            <Button 
-              className="bg-[#0d7a68] text-white hover:bg-[#0a6455]" 
-              onPress={onClose} 
+            <Button
+              className="bg-[#0d7a68] text-white hover:bg-[#0a6455]"
+              onPress={onClose}
               fullWidth
             >
               Got it, thanks!
