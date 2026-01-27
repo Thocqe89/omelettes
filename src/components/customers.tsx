@@ -62,65 +62,65 @@ export default function HelpRequestPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
 
   // Services data
-  const serviceCategories = [
+const serviceCategories = [
     {
       id: "returns",
-      name: "Returns & Refunds",
+      name: t("returns"), // Matches "returns" in JSON
       icon: <FaUndo />,
       color: "red",
       services: [
-        { id: "return-product", name: "Return Product", icon: <FaBoxOpen />, badge: "Popular" },
-        { id: "exchange-item", name: "Exchange Item", icon: <FaExchangeAlt />, badge: "Quick" },
-        { id: "refund-request", name: "Refund Request", icon: <FaMoneyBillWave />, badge: "Priority" },
-        { id: "damaged-item", name: "Damaged Item", icon: <FaExclamationTriangle />, badge: "Urgent" },
+        { id: "return-product", name: t("return_product"), icon: <FaBoxOpen />, badge: t("popular") },
+        { id: "exchange-item", name: t("exchange"), icon: <FaExchangeAlt />, badge: t("quick") },
+        { id: "refund-request", name: t("refund"), icon: <FaMoneyBillWave />, badge: t("priority") },
+        { id: "damaged-item", name: t("damaged"), icon: <FaExclamationTriangle />, badge: t("urgent") },
       ],
     },
     {
-      id: "orders",
-      name: "Order Support",
+    id: "orders",
+      name: t("orders"),
       icon: <FaShoppingBag />,
       color: "blue",
       services: [
-        { id: "track-order", name: "Track Order", icon: <FaTruck />, badge: "Live" },
-        { id: "modify-order", name: "Modify Order", icon: <FaClipboardList />, badge: "Quick" },
-        { id: "cancel-order", name: "Cancel Order", icon: <FaTimes />, badge: "Urgent" },
-        { id: "bulk-order", name: "Bulk Order", icon: <FaStore />, badge: "Business" },
+        { id: "track-order", name: t("track"), icon: <FaTruck />, badge: t("live") },
+        { id: "modify-order", name: t("modify"), icon: <FaClipboardList />, badge: t("quick") },
+        { id: "cancel-order", name: t("cancel"), icon: <FaTimes />, badge: t("urgent") },
+        { id: "bulk-order", name: t("bulk"), icon: <FaStore />, badge: t("business") },
       ],
     },
     {
-      id: "products",
-      name: "Product Support",
+     id: "products",
+      name: t("products"),
       icon: <FaTag />,
       color: "green",
       services: [
-        { id: "product-info", name: "Product Info", icon: <FaQuestionCircle />, badge: "Info" },
-        { id: "price-inquiry", name: "Price Inquiry", icon: <FaMoneyBillWave />, badge: "Quote" },
-        { id: "stock-check", name: "Stock Check", icon: <FaStore />, badge: "Live" },
-        { id: "custom-product", name: "Custom Product", icon: <FaCogs />, badge: "Custom" },
+        { id: "product-info", name: t("prod_info"), icon: <FaQuestionCircle />, badge: t("info") },
+        { id: "price-inquiry", name: t("price_inquiry"), icon: <FaMoneyBillWave />, badge: t("quote") },
+        { id: "stock-check", name: t("stock"), icon: <FaStore />, badge: t("live") },
+        { id: "custom-product", name: t("custom"), icon: <FaCogs />, badge: t("custom") },
       ],
     },
     {
-      id: "account",
-      name: "Account & Billing",
+    id: "account",
+      name: t("account"),
       icon: <FaUser />,
       color: "purple",
       services: [
-        { id: "payment-issue", name: "Payment Issue", icon: <FaCreditCard />, badge: "Urgent" },
-        { id: "invoice-request", name: "Invoice", icon: <FaMoneyBillWave />, badge: "Document" },
-        { id: "account-access", name: "Account Access", icon: <FaUser />, badge: "Security" },
-        { id: "membership", name: "Membership", icon: <FaStar />, badge: "VIP" },
+        { id: "payment-issue", name: t("payment"), icon: <FaCreditCard />, badge: t("urgent") },
+        { id: "invoice-request", name: t("invoice"), icon: <FaMoneyBillWave />, badge: t("document") },
+        { id: "account-access", name: t("access"), icon: <FaUser />, badge: t("security") },
+        { id: "membership", name: t("membership"), icon: <FaStar />, badge: t("vip") },
       ],
     },
   ];
 
   // Return reasons
-  const returnReasons = [
-    { id: "wrong-item", label: "Wrong item received" },
-    { id: "damaged", label: "Item arrived damaged" },
-    { id: "not-as-described", label: "Not as described" },
-    { id: "changed-mind", label: "Changed my mind" },
-    { id: "quality-issue", label: "Quality issue" },
-    { id: "other", label: "Other reason" },
+const returnReasons = [
+    { id: "wrong-item", label: t("wrong") },
+    { id: "damaged", label: t("damaged_arr") },
+    { id: "not-as-described", label: t("described") },
+    { id: "changed-mind", label: t("mind") },
+    { id: "quality-issue", label: t("quality") },
+    { id: "other", label: t("other") },
   ];
 
   // Toggle service selection
@@ -225,8 +225,8 @@ export default function HelpRequestPage() {
   return (
     <DefaultLayout>
       <Helmet>
-        <title>Help & Support | OMS</title>
-        <meta name="description" content="Get help with returns, orders, products, and account support" />
+        <title>{t("title_OMS") || "Help & Support | OMS"}</title>
+        <meta name="description" content={t("meta_description") || "Get help with returns, orders, products, and account support"} />
       </Helmet>
 
       {/* Hero Section */}
@@ -244,35 +244,28 @@ export default function HelpRequestPage() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 py-12 w-full">
           <div className="text-center">
-            <h1
-              className="text-4xl md:text-5xl font-bold text-white mb-4 flex items-center justify-center"
-            >
-              <FaHeadset className="mr-2" /><span className="">{t("badge") || "Customer Support"}</span>
-             
-            </h1>
-
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              How Can We Help You?
+              {t("HOW_CAN_WE_HELP") || "Help & Support"}
             </h1>
 
             <p className="text-lg text-white/80 mb-6 max-w-2xl mx-auto">
-              Select what you need help with, and we'll connect you directly via WhatsApp
+              {t("Select_what_you_need_help_with") || "Select what you need help with, and we'll connect you directly via WhatsApp"}
             </p>
 
             <div className="flex flex-wrap justify-center gap-4">
               <div className="flex items-center gap-2">
                 <FaClock className="text-white" />
-                <span className="text-white/80">Fast Response</span>
+                <span className="text-white/80">{t("response") || "Fast Response"}</span>
               </div>
               <div className="w-px h-4 bg-white/30"></div>
               <div className="flex items-center gap-2">
                 <FaShieldAlt className="text-white" />
-                <span className="text-white/80">Secure</span>
+                <span className="text-white/80">{t("secure") || "Secure"}</span>
               </div>
               <div className="w-px h-4 bg-white/30"></div>
               <div className="flex items-center gap-2">
                 <FaUsers className="text-white" />
-                <span className="text-white/80">Expert Team</span>
+                <span className="text-white/80">{t("experts") || "Expert Team"}</span>
               </div>
             </div>
           </div>
@@ -282,33 +275,6 @@ export default function HelpRequestPage() {
       {/* Main Content */}
       <section className="py-12 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4">
-          {/* Quick Stats */}
-          {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-            {[
-              { icon: <FaClock />, value: "2h", label: "Avg Response", color: "#0d7a68" },
-              { icon: <FaWhatsapp />, value: "24/7", label: "Support", color: "#25D366" },
-              { icon: <FaStar />, value: "98%", label: "Satisfaction", color: "#FFD700" },
-              { icon: <FaUndo />, value: "1-Day", label: "Returns", color: "#E43636" },
-            ].map((stat, index) => (
-              <Card key={index} className="border-none bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 shadow-lg">
-                <CardBody className="p-6 text-center">
-                  <div 
-                    className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-3 mx-auto"
-                    style={{ backgroundColor: `${stat.color}20` }}
-                  >
-                    <div style={{ color: stat.color }}>
-                      {stat.icon}
-                    </div>
-                  </div>
-                  <div className="text-2xl font-bold mb-1">{stat.value}</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-300">
-                    {stat.label}
-                  </div>
-                </CardBody>
-              </Card>
-            ))}
-          </div> */}
-
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Column - Form */}
             <div className="lg:col-span-2 space-y-8">
@@ -317,12 +283,12 @@ export default function HelpRequestPage() {
                 <CardBody className="p-6">
                   <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                     <FaInfoCircle className="text-[#0d7a68]" />
-                    Step 1: Select Help Category
+                    {t("step_1_title") || "Step 1: Select Category"}
                   </h2>
 
                   <Select
-                    label="What do you need help with?"
-                    placeholder="Choose a category"
+                    label={t("category_label") || "What do you need help with?"}
+                    placeholder={t("category_placeholder") || "Choose a category"}
                     className="mb-6"
                     selectedKeys={selectedCategory ? [selectedCategory] : []}
                     onSelectionChange={(keys) => {
@@ -360,7 +326,7 @@ export default function HelpRequestPage() {
                       <CardBody className="p-6">
                         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                           <FaClipboardList className="text-[#0d7a68]" />
-                          Step 2: Select Services
+                          {t("step_2_title") || "Step 2: Select Services"}
                         </h2>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -427,7 +393,7 @@ export default function HelpRequestPage() {
                       <CardBody className="p-6">
                         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                           <FaPaperPlane className="text-[#0d7a68]" />
-                          Step 3: Provide Details
+                          {t("step_3_title") || "Step 3: Provide Details"}
                         </h2>
 
                         <div className="space-y-6">
@@ -435,10 +401,10 @@ export default function HelpRequestPage() {
                           {(selectedCategory === 'returns' || selectedCategory === 'orders') && (
                             <div className="space-y-3">
                               <label className="block text-sm font-medium text-gray-900 dark:text-white">
-                                Order Number (if available)
+                                {t("order_number_label") || "Order Number (if available)"}
                               </label>
                               <Input
-                                placeholder="e.g., ORD-123456"
+                                placeholder={t("order_number_placeholder") || "e.g., ORD-123456"}
                                 value={orderNumber}
                                 onChange={(e) => setOrderNumber(e.target.value)}
                               />
@@ -449,10 +415,10 @@ export default function HelpRequestPage() {
                           {selectedCategory === 'returns' && (
                             <div className="space-y-3">
                               <label className="block text-sm font-medium text-gray-900 dark:text-white">
-                                Reason for Return
+                                {t("return_reason_label") || "Reason for Return"}
                               </label>
                               <Select
-                                placeholder="Select a reason"
+                                placeholder={t("return_reason_placeholder") || "Select a reason"}
                                 selectedKeys={returnReason ? [returnReason] : []}
                                 onSelectionChange={(keys) => {
                                   const key = Array.from(keys)[0] as string;
@@ -469,10 +435,10 @@ export default function HelpRequestPage() {
                           {/* Details */}
                           <div className="space-y-3">
                             <label className="block text-sm font-medium text-gray-900 dark:text-white">
-                              Please describe your issue
+                              {t("details_label") || "Please describe your issue"}
                             </label>
                             <Textarea
-                              placeholder="Provide details about your problem or request..."
+                              placeholder={t("details_placeholder") || "Provide details about your problem or request..."}
                               value={additionalDetails}
                               onChange={(e) => setAdditionalDetails(e.target.value)}
                               minRows={4}
@@ -482,10 +448,10 @@ export default function HelpRequestPage() {
                           {/* Custom Request */}
                           <div className="space-y-3">
                             <label className="block text-sm font-medium text-gray-900 dark:text-white">
-                              Additional Notes (Optional)
+                              {t("notes_label") || "Additional Notes (Optional)"}
                             </label>
                             <Textarea
-                              placeholder="Any additional information or special requests..."
+                              placeholder={t("notes_placeholder") || "Any additional information or special requests..."}
                               value={customRequest}
                               onChange={(e) => setCustomRequest(e.target.value)}
                               minRows={3}
@@ -499,7 +465,7 @@ export default function HelpRequestPage() {
                               onValueChange={setAgreeToTerms}
                             >
                               <span className="text-sm text-gray-600 dark:text-gray-300">
-                                I agree to share my information via WhatsApp for support purposes.
+                                {t("terms_agreement") || "I agree to share my information via WhatsApp for support purposes."}
                               </span>
                             </Checkbox>
                           </div>
@@ -519,7 +485,7 @@ export default function HelpRequestPage() {
                   <CardBody className="p-6">
                     <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                       <FaShieldAlt className="text-[#0d7a68]" />
-                      Request Summary
+                      {t("title") || "Request Summary"}
                     </h2>
 
                     {selectedServices.length === 0 && !additionalDetails.trim() ? (
@@ -528,7 +494,7 @@ export default function HelpRequestPage() {
                           <FaQuestionCircle className="text-xl text-gray-400 dark:text-gray-500" />
                         </div>
                         <p className="text-gray-600 dark:text-gray-400">
-                          Select services to see summary
+                          {t("empty_state") || "Select services to see summary"}
                         </p>
                       </div>
                     ) : (
@@ -537,7 +503,7 @@ export default function HelpRequestPage() {
                         {selectedCategory && (
                           <div>
                             <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                              Category
+                              {t("category_heading") || "Category"}
                             </h3>
                             <div className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50">
                               <div className="p-2 rounded" style={{ backgroundColor: `#0d7a6820`, color: '#0d7a68' }}>
@@ -554,7 +520,7 @@ export default function HelpRequestPage() {
                         {selectedServices.length > 0 && (
                           <div>
                             <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                              Selected Services ({selectedServices.length})
+                              {t("services_heading") || "Selected Services"} ({selectedServices.length})
                             </h3>
                             <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
                               {selectedServices.map((id) => {
@@ -588,13 +554,13 @@ export default function HelpRequestPage() {
                         {orderNumber && (
                           <div>
                             <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                              Order Details
+                              {t("order_details") || "Order Details"}
                             </h3>
                             <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-700/30">
                               <p className="font-mono text-sm text-gray-900 dark:text-white">#{orderNumber}</p>
                               {returnReason && (
                                 <p className="text-sm mt-1 text-gray-600 dark:text-gray-400">
-                                  Reason: {returnReasons.find(r => r.id === returnReason)?.label}
+                                  {t("order_reason") || "Reason"}: {returnReasons.find(r => r.id === returnReason)?.label}
                                 </p>
                               )}
                             </div>
@@ -613,7 +579,7 @@ export default function HelpRequestPage() {
                             isDisabled={!isFormValid()}
                             startContent={!isSending && <FaWhatsapp />}
                           >
-                            {isSending ? "Preparing..." : "Send via WhatsApp"}
+                            {isSending ? t("btn_preparing") || "Preparing..." : t("btn_send") || "Send via WhatsApp"}
                           </Button>
 
                           <Button
@@ -623,7 +589,7 @@ export default function HelpRequestPage() {
                             onPress={resetForm}
                             startContent={<FaSync />}
                           >
-                            Reset Form
+                            {t("btn_reset") || "Reset Form"}
                           </Button>
                         </div>
 
@@ -633,7 +599,7 @@ export default function HelpRequestPage() {
                             <FaHeadset className="mt-0.5 text-[#0d7a68]" />
                             <div>
                               <p className="text-sm text-[#0d7a68]">
-                                Your request will open in WhatsApp. Just click send to connect with our support team.
+                                {t("info_box") || "Your request will open in WhatsApp. Just click send to connect with our support team."}
                               </p>
                             </div>
                           </div>
@@ -648,20 +614,20 @@ export default function HelpRequestPage() {
                   <CardBody className="p-6">
                     <h3 className="font-semibold mb-4 flex items-center gap-2 text-gray-900 dark:text-white">
                       <FaClock className="text-[#0d7a68]" />
-                      Support Hours
+                      {t("Support_Hours") || "Support Hours"}
                     </h3>
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">Mon - Fri</span>
+                        <span className="text-gray-600 dark:text-gray-400">{t("mon_fri") || "Mon - Fri"}</span>
                         <span className="font-medium text-gray-900 dark:text-white">9 AM - 8 PM</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">Saturday</span>
+                        <span className="text-gray-600 dark:text-gray-400">{t("sat") || "Saturday"}</span>
                         <span className="font-medium text-gray-900 dark:text-white">10 AM - 6 PM</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">Sunday</span>
-                        <span className="font-medium text-[#25D366]">WhatsApp Support</span>
+                        <span className="text-gray-600 dark:text-gray-400">{t("sun") || "Sunday"}</span>
+                        <span className="font-medium text-[#25D366]">{t("whatsapp_status") || "WhatsApp Support"}</span>
                       </div>
                     </div>
                   </CardBody>
@@ -674,11 +640,10 @@ export default function HelpRequestPage() {
           <div className="mt-12 p-8 rounded-2xl bg-gradient-to-r from-[#0d7a68]/10 to-[#0a6455]/10 dark:from-[#0d7a68]/20 dark:to-[#0a6455]/20">
             <div className="text-center">
               <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-                Need Help Immediately?
+                {t("heading") || "Need Help Immediately?"}
               </h3>
               <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-2xl mx-auto">
-                Our support team typically responds within 2 hours via WhatsApp.
-                For urgent issues, complete the form above for priority assistance.
+                {t("subheading") || "Our support team typically responds within 2 hours via WhatsApp. For urgent issues, complete the form above for priority assistance."}
               </p>
             </div>
           </div>
@@ -694,8 +659,8 @@ export default function HelpRequestPage() {
                 <FaCheck className="text-white" />
               </div>
               <div>
-                <h2 className="text-lg font-bold">Request Prepared!</h2>
-                <p className="text-sm text-gray-500">WhatsApp is now open</p>
+                <h2 className="text-lg font-bold">{t("header_title")}</h2>
+                <p className="text-sm text-gray-500">{t("header_subtitle")}</p>
               </div>
             </div>
           </ModalHeader>
@@ -705,15 +670,15 @@ export default function HelpRequestPage() {
                 <FaWhatsapp className="text-white text-2xl" />
               </div>
               <p className="text-gray-600 mb-4">
-                Your help request has been prepared. WhatsApp is now open with your message.
-                Just click send to connect with our support team!
+                {t("body_text") || "  Just click send to connect with our support team!"}
+              
               </p>
               <div className="bg-gray-100 p-4 rounded-lg">
                 <p className="text-sm text-gray-700">
-                  <strong>Expected Response:</strong> Within 2 hours
+                  <strong>{t("expected_response_label")}:</strong> {t("expected_response_value")}
                 </p>
                 <p className="text-sm text-gray-700">
-                  <strong>Request ID:</strong> HELP-{Date.now().toString().slice(-6)}
+                  <strong>{t("request_id_label")}:</strong> HELP-{Date.now().toString().slice(-6)}
                 </p>
               </div>
             </div>
@@ -724,7 +689,7 @@ export default function HelpRequestPage() {
               onPress={onClose}
               fullWidth
             >
-              Got it, thanks!
+              {t("request_id_label")}
             </Button>
           </ModalFooter>
         </ModalContent>

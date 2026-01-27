@@ -26,6 +26,7 @@ import { MdFlight, MdLocationOn, MdSecurity, MdWorkspacePremium, MdFlightTakeoff
 import { TbTruckDelivery, TbHeadset, TbCertificate, TbPlane, TbPlaneDeparture, TbPlaneArrival } from "react-icons/tb";
 import DefaultLayout from "@/layouts/default";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 export default function AboutPage() {
   const { t } = useTranslation();
@@ -61,7 +62,7 @@ export default function AboutPage() {
             if (!logo) return null;
             return {
               logo,
-              name: p.Name || p.name || "Brand Logo",
+              name: p.Name || p.name || t("noLogos") || "Brand Logo",
               type: p.Type || "Product",
               rating: p.Rating || 4,
             };
@@ -75,7 +76,7 @@ export default function AboutPage() {
         console.error("Logo API error:", err);
         setLoading(false);
       });
-  }, []);
+  }, [t]);
 
   // Calculate responsive slides per view
   useEffect(() => {
@@ -321,24 +322,6 @@ export default function AboutPage() {
             }}
           />
 
-          {/* Animated Plane */}
-          {/* <motion.div
-            className="absolute top-1/4 text-4xl md:text-6xl text-white/20 z-10"
-            animate={{
-              x: ["-100px", "100vw"],
-            }}
-            transition={{
-              duration: 20,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-            style={{
-              animation: "plane-fly 20s linear infinite"
-            }}
-          >
-            <MdAirplanemodeActive className="rotate-45" />
-          </motion.div> */}
-
           {/* Cloud Elements */}
           {[1, 2, 3].map((cloud) => (
             <motion.div
@@ -379,8 +362,6 @@ export default function AboutPage() {
               transition={{ duration: 0.8 }}
               className="text-center mb-6 sm:mb-8"
             >
-            
-
               {/* Animated Title */}
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 sm:mb-6">
                 <motion.span
@@ -416,7 +397,7 @@ export default function AboutPage() {
                     }}
                     className="gradient-text text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold px-3 py-1 sm:px-4 sm:py-2 rounded-lg bg-gradient-to-r from-[#0d7a68]/20 to-[#A3D9A5]/20 border border-white/10"
                   >
-                    AVIATION
+                    {t("oms")}
                   </motion.span>
                   <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/90">PASSION</span>
                 </motion.div>
@@ -429,8 +410,7 @@ export default function AboutPage() {
                 transition={{ delay: 0.8 }}
                 className="text-sm sm:text-base md:text-lg lg:text-xl text-white/80 max-w-2xl lg:max-w-3xl mx-auto mt-4 sm:mt-6 leading-relaxed px-4"
               >
-                Where aviation passion meets exquisite craftsmanship. Premium aircraft models 
-                that capture the spirit of flight with meticulous detail and authentic heritage.
+                {t("subtitle") || "Where aviation passion meets exquisite craftsmanship. Premium aircraft models that capture the spirit of flight with meticulous detail and authentic heritage."}
               </motion.p>
             </motion.div>
 
@@ -441,14 +421,17 @@ export default function AboutPage() {
               transition={{ delay: 1 }}
               className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-8 sm:mt-12 w-full sm:w-auto"
             >
-              <Button
-                size="lg"
-                className="group relative overflow-hidden bg-gradient-to-r from-[#0d7a68] via-[#0d7a68] to-[#A3D9A5] text-white font-bold px-6 py-5 sm:px-8 sm:py-6 rounded-xl text-base sm:text-lg hover:shadow-xl hover:shadow-[#0d7a68]/30 transition-all duration-300 w-full sm:w-auto"
+              <Link
+                to="/Omelette's"
               >
+                <Button
+                  size="lg"
+                  className="group relative overflow-hidden bg-gradient-to-r from-[#0d7a68] via-[#0d7a68] to-[#A3D9A5] text-white font-bold px-6 py-5 sm:px-8 sm:py-6 rounded-xl text-base sm:text-lg hover:shadow-xl hover:shadow-[#0d7a68]/30 transition-all duration-300 w-full sm:w-auto"
+                >
                 <div className="absolute inset-0 animate-shimmer"></div>
                 <div className="relative flex items-center justify-center sm:justify-start gap-2 sm:gap-3">
                   <FaPlaneDeparture className="text-lg sm:text-xl group-hover:rotate-12 transition-transform duration-300" />
-                  <span>Explore Collection</span>
+                  <span>{t("exploreButton") || "Explore Collection"}</span>
                   <motion.div
                     animate={{ x: [0, 5, 0] }}
                     transition={{ duration: 1, repeat: Infinity }}
@@ -458,17 +441,18 @@ export default function AboutPage() {
                   </motion.div>
                 </div>
               </Button>
+              </Link>
               
-              <Button
+              {/* <Button
                 size="lg"
                 variant="bordered"
                 className="group glass-effect text-white font-bold px-6 py-5 sm:px-8 sm:py-6 rounded-xl text-base sm:text-lg hover:bg-white/5 border-white/20 hover:border-[#A3D9A5]/50 transition-all duration-300 w-full sm:w-auto"
               >
                 <div className="flex items-center justify-center sm:justify-start gap-2 sm:gap-3">
                   <MdLocationOn className="text-lg sm:text-xl group-hover:scale-110 transition-transform" />
-                  <span>Visit Showroom</span>
+                  <span>{t("visitButton") || "Visit Showroom"}</span>
                 </div>
-              </Button>
+              </Button> */}
             </motion.div>
 
             {/* Stats Cards */}
@@ -479,10 +463,10 @@ export default function AboutPage() {
               className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-8 sm:mt-12 md:mt-16 w-full max-w-4xl"
             >
               {[
-                { icon: <FaPlane />, value: "500+", label: "Models" },
-                { icon: <FaUsers />, value: "3K+", label: "Collectors" },
-                { icon: <FaAward />, value: "4.9★", label: "Rating" },
-                { icon: <FaGlobe />, value: "50+", label: "Countries" }
+                { icon: <FaPlane />, value: "500+", label: t("models_and_collectors") || "Models" },
+                { icon: <FaUsers />, value: "50+", label: t("collectors_and_models") || "Collectors" },
+                { icon: <FaAward />, value: "4.9★", label: t("rating") || "Rating" },
+                { icon: <FaGlobe />, value: "5+", label: t("countries") || "Countries" }
               ].map((stat, index) => (
                 <motion.div
                   key={index}
@@ -500,14 +484,14 @@ export default function AboutPage() {
             </motion.div>
 
             {/* Scroll Indicator */}
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: [0.5, 1, 0.5] }}
               transition={{ duration: 2, repeat: Infinity, delay: 2 }}
               className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2"
             >
               <div className="flex flex-col items-center">
-                <span className="text-xs sm:text-sm text-white/50 mb-2 sm:mb-3">Scroll to Discover</span>
+                <span className="text-xs sm:text-sm text-white/50 mb-2 sm:mb-3">{t("scrollIndicator") || "Scroll to Discover"}</span>
                 <div className="w-5 h-8 sm:w-6 sm:h-10 border border-white/20 rounded-full flex justify-center">
                   <motion.div
                     animate={{ y: [0, 8, 0] }}
@@ -516,7 +500,7 @@ export default function AboutPage() {
                   />
                 </div>
               </div>
-            </motion.div>
+            </motion.div> */}
           </div>
         </div>
       </section>
@@ -534,10 +518,10 @@ export default function AboutPage() {
               <FaAward className="text-lg sm:text-xl md:text-2xl text-[#0d7a68] dark:text-[#A3D9A5]" />
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
-              Our <span className="gradient-text-primary">Journey</span> in Numbers
+              <span className="gradient-text-primary">{t("title_desc") || "Our Journey in Numbers"}</span>
             </h2>
             <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto px-4">
-              Years of excellence, countless satisfied collectors, and a growing community of aviation enthusiasts
+              {t("subtitle_desc") || "Years of excellence, countless satisfied collectors, and a growing community of aviation enthusiasts"}
             </p>
           </motion.div>
 
@@ -545,27 +529,27 @@ export default function AboutPage() {
             {[
               { 
                 icon: <FaRocket className="text-lg sm:text-xl md:text-2xl" />, 
-                value: "10K+",
-                label: "Models Sold",
-                description: "Premium Collectibles"
+                value: "100+",
+                label: t("modelsSold") || "Models Sold",
+                description: t("modelsSoldDesc") || "Premium Collectibles"
               },
               { 
                 icon: <FaUsers className="text-lg sm:text-xl md:text-2xl" />, 
-                value: "3K+",
-                label: "Happy Clients",
-                description: "Worldwide"
+                value: "98%",
+                label: t("happyClients") || "Happy Clients",
+                description: t("happyClientsDesc") || "Worldwide"
               },
               { 
                 icon: <FaStar className="text-lg sm:text-xl md:text-2xl" />, 
                 value: "4.9★",
-                label: "Quality Rating",
-                description: "Customer Satisfaction"
+                label: t("qualityRating") || "Quality Rating",
+                description: t("qualityRatingDesc") || "Customer Satisfaction"
               },
               { 
                 icon: <FaHandshake className="text-lg sm:text-xl md:text-2xl" />, 
                 value: "50+",
-                label: "Brand Partners",
-                description: "Global Network"
+                label: t("brandPartners") || "Brand Partners",
+                description: t("brandPartnersDesc") || "Global Network"
               },
             ].map((item, i) => (
               <motion.div
@@ -602,210 +586,194 @@ export default function AboutPage() {
         </div>
       </section>
 
-    {/* ================= RESPONSIVE LOGO SECTION ================= */}
-<section className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-gray-50/50 to-white dark:from-gray-800/50 dark:to-gray-900">
-  <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      className="text-center mb-8 sm:mb-12 md:mb-16"
-    >
-      <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-[#0d7a68]/10 to-[#A3D9A5]/10 dark:from-[#0d7a68]/20 dark:to-[#A3D9A5]/20 rounded-xl sm:rounded-2xl mb-3 sm:mb-4 md:mb-6">
-        <FaHandshake className="text-lg sm:text-xl md:text-2xl text-[#0d7a68] dark:text-[#A3D9A5]" />
-      </div>
-      <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
-        Our Trusted <span className="gradient-text-primary">Partners</span> & Brands
-      </h2>
-      <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto px-4">
-        Collaborating with industry leaders and premium brands to deliver exceptional aviation collectibles
-      </p>
-    </motion.div>
-
-    {loading ? (
-      <div className="flex justify-center items-center h-32 sm:h-40 md:h-48">
-        <div className="animate-pulse flex space-x-4 sm:space-x-6 md:space-x-8">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-32 lg:h-32 bg-gray-200 dark:bg-gray-700 rounded-lg sm:rounded-xl md:rounded-2xl"></div>
-          ))}
-        </div>
-      </div>
-    ) : logos.length === 0 ? (
-      <div className="text-center py-8 sm:py-12 md:py-16">
-        <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-gray-100 dark:bg-gray-800 rounded-xl sm:rounded-2xl mb-3 sm:mb-4 md:mb-6">
-          <FaGlobe className="text-lg sm:text-xl md:text-2xl text-gray-400" />
-        </div>
-        <p className="text-sm sm:text-base md:text-lg text-gray-500 dark:text-gray-400">No partner logos available</p>
-      </div>
-    ) : (
-      <>
-        {/* Desktop: Auto-scrolling */}
-        <div className="hidden lg:block relative overflow-hidden">
-          <div className="absolute left-0 top-0 h-full w-16 sm:w-24 md:w-32 bg-gradient-to-r from-white dark:from-gray-900 to-transparent z-10" />
-          <div className="absolute right-0 top-0 h-full w-16 sm:w-24 md:w-32 bg-gradient-to-l from-white dark:from-gray-900 to-transparent z-10" />
-          
-          <motion.div
-            animate={{ x: [0, -1000] }}
-            transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-            className="flex space-x-6 sm:space-x-8 md:space-x-12 py-4 sm:py-6 md:py-8"
+      {/* ================= RESPONSIVE LOGO SECTION ================= */}
+      <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-gray-50/50 to-white dark:from-gray-800/50 dark:to-gray-900">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-8 sm:mb-12 md:mb-16"
           >
-            {[...logos, ...logos].map((item, index) => (
-              <div key={index} className="flex-shrink-0">
+            <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-[#0d7a68]/10 to-[#A3D9A5]/10 dark:from-[#0d7a68]/20 dark:to-[#A3D9A5]/20 rounded-xl sm:rounded-2xl mb-3 sm:mb-4 md:mb-6">
+              <FaHandshake className="text-lg sm:text-xl md:text-2xl text-[#0d7a68] dark:text-[#A3D9A5]" />
+            </div>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
+              {t("title_logos") || "Our Trusted Partners & Brands"}
+            </h2>
+            <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto px-4">
+              {t("subtitle_logos") || "Collaborating with industry leaders and premium brands to deliver exceptional aviation collectibles"}
+            </p>
+          </motion.div>
+
+          {loading ? (
+            <div className="flex justify-center items-center h-32 sm:h-40 md:h-48">
+              <div className="animate-pulse flex space-x-4 sm:space-x-6 md:space-x-8">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-32 lg:h-32 bg-gray-200 dark:bg-gray-700 rounded-lg sm:rounded-xl md:rounded-2xl"></div>
+                ))}
+              </div>
+            </div>
+          ) : logos.length === 0 ? (
+            <div className="text-center py-8 sm:py-12 md:py-16">
+              <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-gray-100 dark:bg-gray-800 rounded-xl sm:rounded-2xl mb-3 sm:mb-4 md:mb-6">
+                <FaGlobe className="text-lg sm:text-xl md:text-2xl text-gray-400" />
+              </div>
+              <p className="text-sm sm:text-base md:text-lg text-gray-500 dark:text-gray-400">
+                {t("noLogos") || "No partner logos available"}
+              </p>
+            </div>
+          ) : (
+            <>
+              {/* Desktop: Auto-scrolling */}
+              <div className="hidden lg:block relative overflow-hidden">
+                <div className="absolute left-0 top-0 h-full w-16 sm:w-24 md:w-32 bg-gradient-to-r from-white dark:from-gray-900 to-transparent z-10" />
+                <div className="absolute right-0 top-0 h-full w-16 sm:w-24 md:w-32 bg-gradient-to-l from-white dark:from-gray-900 to-transparent z-10" />
+                
                 <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  className="logo-card dark:bg-gray-800 w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 lg:w-48 lg:h-48"
+                  animate={{ x: [0, -1000] }}
+                  transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+                  className="flex space-x-6 sm:space-x-8 md:space-x-12 py-4 sm:py-6 md:py-8"
                 >
-                  <img
-                    src={item.logo}
-                    alt={item.name}
-                    className="w-full h-full object-contain p-2 sm:p-3 md:p-4"
-                    loading="lazy"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                      target.parentElement!.innerHTML = `
-                        <div class="w-full h-full flex items-center justify-center p-4">
-                          <span class="text-xs sm:text-sm text-gray-500 text-center break-words">${item.name}</span>
-                        </div>
-                      `;
-                    }}
-                  />
+                  {[...logos, ...logos].map((item, index) => (
+                    <div key={index} className="flex-shrink-0">
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        className="logo-card dark:bg-gray-800 w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 lg:w-48 lg:h-48"
+                      >
+                        <img
+                          src={item.logo}
+                          alt={item.name}
+                          className="w-full h-full object-contain p-2 sm:p-3 md:p-4"
+                          loading="lazy"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            target.parentElement!.innerHTML = `
+                              <div class="w-full h-full flex items-center justify-center p-4">
+                                <span class="text-xs sm:text-sm text-gray-500 text-center break-words">${item.name}</span>
+                              </div>
+                            `;
+                          }}
+                        />
+                      </motion.div>
+                    </div>
+                  ))}
                 </motion.div>
               </div>
-            ))}
-          </motion.div>
-        </div>
 
-        {/* Mobile & Tablet: Swipeable Carousel */}
-        <div className="lg:hidden relative">
-          {/* Navigation Buttons */}
-          {/* <button
-            onClick={prevSlide}
-            className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300"
-            aria-label="Previous slide"
-          >
-            <FaChevronLeft className="text-[#0d7a68] dark:text-[#A3D9A5]" />
-          </button> */}
-          
-          {/* <button
-            onClick={nextSlide}
-            className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300"
-            aria-label="Next slide"
-          >
-            <FaChevronRight className="text-[#0d7a68] dark:text-[#A3D9A5]" />
-          </button> */}
-
-          {/* Swipeable Container */}
-          <div className="overflow-hidden px-10">
-            <div 
-              ref={slideContainerRef}
-              className={`swipe-container flex ${isDragging ? 'dragging' : ''}`}
-              style={{ transform: `translateX(-${currentSlide * (100 / slidesPerView)}%)` }}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-            >
-              {logos.map((item, index) => (
-                <div 
-                  key={index}
-                  className="flex-shrink-0 px-2"
-                  style={{ width: `${100 / slidesPerView}%` }}
-                >
-                  <motion.div 
-                    whileTap={{ scale: 0.95 }}
-                    className="flex flex-col items-center"
+              {/* Mobile & Tablet: Swipeable Carousel */}
+              <div className="lg:hidden relative">
+                <div className="overflow-hidden px-10">
+                  <div 
+                    ref={slideContainerRef}
+                    className={`swipe-container flex ${isDragging ? 'dragging' : ''}`}
+                    style={{ transform: `translateX(-${currentSlide * (100 / slidesPerView)}%)` }}
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
                   >
-                    <div className="logo-card dark:bg-gray-800 w-full h-40 flex items-center justify-center">
-                      <img
-                        src={item.logo}
-                        alt={item.name}
-                        className="w-full h-full object-contain p-4"
-                        loading="lazy"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                          target.parentElement!.innerHTML = `
-                            <div class="w-full h-full flex items-center justify-center">
-                              <span class="text-sm text-gray-500 text-center">${item.name}</span>
-                            </div>
-                          `;
-                        }}
-                      />
-                    </div>
-                    <h3 className="text-sm font-medium text-gray-900 dark:text-white text-center mt-2 px-1 truncate w-full">
-                      {item.name}
-                    </h3>
-                  </motion.div>
+                    {logos.map((item, index) => (
+                      <div 
+                        key={index}
+                        className="flex-shrink-0 px-2"
+                        style={{ width: `${100 / slidesPerView}%` }}
+                      >
+                        <motion.div 
+                          whileTap={{ scale: 0.95 }}
+                          className="flex flex-col items-center"
+                        >
+                          <div className="logo-card dark:bg-gray-800 w-full h-40 flex items-center justify-center">
+                            <img
+                              src={item.logo}
+                              alt={item.name}
+                              className="w-full h-full object-contain p-4"
+                              loading="lazy"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                target.parentElement!.innerHTML = `
+                                  <div class="w-full h-full flex items-center justify-center">
+                                    <span class="text-sm text-gray-500 text-center">${item.name}</span>
+                                  </div>
+                                `;
+                              }}
+                            />
+                          </div>
+                          <h3 className="text-sm font-medium text-gray-900 dark:text-white text-center mt-2 px-1 truncate w-full">
+                            {item.name}
+                          </h3>
+                        </motion.div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Dots Indicator */}
-          {totalSlides > 1 && (
-            <div className="flex justify-center mt-6 space-x-2">
-              {Array.from({ length: totalSlides }).map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentSlide(index)}
-                  className={`h-2 rounded-full transition-all duration-300 ${
-                    index === currentSlide 
-                      ? 'w-6 bg-gradient-to-r from-[#0d7a68] to-[#A3D9A5]' 
-                      : 'w-2 bg-gray-300 dark:bg-gray-600'
-                  }`}
-                  aria-label={`Go to slide ${index + 1}`}
-                />
-              ))}
-            </div>
+                {/* Dots Indicator */}
+                {totalSlides > 1 && (
+                  <div className="flex justify-center mt-6 space-x-2">
+                    {Array.from({ length: totalSlides }).map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCurrentSlide(index)}
+                        className={`h-2 rounded-full transition-all duration-300 ${
+                          index === currentSlide 
+                            ? 'w-6 bg-gradient-to-r from-[#0d7a68] to-[#A3D9A5]' 
+                            : 'w-2 bg-gray-300 dark:bg-gray-600'
+                        }`}
+                        aria-label={t("slideIndicator") || `Go to slide ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {/* Swipe Hint */}
+                <div className="text-center mt-4">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {t("swipeHint") || "← Swipe →"}
+                  </p>
+                </div>
+              </div>
+            </>
           )}
 
-          {/* Swipe Hint */}
-          <div className="text-center mt-4">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              ← Swipe  →
-            </p>
-          </div>
-        </div>
-      </>
-    )}
-
-    {/* Partnership Badges */}
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      className="mt-8 sm:mt-12 md:mt-16"
-    >
-      <Divider className="mb-6 sm:mb-8 md:mb-12" />
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-        {[
-          { icon: <FaCheck className="text-base sm:text-lg" />, title: "Quality Assured", desc: "Premium Standards" },
-          { icon: <MdSecurity className="text-base sm:text-lg" />, title: "Secure", desc: "Trusted Partnerships" },
-          { icon: <FaHandshake className="text-base sm:text-lg" />, title: "Reliable", desc: "Long-term Relations" },
-          { icon: <FaStar className="text-base sm:text-lg" />, title: "Exclusive", desc: "Limited Partnerships" },
-        ].map((item, i) => (
+          {/* Partnership Badges */}
           <motion.div
-            key={i}
-            whileHover={{ scale: 1.05 }}
-            className="text-center p-3 sm:p-4 md:p-6 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-100 dark:border-gray-700"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mt-8 sm:mt-12 md:mt-16"
           >
-            <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-gradient-to-br from-[#0d7a68]/10 to-[#A3D9A5]/10 dark:from-[#0d7a68]/20 dark:to-[#A3D9A5]/20 rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3 md:mb-4">
-              <div className="text-[#0d7a68] dark:text-[#A3D9A5]">
-                {item.icon}
-              </div>
+            <Divider className="mb-6 sm:mb-8 md:mb-12" />
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+              {[
+                { icon: <FaCheck className="text-base sm:text-lg" />, title: t("qualityAssured") || "Quality Assured", desc: t("qualityAssuredDesc") || "Premium Standards" },
+                { icon: <MdSecurity className="text-base sm:text-lg" />, title: t("secure_partner") || "Secure", desc: t("secureDesc") || "Trusted Partnerships" },
+                { icon: <FaHandshake className="text-base sm:text-lg" />, title: t("reliable") || "Reliable", desc: t("reliableDesc") || "Long-term Relations" },
+                { icon: <FaStar className="text-base sm:text-lg" />, title: t("exclusive") || "Exclusive", desc: t("exclusiveDesc") || "Limited Partnerships" },
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  whileHover={{ scale: 1.05 }}
+                  className="text-center p-3 sm:p-4 md:p-6 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-100 dark:border-gray-700"
+                >
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-gradient-to-br from-[#0d7a68]/10 to-[#A3D9A5]/10 dark:from-[#0d7a68]/20 dark:to-[#A3D9A5]/20 rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3 md:mb-4">
+                    <div className="text-[#0d7a68] dark:text-[#A3D9A5]">
+                      {item.icon}
+                    </div>
+                  </div>
+                  <h4 className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2">
+                    {item.title}
+                  </h4>
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                    {item.desc}
+                  </p>
+                </motion.div>
+              ))}
             </div>
-            <h4 className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2">
-              {item.title}
-            </h4>
-            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-              {item.desc}
-            </p>
           </motion.div>
-        ))}
-      </div>
-    </motion.div>
-  </div>
-</section>
+        </div>
+      </section>
 
       {/* ================= RESPONSIVE MISSION & VISION ================= */}
       <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
@@ -817,10 +785,10 @@ export default function AboutPage() {
             className="text-center mb-8 sm:mb-12 md:mb-16"
           >
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
-              Our Purpose & Promise
+              {t("title_purpose") || "Our Purpose & Promise"}
             </h2>
             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 max-w-2xl mx-auto px-4">
-              Driving passion for aviation through exceptional craftsmanship and authentic experiences
+              {t("subtitle_purpose") || "Driving passion for aviation through exceptional craftsmanship and authentic experiences"}
             </p>
           </motion.div>
 
@@ -841,7 +809,7 @@ export default function AboutPage() {
                     <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-[#0d7a68]/20 to-[#A3D9A5]/20 rounded-lg flex items-center justify-center">
                       <FaRocket className="text-[#0d7a68] dark:text-[#A3D9A5] text-sm sm:text-base" />
                     </div>
-                    <span className="text-sm sm:text-base">Our Mission</span>
+                    <span className="text-sm sm:text-base">{t("tabTitle") || "Our Mission"}</span>
                   </div>
                 }
               >
@@ -850,16 +818,16 @@ export default function AboutPage() {
                     <div className="grid md:grid-cols-2 gap-6 sm:gap-8 items-center">
                       <div>
                         <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 md:mb-6">
-                          To Inspire Aviation Passion
+                          {t("title_mission") || "To Inspire Aviation Passion"}
                         </h3>
                         <ul className="space-y-2 sm:space-y-3 md:space-y-4">
-                          {[
+                          {(t("points", { returnObjects: true }) as string[] || [
                             "Deliver premium, authentic aircraft models",
                             "Foster a global community of aviation enthusiasts",
                             "Maintain uncompromising quality standards",
                             "Provide exceptional customer experiences",
                             "Promote aviation heritage and innovation"
-                          ].map((item, i) => (
+                          ]).map((item: string, i: number) => (
                             <li key={i} className="flex items-start gap-2 sm:gap-3">
                               <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-br from-[#0d7a68]/10 to-[#A3D9A5]/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 sm:mt-1">
                                 <FaCheck className="text-xs text-[#0d7a68] dark:text-[#A3D9A5]" />
@@ -890,7 +858,7 @@ export default function AboutPage() {
                     <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-[#A3D9A5]/20 to-[#0d7a68]/20 rounded-lg flex items-center justify-center">
                       <FaGlobe className="text-[#0d7a68] dark:text-[#A3D9A5] text-sm sm:text-base" />
                     </div>
-                    <span className="text-sm sm:text-base">Our Vision</span>
+                    <span className="text-sm sm:text-base">{t("tabTitle_vision") || "Our Vision"}</span>
                   </div>
                 }
               >
@@ -908,16 +876,14 @@ export default function AboutPage() {
                       </div>
                       <div className="order-1 md:order-2">
                         <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 md:mb-6">
-                          Global Aviation Leadership
+                          {t("title_vision") || "Global Aviation Leadership"}
                         </h3>
                         <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 mb-3 sm:mb-4 md:mb-6">
-                          To become the world's most trusted destination for premium aviation collectibles, 
-                          setting new standards for quality, authenticity, and customer experience in the 
-                          global collectibles market.
+                          {t("description") || "To become the world's most trusted destination for premium aviation collectibles, setting new standards for quality, authenticity, and customer experience in the global collectibles market."}
                         </p>
                         <div className="bg-gradient-to-r from-[#0d7a68]/5 to-transparent dark:from-[#0d7a68]/10 border-l-4 border-[#0d7a68] dark:border-[#A3D9A5] p-3 sm:p-4 rounded-r-lg">
                           <p className="italic text-sm sm:text-base text-gray-700 dark:text-gray-300">
-                            "Where every model tells a story, and every collector becomes part of aviation history."
+                            "{t("quote_subtitle") || "Where every model tells a story, and every collector becomes part of aviation history."}"
                           </p>
                         </div>
                       </div>
@@ -931,7 +897,7 @@ export default function AboutPage() {
       </section>
 
       {/* ================= RESPONSIVE CTA SECTION ================= */}
-      <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-r from-[#0d7a68] to-[#0a6455] relative overflow-hidden">
+  <section className="py-24 bg-gradient-to-r from-[#0d7a68] to-[#0a6455] relative overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -944,12 +910,11 @@ export default function AboutPage() {
             </div>
             
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
-              Ready to Start Your Aviation Collection?
+              {t("title_start") || "Ready to Start Your Aviation Collection?"}
             </h2>
             
             <p className="text-sm sm:text-base md:text-lg text-white/90 mb-6 sm:mb-8 px-4">
-              Join thousands of satisfied collectors who trust Omelette's for premium aviation models 
-              and exceptional customer experience.
+              {t("subtitle_start") || "Join thousands of satisfied collectors who trust Omelette's for premium aviation models and exceptional customer experience."}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-6 sm:mb-8 md:mb-12">
@@ -957,26 +922,26 @@ export default function AboutPage() {
                 size="lg"
                 className="bg-white text-[#0d7a68] font-bold px-5 py-4 sm:px-6 sm:py-5 md:px-8 md:py-6 rounded-xl hover:scale-105 transition-transform text-sm sm:text-base w-full sm:w-auto"
               >
-                <FaRocket className="mr-2 text-xs sm:text-sm" />
-                Browse Collection
+                <TbHeadset className="mr-2 text-xs sm:text-sm" />
+                {t("contactButton") || "Contact Expert"}
               </Button>
-              <Button 
+              {/* <Button 
                 size="lg"
                 variant="bordered" 
                 className="border-white/30 text-white font-bold px-5 py-4 sm:px-6 sm:py-5 md:px-8 md:py-6 rounded-xl hover:bg-white/10 text-sm sm:text-base w-full sm:w-auto"
               >
                 <TbHeadset className="mr-2 text-xs sm:text-sm" />
-                Contact Expert
-              </Button>
+                {t("contactButton") || "Contact Expert"}
+              </Button> */}
             </div>
 
             {/* Trust Indicators */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 max-w-2xl mx-auto px-2">
               {[
-                { label: "Secure Payment", icon: <MdSecurity className="text-sm sm:text-base" /> },
-                { label: "Free Shipping*", icon: <TbTruckDelivery className="text-sm sm:text-base" /> },
-                { label: "24/7 Support", icon: <TbHeadset className="text-sm sm:text-base" /> },
-                { label: "Authenticity", icon: <TbCertificate className="text-sm sm:text-base" /> },
+                { label: t("trustIndicators.securePayment") || "Secure Payment", icon: <MdSecurity className="text-sm sm:text-base" /> },
+                { label: t("trustIndicators.freeShipping") || "Free Shipping*", icon: <TbTruckDelivery className="text-sm sm:text-base" /> },
+                { label: t("trustIndicators.support24_7") || "24/7 Support", icon: <TbHeadset className="text-sm sm:text-base" /> },
+                { label: t("trustIndicators.authenticity") || "Authenticity", icon: <TbCertificate className="text-sm sm:text-base" /> },
               ].map((item, i) => (
                 <div key={i} className="flex items-center gap-1 sm:gap-2 justify-center text-white/80">
                   {item.icon}

@@ -54,7 +54,7 @@ export const Navbar = () => {
     const path = location.pathname;
     if (path === "/") setActiveNav("home");
     else if (path.startsWith("/about")) setActiveNav("about_us");
-    else if (path.startsWith("/Omelette's")) setActiveNav("product");
+    else if (path.startsWith("/Omelette's")) setActiveNav("store");
     else if (path.startsWith("/help")) setActiveNav("help");
     else setActiveNav("");
 
