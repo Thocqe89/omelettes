@@ -918,6 +918,8 @@ export default function AboutPage() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-6 sm:mb-8 md:mb-12">
+               <Link
+                to="/help">
               <Button 
                 size="lg"
                 className="bg-white text-[#0d7a68] font-bold px-5 py-4 sm:px-6 sm:py-5 md:px-8 md:py-6 rounded-xl hover:scale-105 transition-transform text-sm sm:text-base w-full sm:w-auto"
@@ -925,6 +927,7 @@ export default function AboutPage() {
                 <TbHeadset className="mr-2 text-xs sm:text-sm" />
                 {t("contactButton") || "Contact Expert"}
               </Button>
+              </Link>
               {/* <Button 
                 size="lg"
                 variant="bordered" 
