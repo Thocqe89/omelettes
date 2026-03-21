@@ -1,143 +1,178 @@
 import { useEffect, useState } from "react";
-import { FaWhatsapp } from "react-icons/fa6";
 import { Link } from "@heroui/link";
-// import { useDisclosure } from "@heroui/modal";
-import { FiTruck } from "react-icons/fi";
-// import { Modal, ModalContent, ModalHeader, ModalBody } from "@heroui/modal";
-// import { Image } from "@heroui/image";
 import { useTranslation } from "react-i18next";
-import { AiOutlineHome, AiOutlineInfoCircle, AiOutlineShopping, AiOutlineUser } from "react-icons/ai";
-// import i18n from "@/i18n";
-// import { SiGnuprivacyguard } from "react-icons/si";
+import {
+  AiOutlineHome,
+  AiOutlineInfoCircle,
+  AiOutlineShopping,
+  AiOutlineUser,
+} from "react-icons/ai";
+
+const styles = `
+  @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap');
+
+  /* ── iOS floating pill ── */
+  .mf-bar {
+    position: fixed;
+    bottom: max(env(safe-area-inset-bottom, 0px) + 12px, 12px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+
+    width: calc(100% - 32px);
+    max-width: 420px;
+    padding: 8px 6px;
+    border-radius: 28px;
+
+    /* iOS frosted glass */
+    background: rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(40px) saturate(2) brightness(1.1);
+    -webkit-backdrop-filter: blur(40px) saturate(2) brightness(1.1);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow:
+      0 2px 8px rgba(0,0,0,.06),
+      0 8px 28px rgba(0,0,0,.13),
+      0 1px 0 rgba(255,255,255,.7) inset;
+
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    font-family: 'Ubuntu', sans-serif;
+  }
+
+  /* top gloss */
+  .mf-bar::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 15%; right: 15%; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.9) 50%, transparent);
+    border-radius: 28px;
+    pointer-events: none;
+  }
+
+  /* dark mode */
+  .dark .mf-bar {
+    background: rgba(10, 20, 18, 0.45);
+    border-color: rgba(255,255,255,0.1);
+    box-shadow:
+      0 4px 8px rgba(0,0,0,.25),
+      0 12px 36px rgba(0,0,0,.4),
+      0 1px 0 rgba(255,255,255,.07) inset;
+  }
+  .dark .mf-bar::before {
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.1) 50%, transparent);
+  }
+
+  /* hide on desktop */
+  @media (min-width: 1024px) {
+    .mf-bar { display: none !important; }
+  }
+
+  /* ── each item ── */
+  .mf-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 7px 4px 6px;
+    border-radius: 20px;
+    text-decoration: none;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.18s cubic-bezier(.34,1.56,.64,1);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mf-item:active { transform: scale(0.9); }
+
+  /* active background chip */
+  .mf-item.active {
+    background: rgba(13,122,104,0.12);
+  }
+  .dark .mf-item.active {
+    background: rgba(13,122,104,0.28);
+  }
+
+  /* icon lozenge */
+  .mf-icon-wrap {
+    width: 40px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 12px;
+    transition: background 0.2s, transform 0.22s cubic-bezier(.34,1.56,.64,1);
+  }
+  .mf-item.active .mf-icon-wrap {
+    background: rgba(13,122,104,.15);
+    transform: translateY(-2px) scale(1.06);
+  }
+  .dark .mf-item.active .mf-icon-wrap {
+    background: rgba(77,184,168,.2);
+  }
+
+  /* icon */
+  .mf-icon {
+    display: flex;
+    transition: color 0.2s;
+    color: rgba(80, 100, 95, 0.6);
+  }
+  .mf-item.active .mf-icon { color: #0d7a68; }
+  .dark .mf-icon             { color: rgba(255,255,255,0.35); }
+  .dark .mf-item.active .mf-icon { color: #4db8a8; }
+
+  /* label */
+  .mf-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.15px;
+    line-height: 1;
+    color: rgba(80,100,95,0.6);
+    transition: color 0.2s, font-weight 0.15s;
+  }
+  .mf-item.active .mf-label {
+    color: #0d7a68;
+    font-weight: 700;
+  }
+  .dark .mf-label                 { color: rgba(255,255,255,0.32); }
+  .dark .mf-item.active .mf-label { color: #4db8a8; }
+`;
 
 export const MobileFooter = () => {
   const { t } = useTranslation();
-  // const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [activeTab, setActiveTab] = useState("home");
 
-  // const getAnnouncementImage = (lang: string) => {
-  //   switch (lang) {
-  //     case "la":
-  //       return "/image/an/L.png";
-  //     case "th":
-  //       return "/image/an/T.png";
-  //     case "zh":
-  //       return "/image/an/Z.png";
-  //     case "en":
-  //       return "/image/an/E.png";
-
-  //   }
-  // };
-
-  // const img = getAnnouncementImage(i18n.language);
-
-  // Detect current path on page load and update active tab
   useEffect(() => {
-    /*************  ✨ Windsurf Command ⭐  *************/
-    /**
-     * Generates a string of CSS class names for a navigation item based on the provided path.
-     *
-     * @param path - The path to compare with the current pathname.
-     * @returns A string containing CSS class names. If the provided path matches the current pathname,
-     * the text color is set to green. Otherwise, the text color defaults with a hover effect to green.
-     */
-
-    /*******  c58481ae-36ec-44ef-8c0b-00b6b03693cb  *******/
-      window.location.pathname;
-
     const path = window.location.pathname;
-  if (path === "/") setActiveTab("home");
+    if (path === "/")                        setActiveTab("home");
+    else if (path.startsWith("/Omelette's")) setActiveTab("store");
+    else if (path.startsWith("/about"))      setActiveTab("about_us");
+    else if (path.startsWith("/help"))       setActiveTab("help");
+    else                                     setActiveTab("");
+  }, []);
 
-  else if (path.startsWith("/omelette's")) setActiveTab("store");
-  else if (path.startsWith("/about")) setActiveTab("about_us");
-  else if (path.startsWith("/help")) setActiveTab("help");
-  else setActiveTab(""); // fallback
-}, []);
-
-  const navItemClass = (tab: string) =>
-    `flex flex-col items-center gap-1 -mt-6 transition duration-200 transform ${
-      activeTab === tab
-        ? "text-[#0d7a68] scale-100"
-        : "text-default-500 hover:text-[#0d7a68] hover:scale-110"
-    }`;
-
-  const textClass = (tab: string) =>
-    `text-[11px] font-medium transition duration-200 ${
-      activeTab === tab
-        ? "text-[#0d7a68]"
-        : "text-default-500 hover:text-[#0d7a68]"
-    }`;
+  const nav = [
+    { tab: "home",     href: "/",            icon: <AiOutlineHome size={22} />,        label: t("home")     },
+    { tab: "store",    href: "/Omelette's",  icon: <AiOutlineShopping size={22} />,    label: t("store")    },
+    { tab: "about_us", href: "/about",       icon: <AiOutlineInfoCircle size={22} />,  label: t("about_us") },
+    { tab: "help",     href: "/help",        icon: <AiOutlineUser size={22} />,        label: t("help")     },
+  ];
 
   return (
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/70 dark:bg-gray-900/70 border-t border-default-100 shadow-md flex justify-around pt-8 pb-8 text-xs backdrop-blur-sm">
- <Link
-        className={navItemClass("home")}
-        href="/"
-        onClick={() => setActiveTab("home")}
-      >
-        <AiOutlineHome size={24} />
-
-        <p className={textClass("home")}>{t("home")}</p>
-      </Link>
-
-      <Link
-        className={navItemClass("store")}
-        href="/omelette's"
-        onClick={() => setActiveTab("store")}
-      >
-        <AiOutlineShopping size={24} />
-        <p className={textClass("store")}>{t("store")}</p>
-      </Link>
-      <Link
-        className={navItemClass("about_us")}
-        href="/about"
-        onClick={() => setActiveTab("about_us")}
-      >
-        <AiOutlineInfoCircle size={24} />
-        <p className={textClass("about_us")}>{t("about_us")}</p>
-      </Link>
-
-      <Link
-        className={navItemClass("help")}
-        href="/help"
-        onClick={() => setActiveTab("help")}
-      >
-        <AiOutlineUser size={24} />
-        <p className={textClass("help")}>{t("help")}</p>
-      </Link>
-      {/* Modal
-      <Link
-        onClick={() => {
-          setActiveTab("saved");
-          onOpen();
-        }}
-        className={navItemClass("saved")}
-      >
-        <SiGnuprivacyguard size={24} />
-        <p className={textClass("saved")}>{t("anouncement")}</p>
-      </Link>   */}
-
-    
-
-      {/* Modal */}
-      {/* <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent className="w-full max-w-2xl">
-          <>
-            <ModalHeader style={{ backgroundColor: "#0d7a68", color: "white" }}>
-  <div className="flex items-center justify-between w-full">
-    <span className="text-lg font-semibold">{t("anouncement")}</span>
-    <h5 className="text-white text-sm opacity-90">| 15-May-2025 Vientiane Lao PDR</h5>
-  </div>
-</ModalHeader>
-           
-            <ModalBody>
-              <Image isBlurred className="w-full h-auto" src={img} alt="Announcement" />
-              
-            </ModalBody>
-            
-          </>
-        </ModalContent>
-      </Modal> */}
-    </div>
+    <>
+      <style dangerouslySetInnerHTML={{ __html: styles }} />
+      <nav className="lg:hidden mf-bar">
+        {nav.map(({ tab, href, icon, label }) => (
+          <Link
+            key={tab}
+            href={href}
+            className={`mf-item${activeTab === tab ? " active" : ""}`}
+            onClick={() => setActiveTab(tab)}
+          >
+            <span className="mf-icon-wrap">
+              <span className="mf-icon">{icon}</span>
+            </span>
+            <span className="mf-label">{label}</span>
+          </Link>
+        ))}
+      </nav>
+    </>
   );
 };

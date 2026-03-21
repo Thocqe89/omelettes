@@ -1,189 +1,319 @@
 import { Link } from "@heroui/link";
-import { AiOutlineUp } from "react-icons/ai";
 import { useEffect, useState } from "react";
 
 import { Navbar } from "@/components/navbar";
 import Loading from "@/components/loading";
 import { MobileFooter } from "@/components/MobileFooter";
-import { ToastProvider } from "@heroui/toast";
-import OMS_Loading from "@/components/oms_loading";
 
-/* ── Animated footer CSS ── */
-const footerCSS = `
-  @keyframes ftPlanefly {
-    0%   { left: -80px; transform: translateY(0px) rotate(0deg); opacity: 0; }
-    4%   { opacity: 1; }
-    20%  { transform: translateY(-7px) rotate(-4deg); }
-    40%  { transform: translateY(-11px) rotate(-2deg); }
-    60%  { transform: translateY(-5px) rotate(1deg); }
-    80%  { transform: translateY(-2px) rotate(0deg); opacity: 1; }
-    96%  { opacity: 1; }
-    100% { left: calc(100% + 80px); transform: translateY(0px) rotate(0deg); opacity: 0; }
+/* ─────────────────────────────────────────────────────────
+   Layout + Footer CSS
+───────────────────────────────────────────────────────── */
+const layoutCSS = `
+  @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
+
+  :root {
+    --navbar-h: 64px;
+    --mobile-navbar-h: 56px;  /* usually smaller on mobile */
+    --mobile-footer-h: 64px;
+    --teal:      #0d7a68;
+    --teal-mid:  #4db8a8;
+    --teal-pale: #7dd4c8;
   }
-  @keyframes ftRunway {
-    from { background-position: 0 0; }
-    to   { background-position: -48px 0; }
+
+  /* ── prevent horizontal overflow + kill white gap behind mobile pill nav ── */
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+    background-color: #050e0c;
   }
+
+  /* ── Keyframes ── */
   @keyframes ftShimmer {
     0%   { background-position: -200% center; }
     100% { background-position:  200% center; }
   }
   @keyframes ftGlow {
-    0%,100% { box-shadow: 0 -2px 20px rgba(13,122,104,.3); }
-    50%     { box-shadow: 0 -2px 36px rgba(13,122,104,.6); }
+    0%,100% { box-shadow: 0 -3px 32px rgba(13,122,104,.22); }
+    50%     { box-shadow: 0 -3px 52px rgba(13,122,104,.44); }
   }
   @keyframes ftPulse {
-    0%,100% { opacity: .55; }
-    50%     { opacity: .9; }
+    0%,100% { opacity: .45; }
+    50%     { opacity: .85; }
+  }
+  @keyframes ftOrbit {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  @keyframes ftDotBlink {
+    0%,100% { opacity: .35; transform: scale(.85); }
+    50%     { opacity: 1;   transform: scale(1.15); }
+  }
+  @keyframes ftLineGrow {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
   }
 
+  /* ══════════════════════════════════════════
+     FOOTER SHELL
+  ══════════════════════════════════════════ */
   .ft-footer {
     position: relative;
     overflow: hidden;
-    border-radius: 10px 10px 0 0;
-    border-top: 1.5px solid rgba(13,122,104,.4);
-    background: linear-gradient(180deg, #050e0c 0%, #081a16 35%, #0d7a68 100%);
-    animation: ftGlow 4s ease-in-out infinite;
+    border-top: 1px solid rgba(13,122,104,.32);
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 110%, rgba(13,122,104,.16) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 80% at 8%  50%,  rgba(8,61,51,.38)    0%, transparent 55%),
+      radial-gradient(ellipse 32% 65% at 92% 30%,  rgba(13,122,104,.10) 0%, transparent 55%),
+      linear-gradient(180deg, #060f0d 0%, #07120f 50%, #081a15 100%);
+    animation: ftGlow 5s ease-in-out infinite;
     font-family: 'Ubuntu', sans-serif;
+    flex-shrink: 0;
   }
 
-  /* scrolling runway dashes at top edge */
-  .ft-runway {
-    position: absolute;
-    top: 0; left: 0; right: 0; height: 2px;
-    background-image: repeating-linear-gradient(
-      90deg,
-      rgba(77,184,168,.6) 0px, rgba(77,184,168,.6) 20px,
-      transparent 20px, transparent 48px
-    );
-    animation: ftRunway 1.2s linear infinite;
-  }
-
-  /* subtle grid texture */
-  .ft-grid {
+  /* dot-grid texture */
+  .ft-dotgrid {
     position: absolute; inset: 0; pointer-events: none;
-    background-image:
-      linear-gradient(rgba(13,122,104,.06) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(13,122,104,.06) 1px, transparent 1px);
-    background-size: 32px 18px;
+    background-image: radial-gradient(circle, rgba(13,122,104,.12) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,.4) 35%, rgba(0,0,0,.75) 100%);
   }
 
-  /* flight corridor */
-  .ft-sky {
+  /* corner orbit decoration */
+  .ft-orbit-wrap {
     position: absolute;
-    top: 0; left: 0; right: 0; height: 28px;
-    overflow: hidden; pointer-events: none;
+    bottom: -50px; right: -50px;
+    width: 200px; height: 200px;
+    pointer-events: none; opacity: .07;
+  }
+  .ft-orbit-ring {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    border: 1px solid var(--teal-mid);
+    animation: ftOrbit 24s linear infinite;
+  }
+  .ft-orbit-ring-2 {
+    position: absolute; inset: 24px;
+    border-radius: 50%;
+    border: 1px dashed var(--teal-mid);
+    animation: ftOrbit 15s linear infinite reverse;
   }
 
-  /* the flying plane */
-  .ft-plane {
-    position: absolute;
-    top: 5px; left: -80px;
-    filter: drop-shadow(0 0 5px rgba(13,122,104,.75));
-    animation: ftPlanefly 7s cubic-bezier(.4,0,.2,1) infinite;
-    animation-delay: 1.2s;
-    will-change: left, transform;
-  }
-
-  /* contrail */
-  .ft-contrail {
-    position: absolute;
-    top: 13px; left: -80px;
-    height: 1.5px; width: 0;
-    background: linear-gradient(90deg, transparent, rgba(77,184,168,.45), rgba(255,255,255,.25));
-    border-radius: 2px; filter: blur(1px);
-    animation: ftPlanefly 7s cubic-bezier(.4,0,.2,1) infinite;
-    animation-delay: 1.1s;
-    opacity: .6;
-  }
-
-  /* content row */
-  .ft-content {
+  /* ── MAIN 4-col GRID — desktop ── */
+  .ft-body {
     position: relative; z-index: 10;
-    display: flex; align-items: center; justify-content: center;
-    flex-wrap: wrap; gap: 6px 10px;
-    padding: 26px 16px 10px;
+    max-width: 1280px; margin: 0 auto;
+    padding: 60px 48px 40px;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 52px;
   }
 
-  /* brand shimmer */
-  .ft-brand-name {
-    font-weight: 700;
-    background: linear-gradient(135deg, #fff 0%, #7dd4c8 45%, #fff 100%);
-    background-size: 200% auto;
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  /* Brand wordmark */
+  .ft-wordmark {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.6rem;
+    font-weight: 300;
+    letter-spacing: 2px;
+    line-height: 1;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, #ffffff 0%, #7dd4c8 42%, #ffffff 100%);
+    background-size: 220% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: ftShimmer 3s linear infinite;
+    animation: ftShimmer 5s linear infinite;
   }
-  .ft-brand-name em { -webkit-text-fill-color: #E43636; font-style: normal; }
-
-  .ft-sep     { color: rgba(255,255,255,.22); font-size: .75rem; }
-  .ft-copy    { color: rgba(255,255,255,.5);  font-size: .75rem; animation: ftPulse 4s ease-in-out infinite; }
-  .ft-version {
-    color: rgba(77,184,168,.9); font-size: .62rem; font-weight: 600;
-    letter-spacing: 1.5px; text-transform: uppercase;
-    background: rgba(13,122,104,.28); border: 1px solid rgba(77,184,168,.3);
-    border-radius: 20px; padding: 2px 9px;
+  .ft-wordmark em {
+    -webkit-text-fill-color: #E43636;
+    font-style: italic;
   }
 
-  /* bottom teal line */
-  .ft-bottom {
-    position: relative; z-index: 10; height: 2px;
+  .ft-tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: .88rem;
+    font-style: italic;
+    color: rgba(77,184,168,.65);
+    letter-spacing: 1.5px;
+    margin-bottom: 22px;
+  }
+
+  .ft-desc {
+    font-size: .78rem;
+    line-height: 1.8;
+    color: rgba(255,255,255,.36);
+    max-width: 290px;
+    margin-bottom: 28px;
+  }
+
+  /* live status pill */
+  .ft-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(13,122,104,.14);
+    border: 1px solid rgba(13,122,104,.28);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: .63rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(77,184,168,.88);
+  }
+  .ft-status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #4db8a8;
+    box-shadow: 0 0 7px rgba(77,184,168,.85);
+    animation: ftDotBlink 2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  /* nav column heading */
+  .ft-col-title {
+    font-size: .6rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--teal-mid);
+    margin-bottom: 22px;
+    position: relative;
+    padding-bottom: 13px;
+  }
+  .ft-col-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 1px; width: 26px;
+    background: linear-gradient(90deg, var(--teal), transparent);
+    transform-origin: left;
+    animation: ftLineGrow 1.2s ease both;
+  }
+
+  .ft-nav-list {
+    list-style: none;
+    padding: 0; margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .ft-nav-link {
+    font-size: .8rem;
+    color: rgba(255,255,255,.4);
+    text-decoration: none !important;
+    letter-spacing: .3px;
+    transition: color .2s ease, padding-left .2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .ft-nav-link::before {
+    content: '';
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--teal);
+    opacity: 0;
+    flex-shrink: 0;
+    transition: opacity .2s ease;
+  }
+  .ft-nav-link:hover {
+    color: rgba(255,255,255,.82) !important;
+    padding-left: 5px;
+  }
+  .ft-nav-link:hover::before { opacity: 1; }
+
+  /* horizontal rule */
+  .ft-divider {
+    position: relative; z-index: 10;
+    max-width: 1280px; margin: 0 auto;
+    padding: 0 48px;
+  }
+  .ft-divider-line {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(13,122,104,.38) 20%, rgba(77,184,168,.28) 50%, rgba(13,122,104,.38) 80%, transparent);
+  }
+
+  /* bottom bar */
+  .ft-bottom-bar {
+    position: relative; z-index: 10;
+    max-width: 1280px; margin: 0 auto;
+    padding: 18px 48px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .ft-copy {
+    font-size: .72rem;
+    color: rgba(255,255,255,.28);
+    letter-spacing: .5px;
+  }
+  .ft-badges {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .ft-badge {
+    font-size: .58rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(77,184,168,.7);
+    background: rgba(13,122,104,.16);
+    border: 1px solid rgba(77,184,168,.18);
+    border-radius: 20px;
+    padding: 3px 11px;
+    transition: background .22s, border-color .22s, color .22s;
+    cursor: default;
+  }
+  .ft-badge:hover {
+    background: rgba(13,122,104,.3);
+    border-color: rgba(77,184,168,.4);
+    color: rgba(77,184,168,.95);
+  }
+
+  /* very bottom accent line */
+  .ft-bottom-line {
+    height: 2px;
     background: linear-gradient(90deg, transparent, #0d7a68 20%, #4db8a8 50%, #0d7a68 80%, transparent);
-    opacity: .7;
+    opacity: .55;
+  }
+
+  /* ══════════════════════════════════════════
+     MOBILE OVERRIDES
+  ══════════════════════════════════════════ */
+
+  .mobile-content-wrap { padding-bottom: 0; }
+
+  @media (max-width: 1023px) {
+    :root { --navbar-h: 56px; }
+    img, video, canvas, svg { max-width: 100%; height: auto; }
+  }
+
+  @media (max-width: 639px) {
+    .ft-body {
+      grid-template-columns: 1fr;
+      padding: 32px 20px 24px;
+      gap: 28px;
+    }
+    .ft-bottom-bar {
+      padding: 14px 20px 20px;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .ft-divider { padding: 0 20px; }
   }
 `;
 
-/* ── Tiny plane SVG ── */
-const FooterPlane = () => (
-  <svg width="40" height="17" viewBox="0 0 80 34" fill="none">
-    <ellipse cx="40" cy="17" rx="36" ry="6" fill="url(#fpF)" />
-    <path d="M76 17 Q80 16.5 79 17 Q80 17.5 76 17Z" fill="#d0eae6" />
-    <ellipse cx="69" cy="15.5" rx="3.5" ry="2.5" fill="#e8f8f5" opacity=".9" />
-    <ellipse cx="63" cy="15"   rx="2.8" ry="2"   fill="#cdf0ea" opacity=".75" />
-    <path d="M42 17 L58 10 L62 11 L52 17 L62 23 L58 24Z" fill="url(#fpW)" />
-    <path d="M9 17 L17 13 L20 14 L14 17 L20 20 L17 21Z"  fill="#3a7870" />
-    <path d="M10 17 L19 7 L21 8 L15 17Z" fill="#2e6860" />
-    <ellipse cx="53" cy="23" rx="8" ry="3" fill="url(#fpE)" transform="rotate(-3 53 23)" />
-    <ellipse cx="60" cy="22.5" rx="1.5" ry="2.5" fill="rgba(125,212,200,.8)" />
-    {[22,28,34,40,46,52,58,63].map((x,i)=>(
-      <rect key={i} x={x} y="14.5" width="3.5" height="2.5" rx="1"
-        fill="#d4f0eb" opacity={i>5?.55:.85}/>
-    ))}
-    <defs>
-      <linearGradient id="fpF" x1="4" y1="11" x2="76" y2="23" gradientUnits="userSpaceOnUse">
-        <stop offset="0%"  stopColor="#3a7870"/><stop offset="40%" stopColor="#b8deda"/>
-        <stop offset="70%" stopColor="#e0f5f2"/><stop offset="100%" stopColor="#5a9a90"/>
-      </linearGradient>
-      <linearGradient id="fpW" x1="42" y1="10" x2="62" y2="24" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#7ac8be"/><stop offset="100%" stopColor="#2e6860"/>
-      </linearGradient>
-      <linearGradient id="fpE" x1="45" y1="20" x2="61" y2="26" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#1e5850"/><stop offset="100%" stopColor="#7ac8be"/>
-      </linearGradient>
-    </defs>
-  </svg>
-);
+
 
 export default function DefaultLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [showScrollTop, setShowScrollTop] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const threshold = window.innerWidth < 768 ? 100 : 300;
-      setShowScrollTop(window.scrollY > threshold);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   useEffect(() => {
     const alreadyVisited = sessionStorage.getItem("hasVisited");
@@ -200,75 +330,124 @@ export default function DefaultLayout({
 
   return (
     <div className="relative flex flex-col min-h-screen">
-      {/* <ToastProvider placement="bottom-right" toastOffset={60} /> */}
-      <style dangerouslySetInnerHTML={{ __html: footerCSS }} />
+      <style dangerouslySetInnerHTML={{ __html: layoutCSS }} />
 
+      {/* ── Navbar ── */}
       <Navbar />
 
-      {/* Main content */}
-      <main className="flex-grow">
-        <div className="w-full overflow-x-hidden">
-          {isLoading ? (
-            <>
-              <Loading />
-              {/* <OMS_Loading /> */}
-            </>
-          ) : (
-            children
-          )}
+      {/* ── Main content ── */}
+      <main
+        className="flex-grow w-full"
+        style={{ paddingTop: "var(--navbar-h)" }}
+      >
+        <div className="mobile-content-wrap">
+          {isLoading ? <Loading /> : children}
         </div>
-
-        {/* Fixed Scroll to Top Button */}
-        {/* {showScrollTop && (
-          <button
-            aria-label="Scroll to top"
-            className="fixed z-[10000] bg-white dark:bg-slate-800 text-[#0d7a68] p-2 rounded-full shadow-lg border border-[#0d7a68] hover:bg-[#0d7a68] hover:text-white transition-all duration-300"
-            style={{ bottom: 'calc(80px + 1rem)', right: '1rem' }}
-            onClick={scrollToTop}
-          >
-            <AiOutlineUp className="w-5 h-5" />
-          </button>
-        )} */}
       </main>
 
+      {/* ── Mobile bottom nav — ONLY phone & tablet (< 1024px) ── */}
       <MobileFooter />
 
-      {/* ── Animated Footer — hidden on mobile ── */}
-      <footer className="ft-footer hidden sm:block w-full shadow-lg">
+      {/* ── Desktop footer — ONLY large screens (≥ 1024px) ── */}
+      <footer className="ft-footer hidden lg:block w-full">
 
-        {/* Scrolling runway dashes */}
-        <div className="ft-runway" />
+        {/* Background textures */}
+        <div className="ft-dotgrid" />
 
-        {/* Grid texture */}
-        <div className="ft-grid" />
-
-        {/* Airplane flight corridor */}
-        <div className="ft-sky">
-          <div className="ft-contrail" />
-          <div className="ft-plane"><FooterPlane /></div>
+        {/* Decorative orbit rings bottom-right */}
+        <div className="ft-orbit-wrap">
+          <div className="ft-orbit-ring" />
+          <div className="ft-orbit-ring-2" />
         </div>
 
-        {/* Text content */}
-        <div className="ft-content">
-          <Link
-            isExternal
-            href="/"
-            title="Omelette's"
-            className="flex items-center gap-1.5 text-white no-underline"
-            style={{ fontSize: ".82rem", fontWeight: 500 }}
-          >
-            {/* <span style={{ color: "rgba(255,255,255,.65)" }}>Powered by</span> */}
-            <span className="ft-brand-name">Omelette<em>'</em>s</span>
-          </Link>
+        {/* ── 4-column content grid ── */}
+        <div className="ft-body">
 
-          <span className="ft-sep">|</span>
-          <span className="ft-copy">Copyright © 2023–2025</span>
-          <span className="ft-sep">|</span>
-          <span className="ft-version">v0.0.1</span>
+          {/* Col 1 — Brand */}
+          <div>
+            <div className="ft-wordmark">Omelette<em>'</em>s</div>
+            <div className="ft-tagline">Premium Aviation Collectibles</div>
+            <p className="ft-desc">
+              Handcrafted scale models for discerning collectors and aviation
+              enthusiasts. Each piece honours the golden age of flight —
+              precision-engineered to the finest detail.
+            </p>
+            <div className="ft-status">
+              <div className="ft-status-dot" />
+              All models in stock
+            </div>
+          </div>
+
+          {/* Col 2 — Explore */}
+          <div>
+            <div className="ft-col-title">Explore</div>
+            <ul className="ft-nav-list">
+              {[
+                { label: "Collection",   href: "/Omelette's" },
+                { label: "New Arrivals", href: "/Omelette's" },
+                { label: "Best Sellers", href: "/Omelette's" },
+                { label: "Gift Sets",    href: "/Omelette's" },
+              ].map(item => (
+                <li key={item.label}>
+                  <Link href={item.href} className="ft-nav-link">{item.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Col 3 — Company */}
+          <div>
+            <div className="ft-col-title">Company</div>
+            <ul className="ft-nav-list">
+              {[
+                { label: "About Us",  href: "/about" },
+                { label: "Our Story", href: "/about" },
+                { label: "Contact",   href: "/help" },
+                { label: "FAQ",       href: "/help" },
+              ].map(item => (
+                <li key={item.label}>
+                  <Link href={item.href} className="ft-nav-link">{item.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Col 4 — Information */}
+          <div>
+            <div className="ft-col-title">Information</div>
+            <ul className="ft-nav-list">
+              {[
+                { label: "Shipping Policy", href: "/help" },
+                { label: "Returns",         href: "/help" },
+                { label: "Authenticity",    href: "/about" },
+                { label: "Care Guide",      href: "/help" },
+              ].map(item => (
+                <li key={item.label}>
+                  <Link href={item.href} className="ft-nav-link">{item.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+        </div>
+
+        {/* Divider */}
+        <div className="ft-divider">
+          <div className="ft-divider-line" />
+        </div>
+
+        {/* Bottom bar */}
+        <div className="ft-bottom-bar">
+          <span className="ft-copy">© 2023–2025 Omelette's · All rights reserved</span>
+          <div className="ft-badges">
+            <span className="ft-badge">v0.0.1</span>
+            <span className="ft-badge">Premium Quality</span>
+            <span className="ft-badge">Certified Authentic</span>
+          </div>
         </div>
 
         {/* Bottom accent line */}
-        <div className="ft-bottom" />
+        <div className="ft-bottom-line" />
 
       </footer>
     </div>

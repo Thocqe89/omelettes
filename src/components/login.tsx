@@ -1,502 +1,652 @@
-import { motion, Variants } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { useState } from "react";
-import { FaEye, FaEyeSlash, FaLock, FaEnvelope, FaChevronDown, FaChevronUp, FaTimes, FaUserFriends, FaEnvelopeOpen, FaArrowLeft } from "react-icons/fa";
+import {
+  FaEye, FaEyeSlash, FaLock, FaEnvelope,
+  FaChevronDown, FaChevronUp, FaTimes,
+  FaUserFriends, FaEnvelopeOpen,
+} from "react-icons/fa";
+import { HiArrowLeft } from "react-icons/hi";
 import { Link } from "react-router-dom";
 
+const LOGO = "https://res.cloudinary.com/deahgtn57/image/upload/v1774000744/omelett%27s/public/logo/ChatGPT_Image_Mar_13_2026_05_25_31_PM_yfp4b7.png";
+
+const css = `
+  @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Ubuntu', sans-serif; }
+
+  /* ── page ── */
+  .lp {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 80% 55% at 20% 30%, rgba(192,25,44,.28) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 75%, rgba(120,5,20,.35) 0%, transparent 60%),
+      radial-gradient(ellipse 45% 40% at 65% 15%, rgba(160,15,30,.18) 0%, transparent 55%),
+      linear-gradient(160deg, #0e0205 0%, #1a0008 40%, #120006 100%);
+  }
+
+  /* vivid paint orbs — these give glass something to blur over */
+  .lp-orb {
+    position: fixed; border-radius: 50%;
+    pointer-events: none; filter: blur(70px);
+  }
+
+  /* dot grid — matches site style */
+  .lp-grid {
+    position: fixed; inset: 0; pointer-events: none;
+    background-image: radial-gradient(circle, rgba(192,25,44,.13) 1px, transparent 1px);
+    background-size: 30px 30px;
+    mask-image: radial-gradient(ellipse 85% 85% at 50% 50%, black 40%, transparent 100%);
+  }
+
+  /* subtle diagonal lines */
+  .lp-lines {
+    position: fixed; inset: 0; pointer-events: none; opacity: .07;
+    background-image: repeating-linear-gradient(
+      -45deg,
+      rgba(192,25,44,.2) 0px, rgba(192,25,44,.2) 1px,
+      transparent 1px, transparent 52px
+    );
+  }
+
+  /* ── back / close button ── */
+  .lp-back {
+    position: fixed; z-index: 300;
+    width: 34px; height: 34px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,.12);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,.18);
+    color: rgba(255,255,255,.65); text-decoration: none;
+    box-shadow: 0 4px 14px rgba(0,0,0,.3), 0 1px 0 rgba(255,255,255,.1) inset;
+    transition: background .2s, color .2s, transform .2s;
+    font-size: 18px; font-weight: 300; line-height: 1;
+    /* mobile: top-right */
+    top: 18px; right: 18px; left: auto;
+  }
+  .lp-back:hover {
+    background: rgba(192,25,44,.45);
+    color: #fff; transform: scale(1.08);
+    border-color: rgba(192,25,44,.5);
+  }
+  /* desktop: top-left */
+  @media (min-width: 768px) {
+    .lp-back { left: 18px; right: auto; }
+  }
+  /* show × on mobile, arrow on desktop */
+  .lp-back-x      { display: flex; }
+  .lp-back-arrow  { display: none; }
+  @media (min-width: 768px) {
+    .lp-back-x     { display: none; }
+    .lp-back-arrow { display: flex; }
+  }
+
+  /* ── main glass card ── */
+  .lp-card {
+    position: relative; z-index: 10;
+    width: 100%; max-width: 920px;
+    margin: 0 20px;
+    border-radius: 32px;
+    display: flex;
+    overflow: hidden;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.18);
+    backdrop-filter: blur(48px) saturate(1.8) brightness(1.08);
+    -webkit-backdrop-filter: blur(48px) saturate(1.8) brightness(1.08);
+    box-shadow:
+      0 40px 100px rgba(0,0,0,.55),
+      0 1px 0 rgba(255,255,255,.2) inset,
+      0 0 0 1px rgba(255,255,255,.05) inset;
+  }
+  /* top specular */
+  .lp-card::before {
+    content: ''; position: absolute; top: 0; left: 12%; right: 12%; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.45) 50%, transparent);
+    pointer-events: none; z-index: 2;
+  }
+
+  /* shimmer bar */
+  .lp-bar {
+    position: absolute; top: 0; left: 0; right: 0; height: 3px; z-index: 3;
+    background: linear-gradient(90deg, #c0192c, #e85566, #fff, #e85566, #c0192c);
+    background-size: 300% auto;
+    animation: shimmer 4s linear infinite;
+  }
+  @keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
+
+  /* ── left branding pane ── */
+  .lp-left {
+    display: none;
+    width: 42%; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 56px 40px;
+    border-right: 1px solid rgba(255,255,255,.1);
+    position: relative;
+    background: rgba(192,25,44,.08);
+  }
+  @media (min-width: 768px) { .lp-left { display: flex; } }
+
+  .lp-brand {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 20px; text-align: center;
+  }
+
+  /* logo frame */
+  .lp-logo-frame {
+    width: 172px; height: 172px; border-radius: 40px;
+    background: rgba(192,25,44,.15);
+    border: 1px solid rgba(192,25,44,.3);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+    box-shadow:
+      0 12px 44px rgba(192,25,44,.28),
+      0 1px 0 rgba(255,255,255,.12) inset;
+    animation: glowLogo 4s ease-in-out infinite;
+  }
+  @keyframes glowLogo {
+    0%,100% { box-shadow: 0 12px 44px rgba(192,25,44,.22), 0 1px 0 rgba(255,255,255,.1) inset; }
+    50%      { box-shadow: 0 18px 60px rgba(192,25,44,.42), 0 1px 0 rgba(255,255,255,.14) inset; }
+  }
+  .lp-logo-frame::before {
+    content: ''; position: absolute; top: 0; left: 14%; right: 14%; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.4), transparent);
+  }
+
+  .lp-wordmark {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.6rem; font-weight: 600; line-height: 1;
+    color: #fff; letter-spacing: 1px;
+  }
+  .lp-wordmark em { color: #E43636; font-style: italic; }
+
+  .lp-tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: .88rem; font-style: italic;
+    color: rgba(255,180,180,.5); letter-spacing: 1.5px;
+    margin-top: -8px;
+  }
+
+  .lp-sep {
+    width: 40px; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(192,25,44,.7), transparent);
+  }
+
+  .lp-pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 6px 16px; border-radius: 20px;
+    background: rgba(192,25,44,.18);
+    border: 1px solid rgba(192,25,44,.3);
+    backdrop-filter: blur(8px);
+    font-size: .63rem; font-weight: 600;
+    letter-spacing: 2.5px; text-transform: uppercase;
+    color: rgba(255,160,160,.9);
+  }
+  .lp-pill-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #e85566; box-shadow: 0 0 6px #e85566;
+    animation: blink 2s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:.3} 50%{opacity:1} }
+
+  /* ── right form pane ── */
+  .lp-right {
+    flex: 1; padding: 52px 44px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  @media (max-width: 767px) { .lp-right { padding: 64px 28px 40px; } }
+
+  /* mobile logo */
+  .lp-mobile-top {
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    margin-bottom: 32px;
+  }
+  @media (min-width: 768px) { .lp-mobile-top { display: none; } }
+  .lp-mobile-logo {
+    width: 68px; height: 68px; border-radius: 20px;
+    background: rgba(192,25,44,.2);
+    border: 1px solid rgba(192,25,44,.3);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 28px rgba(192,25,44,.28);
+  }
+  .lp-mobile-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem; font-weight: 600; color: #fff;
+  }
+  .lp-mobile-name em { color: #E43636; font-style: italic; }
+
+  .lp-title { font-size: 1.45rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .lp-sub   { font-size: .78rem; color: rgba(255,255,255,.32); margin-bottom: 26px; }
+
+  /* notice */
+  .lp-notice {
+    display: flex; align-items: flex-start; gap: 9px;
+    padding: 11px 14px; border-radius: 12px;
+    background: rgba(192,25,44,.1);
+    border: 1px solid rgba(192,25,44,.22);
+    border-left: 3px solid #c0192c;
+    margin-bottom: 22px;
+  }
+  .lp-notice-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #e85566; flex-shrink: 0; margin-top: 4px;
+    box-shadow: 0 0 5px #e85566;
+    animation: blink 2.5s ease-in-out infinite;
+  }
+  .lp-notice p { font-size: .75rem; color: rgba(255,255,255,.42); line-height: 1.55; }
+
+  /* field */
+  .lp-field { margin-bottom: 16px; }
+  .lp-label {
+    display: block; font-size: .62rem; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(255,160,160,.65); margin-bottom: 7px;
+  }
+  .lp-input-wrap { position: relative; }
+  .lp-icon {
+    position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+    color: rgba(192,25,44,.45); font-size: 13px;
+    display: flex; align-items: center; pointer-events: none;
+  }
+  .lp-input {
+    width: 100%; padding: 12px 14px 12px 38px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,.1);
+    background: rgba(255,255,255,.07);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    color: #fff; font-size: .87rem;
+    outline: none;
+    transition: border-color .2s, background .2s, box-shadow .2s;
+    box-shadow: 0 1px 0 rgba(255,255,255,.06) inset;
+  }
+  .lp-input::placeholder { color: rgba(255,255,255,.18); }
+  .lp-input:focus {
+    border-color: rgba(192,25,44,.55);
+    background: rgba(255,255,255,.1);
+    box-shadow: 0 0 0 3px rgba(192,25,44,.15), 0 1px 0 rgba(255,255,255,.08) inset;
+  }
+  .lp-input-pw { padding-right: 42px; }
+  .lp-eye {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    color: rgba(255,255,255,.22); font-size: 13px;
+    display: flex; align-items: center; transition: color .2s;
+  }
+  .lp-eye:hover { color: #e85566; }
+
+  /* terms toggle */
+  .lp-terms-btn {
+    width: 100%; display: flex; align-items: center; justify-content: space-between;
+    padding: 11px 14px; border-radius: 12px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.09);
+    backdrop-filter: blur(8px);
+    font-size: .79rem; font-weight: 500; color: rgba(255,255,255,.5);
+    font-family: 'Ubuntu', sans-serif; cursor: pointer;
+    transition: background .2s, border-color .2s;
+  }
+  .lp-terms-btn:hover { background: rgba(192,25,44,.1); border-color: rgba(192,25,44,.2); }
+  .lp-terms-body { overflow: hidden; margin-top: 8px; }
+  .lp-terms-inner {
+    padding: 13px; border-radius: 12px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.08);
+    font-size: .73rem; line-height: 1.7; color: rgba(255,255,255,.35);
+    max-height: 150px; overflow-y: auto;
+  }
+  .lp-terms-inner::-webkit-scrollbar { width: 3px; }
+  .lp-terms-inner::-webkit-scrollbar-thumb { background: rgba(192,25,44,.4); border-radius: 3px; }
+  .lp-terms-inner p { margin-bottom: 6px; }
+  .lp-terms-inner strong { color: rgba(255,160,160,.6); font-size: .7rem; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* checkbox */
+  .lp-check { display: flex; align-items: center; gap: 10px; margin: 18px 0 22px; }
+  .lp-checkbox {
+    width: 18px; height: 18px; border-radius: 5px; flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06);
+    appearance: none; cursor: pointer; transition: all .2s; position: relative;
+  }
+  .lp-checkbox:checked { background: #c0192c; border-color: #c0192c; box-shadow: 0 0 8px rgba(192,25,44,.45); }
+  .lp-checkbox:checked::after {
+    content: ''; position: absolute;
+    width: 5px; height: 9px;
+    border: 2px solid #fff; border-top: none; border-left: none;
+    transform: rotate(42deg) translate(-1px,-1px); left: 5px; top: 1px;
+  }
+  .lp-check-label { font-size: .79rem; color: rgba(255,255,255,.4); cursor: pointer; line-height: 1.4; }
+
+  /* submit */
+  .lp-btn {
+    width: 100%; padding: 13px; border-radius: 13px; border: none;
+    font-size: .9rem; font-weight: 600; font-family: 'Ubuntu', sans-serif;
+    cursor: pointer; transition: all .22s; position: relative; overflow: hidden;
+  }
+  .lp-btn::before {
+    content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+    transition: left .5s;
+  }
+  .lp-btn-on { background: linear-gradient(135deg, #c0192c, #9e1224); color: #fff; box-shadow: 0 6px 22px rgba(192,25,44,.4), 0 1px 0 rgba(255,255,255,.1) inset; }
+  .lp-btn-on:hover { box-shadow: 0 10px 30px rgba(192,25,44,.58); transform: translateY(-1px); }
+  .lp-btn-on:hover::before { left: 150%; }
+  .lp-btn-on:active { transform: scale(.98); }
+  .lp-btn-off { background: rgba(255,255,255,.07); color: rgba(255,255,255,.2); cursor: not-allowed; border: 1px solid rgba(255,255,255,.06); }
+
+  /* footer */
+  .lp-foot { text-align: center; margin-top: 20px; font-size: .77rem; color: rgba(255,255,255,.3); }
+  .lp-link {
+    color: rgba(255,160,160,.8); font-weight: 600; background: none; border: none;
+    cursor: pointer; font-size: .77rem; text-decoration: underline;
+    text-underline-offset: 2px; font-family: 'Ubuntu', sans-serif;
+    transition: color .2s;
+  }
+  .lp-link:hover { color: #e85566; }
+
+  /* ════ MODAL — full iOS glass ════ */
+  .lp-modal-bg {
+    position: fixed; inset: 0; z-index: 9999;
+    background: linear-gradient(135deg, rgba(26,0,8,.9), rgba(45,0,15,.93));
+    backdrop-filter: blur(24px) saturate(1.6);
+    -webkit-backdrop-filter: blur(24px) saturate(1.6);
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  .lp-modal {
+    position: relative; width: 100%; max-width: 440px;
+    border-radius: 28px;
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.18);
+    backdrop-filter: blur(48px) saturate(1.8) brightness(1.08);
+    -webkit-backdrop-filter: blur(48px) saturate(1.8) brightness(1.08);
+    box-shadow: 0 32px 80px rgba(0,0,0,.55), 0 1px 0 rgba(255,255,255,.18) inset;
+    overflow: hidden;
+  }
+  .lp-modal::before {
+    content: ''; position: absolute; top: 0; left: 14%; right: 14%; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.4), transparent);
+    pointer-events: none;
+  }
+  .lp-modal-bar {
+    height: 2px;
+    background: linear-gradient(90deg, #7a0d1b, #c0192c, #e85566, #c0192c, #7a0d1b);
+    background-size: 300% auto;
+    animation: shimmer 4s linear infinite;
+  }
+  .lp-modal-head {
+    padding: 22px 22px 18px;
+    border-bottom: 1px solid rgba(255,255,255,.09);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .lp-modal-head-left { display: flex; align-items: center; gap: 12px; }
+  .lp-modal-icon {
+    width: 42px; height: 42px; border-radius: 13px;
+    background: rgba(192,25,44,.25); border: 1px solid rgba(192,25,44,.3);
+    display: flex; align-items: center; justify-content: center;
+    color: #e85566; font-size: 17px;
+    box-shadow: 0 4px 14px rgba(192,25,44,.2);
+  }
+  .lp-modal-title { font-size: .98rem; font-weight: 700; color: #fff; }
+  .lp-modal-sub   { font-size: .7rem; color: rgba(255,255,255,.38); margin-top: 1px; }
+  .lp-modal-close {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: rgba(192,25,44,.35); border: 1px solid rgba(192,25,44,.3);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 13px;
+    transition: background .2s, transform .2s;
+  }
+  .lp-modal-close:hover { background: #c0192c; transform: scale(1.08); }
+  .lp-modal-body {
+    padding: 16px 22px;
+    max-height: 44vh; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 9px;
+  }
+  .lp-modal-body::-webkit-scrollbar { width: 3px; }
+  .lp-modal-body::-webkit-scrollbar-thumb { background: rgba(192,25,44,.4); border-radius: 3px; }
+  .lp-modal-row {
+    display: flex; align-items: flex-start; gap: 11px;
+    padding: 12px 13px; border-radius: 14px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.08);
+    transition: background .2s;
+  }
+  .lp-modal-row:hover { background: rgba(192,25,44,.1); border-color: rgba(192,25,44,.18); }
+  .lp-modal-row-icon {
+    width: 32px; height: 32px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 13px;
+  }
+  .lp-modal-row-title { font-size: .81rem; font-weight: 600; color: rgba(255,255,255,.82); margin-bottom: 3px; }
+  .lp-modal-row-desc  { font-size: .73rem; color: rgba(255,255,255,.38); line-height: 1.55; }
+  .lp-modal-foot { padding: 14px 22px 22px; border-top: 1px solid rgba(255,255,255,.07); }
+  .lp-modal-btn {
+    width: 100%; padding: 13px; border-radius: 13px; border: none;
+    background: linear-gradient(135deg, #c0192c, #9e1224);
+    color: #fff; font-weight: 600; font-size: .88rem;
+    font-family: 'Ubuntu', sans-serif;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(192,25,44,.35);
+    transition: box-shadow .22s, transform .22s;
+  }
+  .lp-modal-btn:hover { box-shadow: 0 10px 28px rgba(192,25,44,.52); transform: translateY(-1px); }
+  .lp-modal-note { text-align: center; font-size: .65rem; color: rgba(255,255,255,.18); margin-top: 10px; }
+`;
+
+const itemV: Variants = {
+  hidden: { y: 14, opacity: 0 },
+  visible: { y: 0, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
+};
+const containerV: Variants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.09, delayChildren: 0.1 } },
+};
+const modalV: Variants = {
+  hidden: { opacity: 0, scale: .93, y: 18 },
+  visible: { opacity: 1, scale: 1, y: 0, transition: { duration: .3, ease: [.22,1,.36,1] } },
+  exit:    { opacity: 0, scale: .93, y: 18, transition: { duration: .2 } },
+};
+
 export default function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: ""
-  });
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [showPw,    setShowPw]    = useState(false);
+  const [email,     setEmail]     = useState("");
+  const [password,  setPassword]  = useState("");
+  const [accepted,  setAccepted]  = useState(false);
   const [showTerms, setShowTerms] = useState(false);
-  const [showSignupPopup, setShowSignupPopup] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!acceptedTerms) {
-      alert("Please accept the terms and conditions before proceeding");
-      return;
-    }
-    // Handle login logic here
-    console.log("Login submitted:", formData);
-  };
-
-  // Properly typed animation variants
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3
-      }
-    }
-  };
-
-  const itemVariants: Variants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.5,
-        ease: "easeOut"
-      }
-    }
-  };
-
-  const termsVariants: Variants = {
-    hidden: { opacity: 0, height: 0 },
-    visible: {
-      opacity: 1,
-      height: "auto",
-      transition: {
-        duration: 0.3
-      }
-    }
-  };
-
-  const popupVariants: Variants = {
-    hidden: { opacity: 0, scale: 0.9 },
-    visible: { 
-      opacity: 1, 
-      scale: 1,
-      transition: {
-        duration: 0.3,
-        ease: "easeOut"
-      }
-    },
-    exit: {
-      opacity: 0,
-      scale: 0.9,
-      transition: {
-        duration: 0.2
-      }
-    }
+    if (!accepted) { alert("Please accept the terms first."); return; }
+    console.log("Login:", { email, password });
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-white">
-      {/* Back to Home Button */}
-      {/* <Link 
-        to="/" 
-        className="fixed top-4 left-4 z-50 flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 text-gray-700 hover:text-[#0d7a68] border border-gray-200"
-      >
-        <FaArrowLeft />
-        <span>Back to Home</span>
-      </Link> */}
+    <div className="lp">
+      <style dangerouslySetInnerHTML={{ __html: css }} />
 
-      {/* Left Side - Logo and Branding - Hidden on mobile */}
-      <motion.div 
-        className="hidden md:flex md:w-2/5 bg-white flex-col items-center justify-center p-8 relative overflow-hidden"
-        initial={{ opacity: 0, x: -50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.7, ease: "easeOut" }}
+      {/* bg layers */}
+      <div className="lp-orb" style={{ width:560,height:560,top:"-12%",left:"-10%",background:"radial-gradient(circle,rgba(192,25,44,.5) 0%,transparent 65%)" }} />
+      <div className="lp-orb" style={{ width:420,height:420,bottom:"-14%",right:"-8%",background:"radial-gradient(circle,rgba(140,10,28,.45) 0%,transparent 65%)" }} />
+      <div className="lp-orb" style={{ width:300,height:300,top:"25%",right:"12%",background:"radial-gradient(circle,rgba(100,0,20,.35) 0%,transparent 65%)" }} />
+      <div className="lp-orb" style={{ width:200,height:200,bottom:"20%",left:"8%",background:"radial-gradient(circle,rgba(160,15,35,.25) 0%,transparent 65%)" }} />
+      <div className="lp-grid" />
+      <div className="lp-lines" />
+
+      {/* back / close */}
+      <Link to="/" className="lp-back" title="Back to Home">
+        <span className="lp-back-x" style={{ fontSize:18, fontWeight:300, lineHeight:1 }}>×</span>
+        <span className="lp-back-arrow"><HiArrowLeft size={15} /></span>
+      </Link>
+
+      {/* glass card */}
+      <motion.div
+        className="lp-card"
+        initial={{ opacity: 0, y: 32, scale: .97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: .6, ease: [.22,1,.36,1] }}
       >
-        {/* Decorative elements */}
-        <div className="absolute -left-24 -top-24 w-64 h-64 rounded-full bg-[#0d7a68]/10"></div>
-        <div className="absolute -right-24 -bottom-24 w-64 h-64 rounded-full bg-[#0d7a68]/10"></div>
-        
-        <div className="w-full max-w-md z-10">
-          <motion.div 
-            className="mb-8 flex justify-center"
-            initial={{ scale: 0.9 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <div className="bg-gradient-to-br from-[#0d7a68] to-[#0a5d4f] p-4 rounded-2xl shadow-lg">
-              <img 
-                src="https://res.cloudinary.com/deahgtn57/image/upload/v1751616678/omelett%27s/public/image/ChatGPT_Image_Jun_29_2025_02_29_59_PM_vmvihs.png" 
-                alt="OMS Logo" 
-                className="w-40 h-auto"
-              />
-            </div>
+        <div className="lp-bar" />
+
+        {/* LEFT */}
+        <div className="lp-left">
+          <div className="lp-brand">
+            <motion.div className="lp-logo-frame" initial={{ scale:.88,opacity:0 }} animate={{ scale:1,opacity:1 }} transition={{ duration:.55,delay:.25 }}>
+              <img src={LOGO} alt="OMS" style={{ width:118,height:"auto",position:"relative",zIndex:1 }} />
+            </motion.div>
+            <motion.div className="lp-wordmark" initial={{ opacity:0,y:8 }} animate={{ opacity:1,y:0 }} transition={{ duration:.45,delay:.38 }}>
+              Omelette<em>'</em>s
+            </motion.div>
+            <motion.div className="lp-tagline" initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ duration:.45,delay:.48 }}>
+              Premium Aviation Collectibles
+            </motion.div>
+            <div className="lp-sep" />
+            <motion.div className="lp-pill" initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ duration:.45,delay:.56 }}>
+              <div className="lp-pill-dot" /> Members Only
+            </motion.div>
+          </div>
+        </div>
+
+        {/* RIGHT */}
+        <div className="lp-right">
+          <motion.div variants={containerV} initial="hidden" animate="visible">
+
+            {/* mobile top */}
+            <motion.div className="lp-mobile-top" variants={itemV}>
+              <div className="lp-mobile-logo">
+                <img src={LOGO} alt="OMS" style={{ width:42,height:"auto" }} />
+              </div>
+              <div className="lp-mobile-name">Omelette<em>'</em>s</div>
+            </motion.div>
+
+            <motion.div variants={itemV}>
+              <div className="lp-title">Welcome back <span style={{ color:"#e85566" }}>✦</span></div>
+              <div className="lp-sub">Sign in to your exclusive OMS account</div>
+            </motion.div>
+
+            <motion.div className="lp-notice" variants={itemV}>
+              <div className="lp-notice-dot" />
+              <p>This platform is for invited OMS members only.</p>
+            </motion.div>
+
+            <form onSubmit={onSubmit}>
+              <motion.div className="lp-field" variants={itemV}>
+                <label className="lp-label" htmlFor="email">Email Address</label>
+                <div className="lp-input-wrap">
+                  <span className="lp-icon"><FaEnvelope /></span>
+                  <input id="email" type="email" className="lp-input" placeholder="your@email.com" value={email} onChange={e => setEmail(e.target.value)} required />
+                </div>
+              </motion.div>
+
+              <motion.div className="lp-field" variants={itemV}>
+                <label className="lp-label" htmlFor="password">Password</label>
+                <div className="lp-input-wrap">
+                  <span className="lp-icon"><FaLock /></span>
+                  <input id="password" type={showPw?"text":"password"} className="lp-input lp-input-pw" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required />
+                  <button type="button" className="lp-eye" onClick={() => setShowPw(p=>!p)}>
+                    {showPw ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+              </motion.div>
+
+              <motion.div className="lp-field" variants={itemV}>
+                <button type="button" className="lp-terms-btn" onClick={() => setShowTerms(p=>!p)}>
+                  <span>Terms &amp; Conditions</span>
+                  {showTerms ? <FaChevronUp size={11}/> : <FaChevronDown size={11}/>}
+                </button>
+                <AnimatePresence>
+                  {showTerms && (
+                    <motion.div className="lp-terms-body" initial={{ height:0,opacity:0 }} animate={{ height:"auto",opacity:1 }} exit={{ height:0,opacity:0 }} transition={{ duration:.25 }}>
+                      <div className="lp-terms-inner">
+                        <p><strong>1. Exclusive Membership</strong></p>
+                        <p>OMS membership is by invitation only. Access is restricted to invited members.</p>
+                        <p><strong>2. Invitation Required</strong></p>
+                        <p>You must receive a valid invitation from an existing member to create an account.</p>
+                        <p><strong>3. Account Security</strong></p>
+                        <p>You are responsible for maintaining the confidentiality of your credentials.</p>
+                        <p><strong>4. Exclusive Content</strong></p>
+                        <p>All content within OMS is confidential and intended for members only.</p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+
+              <motion.div className="lp-check" variants={itemV}>
+                <input type="checkbox" id="terms" className="lp-checkbox" checked={accepted} onChange={() => setAccepted(p=>!p)} />
+                <label htmlFor="terms" className="lp-check-label">I confirm I have received an OMS invitation</label>
+              </motion.div>
+
+              <motion.button
+                type="submit" disabled={!accepted}
+                className={`lp-btn ${accepted?"lp-btn-on":"lp-btn-off"}`}
+                variants={itemV}
+                whileHover={accepted?{scale:1.01}:{}}
+                whileTap={accepted?{scale:.98}:{}}
+              >
+                Sign In
+              </motion.button>
+            </form>
+
+            <motion.div className="lp-foot" variants={itemV}>
+              Don't have an account?{" "}
+              <button className="lp-link" onClick={() => setShowModal(true)}>Sign up</button>
+              <div style={{ fontSize:".66rem",marginTop:6,opacity:.7 }}>Membership is exclusive and requires invitation</div>
+            </motion.div>
+
           </motion.div>
-          
-          <motion.h1 
-            className="text-3xl font-bold text-gray-800 text-center mb-4"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            Welcome to OMS
-          </motion.h1>
-          
-          <motion.p 
-            className="text-gray-600 text-center mb-8"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-          >
-            Sign in to access your exclusive account and manage your special customer benefits.
-          </motion.p>
-          
-          {/* Exclusive Membership Info */}
-          {/* <motion.div 
-            className="mt-8 p-6 bg-gradient-to-r from-[#0d7a68]/10 to-[#0a5d4f]/10 rounded-xl border border-[#0d7a68]/20"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.8 }}
-          >
-            <div className="flex items-start gap-3">
-              <div className="bg-[#0d7a68] p-2 rounded-lg">
-                <FaUserFriends className="text-white text-lg" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-800 mb-2">Exclusive Access Only</h3>
-                <p className="text-sm text-gray-600">
-                  OMS membership is by invitation only. To create an account, you need an invitation from an existing member.
-                </p>
-              </div>
-            </div>
-          </motion.div> */}
         </div>
       </motion.div>
 
-      {/* Right Side - Login Form */}
-      <motion.div 
-        className="w-full md:w-3/5 bg-gradient-to-br from-[#0d7a68] to-[#0a5d4f] flex items-center justify-center p-6 md:p-8 relative overflow-hidden min-h-screen"
-        initial={{ opacity: 0, x: 50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
-      >
-        {/* Mobile logo - only shown on mobile */}
-        <motion.div 
-          className="absolute top-6 left-0 w-full flex justify-center md:hidden z-20"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
-          <div className="bg-gradient-to-br from-[#0d7a68] to-[#0a5d4f] p-3 rounded-xl shadow-lg">
-            <img 
-              src="https://res.cloudinary.com/deahgtn57/image/upload/v1751616678/omelett%27s/public/image/ChatGPT_Image_Jun_29_2025_02_29_59_PM_vmvihs.png" 
-              alt="OMS Logo" 
-              className="w-16 h-auto"
-            />
-          </div>
-        </motion.div>
-        
-        {/* Decorative elements */}
-        <div className="absolute -left-32 -top-32 w-80 h-80 rounded-full bg-white/10"></div>
-        <div className="absolute -right-32 -bottom-32 w-80 h-80 rounded-full bg-white/10"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-white/5"></div>
-        
-        <motion.div 
-          className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 md:p-8 z-10 mt-16 md:mt-0"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          <motion.h2 
-            className="text-2xl font-bold text-gray-800 mb-6 text-center"
-            variants={itemVariants}
-          >
-            Login to Your Account
-          </motion.h2>
+      {/* ── MODAL ── */}
+      <AnimatePresence>
+        {showModal && (
+          <motion.div className="lp-modal-bg" initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }} transition={{ duration:.22 }} onClick={() => setShowModal(false)}>
+            {/* modal orbs */}
+            <div style={{ position:"absolute",width:380,height:380,top:"-10%",left:"-8%",borderRadius:"50%",background:"radial-gradient(circle,rgba(192,25,44,.4) 0%,transparent 60%)",filter:"blur(55px)",pointerEvents:"none" }} />
+            <div style={{ position:"absolute",width:300,height:300,bottom:"-10%",right:"-5%",borderRadius:"50%",background:"radial-gradient(circle,rgba(140,10,28,.3) 0%,transparent 60%)",filter:"blur(48px)",pointerEvents:"none" }} />
 
-          {/* Terms and Conditions */}
-          <motion.div className="mb-6 bg-yellow-50 p-4 rounded-lg border border-yellow-200" variants={itemVariants}>
-            <div className="flex items-start">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-yellow-800">Exclusive Platform</h3>
-                <div className="mt-2 text-sm text-yellow-700">
-                  <p>This platform is exclusively for invited OMS members. Membership requires an invitation.</p>
+            <motion.div className="lp-modal" variants={modalV} initial="hidden" animate="visible" exit="exit" onClick={e=>e.stopPropagation()}>
+              <div className="lp-modal-bar" />
+              <div className="lp-modal-head">
+                <div className="lp-modal-head-left">
+                  <div className="lp-modal-icon"><FaUserFriends /></div>
+                  <div>
+                    <div className="lp-modal-title">OMS Membership</div>
+                    <div className="lp-modal-sub">Invitation Required</div>
+                  </div>
                 </div>
+                <button className="lp-modal-close" onClick={() => setShowModal(false)}><FaTimes size={12}/></button>
               </div>
-            </div>
-          </motion.div>
 
-          <form onSubmit={handleSubmit}>
-            <motion.div className="mb-6" variants={itemVariants}>
-              <label htmlFor="email" className="block text-gray-700 mb-2 font-medium">
-                Email Address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaEnvelope className="text-gray-400" />
-                </div>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0d7a68] focus:border-transparent transition-colors"
-                  placeholder="Enter your invited email"
-                  required
-                />
+              <div className="lp-modal-body">
+                {[
+                  { icon:<FaUserFriends/>, bg:"rgba(192,25,44,.2)", color:"#e85566", title:"Invitation-Only", desc:"OMS is exclusively by invitation. You cannot create an account without one from an existing member." },
+                  { icon:<FaEnvelope/>,    bg:"rgba(59,130,246,.18)",color:"#60a5fa", title:"How to Get Invited",  desc:"Contact an existing OMS member and request an invitation email with registration instructions." },
+                  { icon:<FaLock/>,        bg:"rgba(168,85,247,.16)",color:"#c084fc", title:"Secure & Private",    desc:"All members are verified through our invitation system with strict privacy standards." },
+                ].map((r,i) => (
+                  <div key={i} className="lp-modal-row">
+                    <div className="lp-modal-row-icon" style={{ background:r.bg,color:r.color }}>{r.icon}</div>
+                    <div>
+                      <div className="lp-modal-row-title">{r.title}</div>
+                      <div className="lp-modal-row-desc">{r.desc}</div>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </motion.div>
 
-            <motion.div className="mb-6" variants={itemVariants}>
-              <label htmlFor="password" className="block text-gray-700 mb-2 font-medium">
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaLock className="text-gray-400" />
-                </div>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0d7a68] focus:border-transparent transition-colors"
-                  placeholder="Enter your password"
-                  required
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <FaEyeSlash />
-                  ) : (
-                    <FaEye />
-                  )}
+              <div className="lp-modal-foot">
+                <button className="lp-modal-btn" onClick={() => { setShowModal(false); window.location.href="/help"; }}>
+                  <FaEnvelopeOpen size={14}/> Request Invitation Help
                 </button>
+                <div className="lp-modal-note">OMS — Exclusive Membership Platform</div>
               </div>
             </motion.div>
-
-            {/* Terms and Conditions Toggle */}
-            <motion.div className="mb-6" variants={itemVariants}>
-              <button
-                type="button"
-                className="w-full flex items-center justify-between p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                onClick={() => setShowTerms(!showTerms)}
-              >
-                <span className="text-sm font-medium text-gray-700">Terms & Conditions</span>
-                {showTerms ? <FaChevronUp className="text-gray-500" /> : <FaChevronDown className="text-gray-500" />}
-              </button>
-              
-              {showTerms && (
-                <motion.div 
-                  variants={termsVariants}
-                  initial="hidden"
-                  animate="visible"
-                  className="mt-3 p-4 bg-gray-50 rounded-lg overflow-hidden"
-                >
-                  <div className="text-xs text-gray-600 max-h-40 overflow-y-auto">
-                    <h4 className="font-bold mb-2">1. Exclusive Membership</h4>
-                    <p className="mb-3">OMS membership is by invitation only. Access is restricted to invited members.</p>
-                    
-                    <h4 className="font-bold mb-2">2. Invitation Required</h4>
-                    <p className="mb-3">To create an OMS account, you must receive a valid invitation from an existing member.</p>
-                    
-                    <h4 className="font-bold mb-2">3. Account Security</h4>
-                    <p className="mb-3">You are responsible for maintaining the confidentiality of your account credentials.</p>
-                    
-                    <h4 className="font-bold mb-2">4. Exclusive Content</h4>
-                    <p>All content within OMS is confidential and intended for members only.</p>
-                  </div>
-                </motion.div>
-              )}
-            </motion.div>
-
-            <motion.div className="flex items-center mb-6" variants={itemVariants}>
-              <input
-                type="checkbox"
-                id="acceptTerms"
-                checked={acceptedTerms}
-                onChange={() => setAcceptedTerms(!acceptedTerms)}
-                className="h-4 w-4 text-[#0d7a68] focus:ring-[#0d7a68] border-gray-300 rounded"
-              />
-              <label htmlFor="acceptTerms" className="ml-2 block text-sm text-gray-700">
-                I confirm I have received an OMS invitation
-              </label>
-            </motion.div>
-
-            <motion.button
-              type="submit"
-              disabled={!acceptedTerms}
-              className={`w-full py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0d7a68] transition-all duration-300 shadow-md ${
-                acceptedTerms 
-                  ? "bg-gradient-to-r from-[#0d7a68] to-[#0a5d4f] text-white hover:opacity-90" 
-                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
-              }`}
-              variants={itemVariants}
-              whileHover={acceptedTerms ? { scale: 1.02 } : {}}
-              whileTap={acceptedTerms ? { scale: 0.98 } : {}}
-            >
-              Sign In
-            </motion.button>
-          </form>
-
-          <motion.div className="mt-6 text-center" variants={itemVariants}>
-            <p className="text-sm text-gray-600">
-              Don't have an account?{" "}
-              <button 
-                onClick={() => setShowSignupPopup(true)}
-                className="font-medium text-[#0d7a68] hover:text-[#0a5d4f] transition-colors underline"
-              >
-                Sign up
-              </button>
-            </p>
-            <p className="text-xs text-gray-500 mt-2">
-              Membership is exclusive and requires invitation
-            </p>
           </motion.div>
-        </motion.div>
-      </motion.div>
-
-      {/* Signup Popup/Modal */}
-      {showSignupPopup && (
-        <motion.div 
-          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={() => setShowSignupPopup(false)}
-        >
-          <motion.div 
-            className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden"
-            variants={popupVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Popup Header */}
-            <div className="bg-gradient-to-r from-[#0d7a68] to-[#0a5d4f] p-6 text-white relative">
-              <button
-                onClick={() => setShowSignupPopup(false)}
-                className="absolute top-4 right-4 text-white hover:text-gray-200 transition-colors"
-              >
-                <FaTimes className="text-xl" />
-              </button>
-              
-              <div className="flex items-center gap-4">
-                <div className="bg-white/20 p-3 rounded-xl">
-                  <FaUserFriends className="text-2xl" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold">OMS Membership</h3>
-                  <p className="text-white/80 text-sm">Invitation Required</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Popup Content */}
-            <div className="p-6 overflow-y-auto max-h-[60vh]">
-              <div className="text-center mb-6">
-                <div className="w-20 h-20 bg-gradient-to-br from-[#0d7a68]/20 to-[#0a5d4f]/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <FaEnvelopeOpen className="text-3xl text-[#0d7a68]" />
-                </div>
-                <h4 className="text-lg font-bold text-gray-800 mb-2">Exclusive Membership Access</h4>
-                <p className="text-gray-600 mb-4">
-                  OMS is an exclusive platform for special members only
-                </p>
-              </div>
-
-              <div className="space-y-4 mb-6">
-                <div className="flex items-start gap-3 p-4 bg-blue-50 rounded-lg">
-                  <div className="bg-blue-100 p-2 rounded-lg">
-                    <FaUserFriends className="text-blue-600" />
-                  </div>
-                  <div>
-                    <h5 className="font-semibold text-gray-800 mb-1">Invitation-Only</h5>
-                    <p className="text-sm text-gray-600">
-                      OMS membership is exclusively by invitation. You cannot create an account without an invitation from an existing member.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg">
-                  <div className="bg-green-100 p-2 rounded-lg">
-                    <FaEnvelope className="text-green-600" />
-                  </div>
-                  <div>
-                    <h5 className="font-semibold text-gray-800 mb-1">How to Get Invited</h5>
-                    <p className="text-sm text-gray-600">
-                      Contact an existing OMS member and request an invitation. They will send you an invitation email with registration instructions.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3 p-4 bg-purple-50 rounded-lg">
-                  <div className="bg-purple-100 p-2 rounded-lg">
-                    <FaLock className="text-purple-600" />
-                  </div>
-                  <div>
-                    <h5 className="font-semibold text-gray-800 mb-1">Secure & Private</h5>
-                    <p className="text-sm text-gray-600">
-                      OMS maintains strict privacy and security standards. All members are verified through our invitation system.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                <div className="flex items-start">
-                  <svg className="h-5 w-5 text-yellow-400 mt-0.5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                  </svg>
-                  <div className="ml-3">
-                    <h5 className="text-sm font-medium text-yellow-800">Important Notice</h5>
-                    <p className="text-sm text-yellow-700 mt-1">
-                      If you haven't received an invitation, you cannot create an account. Please contact an OMS member for assistance.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Popup Footer */}
-            <div className="p-6 border-t border-gray-200 bg-gray-50">
-              <div className="flex flex-col sm:flex-row gap-3">
-                {/* <button
-                  onClick={() => setShowSignupPopup(false)}
-                  className="px-4 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors flex-1"
-                >
-                  Close
-                </button> */}
-              <button
-  onClick={() => {
-    setShowSignupPopup(false);
-    window.location.href = '/help'; // Redirects the whole page
-  }}
-  className="px-4 py-3 bg-gradient-to-r from-[#0d7a68] to-[#0a5d4f] text-white rounded-lg hover:opacity-90 transition-opacity flex-1 flex items-center justify-center gap-2"
->
-  <FaEnvelopeOpen />
-  Request Invitation Help
-</button>
-              </div>
-              
-              <p className="text-xs text-gray-500 text-center mt-4">
-                OMS - Exclusive Membership Platform
-              </p>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-
-      {/* Mobile Back Button */}
-      {/* <div className="md:hidden fixed bottom-4 left-1/2 transform -translate-x-1/2 z-40">
-        <Link 
-          to="/" 
-          className="flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 text-gray-700 hover:text-[#0d7a68] border border-gray-200"
-        >
-          <FaArrowLeft />
-          <span>Back to Home</span>
-        </Link>
-      </div> */}
+        )}
+      </AnimatePresence>
     </div>
   );
 }

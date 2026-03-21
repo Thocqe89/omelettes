@@ -21,6 +21,7 @@ import OMS_Trip_Tracker from "./components/oms-tirp-tracker";
 import LoginPage from "./components/login";
 import OMSDashboard from "./components/test";
 import OMS_Help_Request from "./components/customers";
+import Loading from "./components/loading";
 
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
         <Route element={<  LoginPage />} path="/OMS_Login" />
         {/* <Route element={<OMSDashboard />} path="/OMS_Dashboard" />
         <Route element={<Dashboard />} path="/oms-dashboard" /> */}
+          <Route element={<Loading />} path="/omloooding" /> 
 
 
 

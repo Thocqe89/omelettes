@@ -3,12 +3,12 @@
   "short_name": "Omelette's",
   "icons": [
     {
-      "src": "https://res.cloudinary.com/deahgtn57/image/upload/v1756960044/omelett%27s/public/logo/logo.png",
+      "src": "https://res.cloudinary.com/deahgtn57/image/upload/v1774086721/omelett%27s/public/logo/OMS-RED_1_qqr6zm.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "https://res.cloudinary.com/deahgtn57/image/upload/v1756960044/omelett%27s/public/logo/logo.png",
+      "src": "https://res.cloudinary.com/deahgtn57/image/upload/v1774086721/omelett%27s/public/logo/OMS-RED_1_qqr6zm.png",
       "type": "image/png",
       "sizes": "512x512"
     }

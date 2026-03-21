@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
 /* ─────────────────────────────────────────────────────────
-   AirplaneLoading
+   AirplaneLoading (plane removed)
    Props:
      isLoading  — show/hide
-     message    — optional text under the plane (default "Loading…")
+     message    — optional text (default "Loading…")
      fullScreen — true = fixed overlay, false = fills parent container
 ───────────────────────────────────────────────────────── */
 interface AirplaneLoadingProps {
@@ -159,102 +159,6 @@ const css = `
     opacity: .5;
   }
 
-  /* ── main airplane SVG container ── */
-  .al-plane-container {
-    position: absolute;
-    bottom: 38%;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    pointer-events: none;
-  }
-
-  /* takeoff: start on ground left→right, lift off and exit top-right */
-  .al-plane-takeoff {
-    animation: alTakeoff 3.2s cubic-bezier(.4,0,.2,1) infinite;
-    transform-origin: center bottom;
-  }
-  @keyframes alTakeoff {
-    0%   { transform: translate(-180px, 0px)   rotate(0deg);   opacity: 0; }
-    8%   { opacity: 1; }
-    30%  { transform: translate(-40px, 0px)    rotate(0deg);   opacity: 1; }
-    55%  { transform: translate(60px, -55px)   rotate(-11deg); opacity: 1; }
-    80%  { transform: translate(200px, -160px) rotate(-18deg); opacity: .7; }
-    95%  { transform: translate(340px, -280px) rotate(-22deg); opacity: 0; }
-    100% { transform: translate(360px, -300px) rotate(-22deg); opacity: 0; }
-  }
-
-  /* landing: enter from top-right, descend, touch down, roll to stop */
-  .al-plane-landing {
-    animation: alLanding 3.2s cubic-bezier(.4,0,.2,1) infinite;
-    transform-origin: center bottom;
-  }
-  @keyframes alLanding {
-    0%   { transform: translate(300px, -260px) rotate(10deg);  opacity: 0; }
-    8%   { opacity: 1; }
-    40%  { transform: translate(80px, -50px)   rotate(6deg);   opacity: 1; }
-    58%  { transform: translate(-20px, 0px)    rotate(2deg);   opacity: 1; }
-    70%  { transform: translate(-80px, 0px)    rotate(0deg);   opacity: 1; }
-    90%  { transform: translate(-200px, 0px)   rotate(0deg);   opacity: .5; }
-    100% { transform: translate(-240px, 0px)   rotate(0deg);   opacity: 0; }
-  }
-
-  /* ── engine heat shimmer ── */
-  .al-exhaust {
-    position: absolute;
-    right: -18px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 22px;
-    height: 8px;
-    background: radial-gradient(ellipse at left, rgba(13,122,104,.7), transparent);
-    filter: blur(3px);
-    animation: alExhaust .4s ease-in-out infinite alternate;
-  }
-  @keyframes alExhaust {
-    from { opacity: .6; transform: translateY(-50%) scaleX(1); }
-    to   { opacity: 1;  transform: translateY(-50%) scaleX(1.4); }
-  }
-
-  /* ── wheel sparks on landing ── */
-  .al-sparks {
-    position: absolute;
-    bottom: -4px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 40px;
-    height: 12px;
-    opacity: 0;
-  }
-  .al-plane-landing .al-sparks {
-    animation: alSparks 3.2s ease infinite;
-  }
-  @keyframes alSparks {
-    0%,52%   { opacity: 0; }
-    58%,65%  { opacity: 1; }
-    70%      { opacity: 0; }
-    100%     { opacity: 0; }
-  }
-  .al-spark {
-    position: absolute;
-    bottom: 0;
-    width: 2px;
-    height: 6px;
-    background: #4db8a8;
-    border-radius: 1px;
-    animation: alSparkFly .3s ease-out infinite;
-  }
-  .al-spark:nth-child(1) { left: 8px;  animation-delay: 0s;    height: 5px; }
-  .al-spark:nth-child(2) { left: 16px; animation-delay: .05s;  height: 8px; }
-  .al-spark:nth-child(3) { left: 24px; animation-delay: .1s;   height: 4px; }
-  .al-spark:nth-child(4) { left: 32px; animation-delay: .02s;  height: 7px; }
-  @keyframes alSparkFly {
-    from { transform: translateY(0) rotate(-15deg); opacity: 1; }
-    to   { transform: translateY(-10px) rotate(10deg); opacity: 0; }
-  }
-
   /* ── cloud layers ── */
   .al-clouds {
     position: absolute;
@@ -390,92 +294,12 @@ const SPEED_LINES = Array.from({ length: 10 }, (_, i) => ({
   dur:   `${(1.2 + (i * 0.3) % 1.5).toFixed(1)}s`,
 }));
 
-/* ── Airplane SVG — clean side-view wide-body ── */
-const PlaneSVG = ({ size = 110 }: { size?: number }) => (
-  <svg
-    width={size}
-    height={size * 0.44}
-    viewBox="0 0 220 96"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    style={{ display: "block", filter: "drop-shadow(0 0 12px rgba(13,122,104,.55))" }}
-  >
-    {/* Fuselage */}
-    <ellipse cx="110" cy="48" rx="100" ry="17" fill="url(#fuse)" />
-    {/* Nose */}
-    <path d="M210 48 Q220 47 218 48 Q220 49 210 48Z" fill="#d0eae6" />
-    {/* Cockpit window */}
-    <ellipse cx="192" cy="44" rx="9" ry="6" fill="#e8f8f5" opacity=".9" />
-    <ellipse cx="178" cy="43" rx="7" ry="5" fill="#cdf0ea" opacity=".75" />
-    {/* Main wing */}
-    <path d="M115 48 L158 28 L172 31 L140 48 L172 65 L158 68Z" fill="url(#wing)" />
-    {/* Wing highlight */}
-    <path d="M118 46 L157 29 L165 30 L130 47Z" fill="rgba(220,245,242,.12)" />
-    {/* Tail horizontal */}
-    <path d="M24 48 L46 38 L54 40 L38 48 L54 56 L46 58Z" fill="url(#tail)" />
-    {/* Tail fin vertical */}
-    <path d="M28 48 L50 22 L55 24 L40 48Z" fill="url(#tailfin)" />
-    {/* Engine pod */}
-    <ellipse cx="148" cy="65" rx="22" ry="8" fill="url(#engine)" transform="rotate(-3 148 65)" />
-    {/* Engine intake glow */}
-    <ellipse cx="168" cy="64" rx="4" ry="6" fill="rgba(125,212,200,.75)" />
-    {/* Engine exhaust glow */}
-    <ellipse cx="128" cy="65" rx="3" ry="4" fill="rgba(13,122,104,.5)" />
-    {/* Windows row */}
-    {[60,74,88,102,116,130,144,158,168,178].map((x, i) => (
-      <rect key={i} x={x} y="41" width="8" height="6" rx="2.5"
-        fill="#d4f0eb" opacity={i > 6 ? .65 : .85} />
-    ))}
-    {/* Belly stripe */}
-    <path d="M22 52 Q110 57 210 49" stroke="rgba(77,184,168,.2)" strokeWidth="1" fill="none" />
-    {/* Landing gear (tiny wheels) */}
-    <circle cx="90"  cy="65" r="4" fill="rgba(13,122,104,.5)" />
-    <circle cx="150" cy="73" r="3.5" fill="rgba(13,122,104,.4)" />
-
-    <defs>
-      <linearGradient id="fuse" x1="10" y1="31" x2="210" y2="65" gradientUnits="userSpaceOnUse">
-        <stop offset="0%"   stopColor="#4a8a80" />
-        <stop offset="35%"  stopColor="#b8deda" />
-        <stop offset="65%"  stopColor="#e0f5f2" />
-        <stop offset="100%" stopColor="#6aada5" />
-      </linearGradient>
-      <linearGradient id="wing" x1="115" y1="28" x2="172" y2="68" gradientUnits="userSpaceOnUse">
-        <stop offset="0%"  stopColor="#7ac8be" />
-        <stop offset="100%" stopColor="#3a7870" />
-      </linearGradient>
-      <linearGradient id="tail" x1="24" y1="38" x2="54" y2="58" gradientUnits="userSpaceOnUse">
-        <stop offset="0%"  stopColor="#5a9990" />
-        <stop offset="100%" stopColor="#2e6860" />
-      </linearGradient>
-      <linearGradient id="tailfin" x1="28" y1="22" x2="55" y2="48" gradientUnits="userSpaceOnUse">
-        <stop offset="0%"  stopColor="#4a8880" />
-        <stop offset="100%" stopColor="#1e5850" />
-      </linearGradient>
-      <linearGradient id="engine" x1="126" y1="57" x2="170" y2="73" gradientUnits="userSpaceOnUse">
-        <stop offset="0%"  stopColor="#1e5850" />
-        <stop offset="60%" stopColor="#5aaaa0" />
-        <stop offset="100%" stopColor="#a0d8d2" />
-      </linearGradient>
-    </defs>
-  </svg>
-);
-
 export default function Loading({
   isLoading = true,
   message   = "Loading",
   fullScreen = true,
 }: AirplaneLoadingProps) {
-  const [phase, setPhase]   = useState<"takeoff" | "landing">("takeoff");
   const [visible, setVisible] = useState(isLoading);
-
-  /* ── Alternate takeoff / landing every cycle ── */
-  useEffect(() => {
-    if (!isLoading) return;
-    const id = setInterval(() => {
-      setPhase(p => p === "takeoff" ? "landing" : "takeoff");
-    }, 3200);
-    return () => clearInterval(id);
-  }, [isLoading]);
 
   /* ── Fade-out when done loading ── */
   useEffect(() => {
@@ -547,22 +371,6 @@ export default function Loading({
           <div className="al-glow" />
         </div>
 
-        {/* Airplane */}
-        <div className="al-plane-container">
-          <div className={phase === "takeoff" ? "al-plane-takeoff" : "al-plane-landing"}
-            style={{ position: "relative" }}>
-            <PlaneSVG size={120} />
-            {/* Engine exhaust */}
-            <div className="al-exhaust" />
-            {/* Landing sparks */}
-            <div className="al-sparks">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="al-spark" />
-              ))}
-            </div>
-          </div>
-        </div>
-
         {/* UI overlay */}
         <div className="al-ui">
           {/* Brand */}
@@ -570,9 +378,9 @@ export default function Loading({
             Omelette<span>'</span>s
           </div>
 
-          {/* Phase */}
+          {/* Phase label */}
           <div className="al-phase">
-            {phase === "takeoff" ? "✈ Preparing for Takeoff" : "✈ On Final Approach"}
+            ✦ Please Wait
           </div>
 
           {/* Progress bar */}
