@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useTranslation } from "react-i18next";
-import { FaWhatsapp, FaStar, FaTruck } from "react-icons/fa";
+import { FaWhatsapp, FaStar, FaTruck, FaCopy, FaCheck } from "react-icons/fa";
 import DefaultLayout from "@/layouts/default";
 import { AiOutlineLeft, AiOutlineRight, AiOutlineShoppingCart, AiOutlineArrowUp } from "react-icons/ai";
 import { FiSearch } from "react-icons/fi";
@@ -288,7 +288,6 @@ const LazyImage = ({
 
   return (
     <div style={{ position:"relative", width:"100%", height:"100%", overflow:"hidden", cursor: onClick ? "zoom-in" : undefined }} onClick={onClick}>
-      {/* tiny blur shown instantly while full image loads */}
       <img
         src={blurSrc}
         aria-hidden
@@ -300,7 +299,6 @@ const LazyImage = ({
           pointerEvents:"none",
         }}
       />
-      {/* shimmer skeleton */}
       {!loaded && (
         <div style={{
           position:"absolute", inset:0,
@@ -310,7 +308,6 @@ const LazyImage = ({
           pointerEvents:"none",
         }} />
       )}
-      {/* full resolution image */}
       <img
         src={src}
         alt={alt}
@@ -324,21 +321,98 @@ const LazyImage = ({
   );
 };
 
+// Success Modal - Same glass style as order modal
+const SuccessModal = ({ isOpen, onClose, requestId }: { isOpen: boolean; onClose: () => void; requestId: string }) => {
+  const [copied, setCopied] = React.useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(requestId);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <motion.div className="om-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: .22 }} onClick={onClose}>
+      <div className="om-orb" style={{ width: 440, height: 440, top: "-18%", left: "-10%", background: "radial-gradient(circle,rgba(13,122,104,.5) 0%,transparent 60%)", filter: "blur(55px)" }} />
+      <div className="om-orb" style={{ width: 340, height: 340, bottom: "-18%", right: "-6%", background: "radial-gradient(circle,rgba(77,184,168,.35) 0%,transparent 60%)", filter: "blur(48px)" }} />
+      <div className="om-orb" style={{ width: 220, height: 220, top: "30%", right: "15%", background: "radial-gradient(circle,rgba(10,60,160,.3) 0%,transparent 60%)", filter: "blur(38px)" }} />
+      <motion.div className="om-panel" onClick={e => e.stopPropagation()} initial={{ opacity: 0, scale: .95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: .95, y: 20 }} transition={{ duration: .28, ease: [.22, 1, .36, 1] }}>
+        <button className="om-close" onClick={onClose} aria-label="Close"><IoClose size={14} /></button>
+        <div className="om-header">
+          <div className="om-title">
+            <div className="om-title-icon">
+              <FaCheck size={16} />
+            </div>
+            <span>Order Request Sent!</span>
+          </div>
+        </div>
+        <div className="om-body">
+          <div className="text-center">
+            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center shadow-xl">
+              <FaWhatsapp className="text-white text-2xl" />
+            </div>
+            <p className="text-white/80 mb-4 text-sm">
+              Your order request has been opened in WhatsApp. Please click send to complete your order.
+            </p>
+            
+            {/* Request ID with Copy Button */}
+            <div className="om-summary mb-4">
+              <div className="om-sum-label">REQUEST ID</div>
+              <div className="flex items-center justify-between gap-2 mt-2">
+                <code className="text-sm font-mono text-[#4db8a8]">{requestId}</code>
+                <button
+                  onClick={handleCopy}
+                  className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition-colors border border-white/20"
+                  title="Copy Request ID"
+                >
+                  {copied ? <FaCheck className="text-green-500" size={14} /> : <FaCopy className="text-white/80" size={14} />}
+                </button>
+              </div>
+              {copied && (
+                <p className="text-xs text-green-400 mt-2">Copied to clipboard!</p>
+              )}
+            </div>
+
+            <div className="om-sum-note text-xs">
+              ⚠️ Please save this Request ID for tracking your order. You'll need it for any future inquiries.
+            </div>
+          </div>
+        </div>
+        <div className="om-footer">
+          <button className="om-wa-btn" onClick={onClose} style={{ background: "linear-gradient(135deg,#0d7a68,#0a6455)", boxShadow: "0 6px 20px rgba(13,122,104,.32)" }}>
+            Close
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
 export default function Omellets() {
   const { t } = useTranslation();
-  const [entries,      setEntries]      = React.useState<Product[]>([]);
-  const [loading,      setLoading]      = React.useState(true);
-  const [searchTerm,   setSearchTerm]   = React.useState("");
+  const [entries, setEntries] = React.useState<Product[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [searchTerm, setSearchTerm] = React.useState("");
   const [imageIndexes, setImageIndexes] = React.useState<Record<string, number>>({});
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [selectedProduct, setSelectedProduct] = React.useState<Product | null>(null);
-  const [orderDetails,    setOrderDetails]    = React.useState<OrderDetails>({
+  const [orderDetails, setOrderDetails] = React.useState<OrderDetails>({
     productId: "", productName: "", price: 0, quantity: 1,
     customerName: "", phone: "", address: "", notes: "", includeLogistics: false,
   });
-  const [lightboxOpen,          setLightboxOpen]          = React.useState(false);
+  const [lightboxOpen, setLightboxOpen] = React.useState(false);
   const [selectedProductImages, setSelectedProductImages] = React.useState<string[]>([]);
-  const [selectedImageIndex,    setSelectedImageIndex]    = React.useState(0);
+  const [selectedImageIndex, setSelectedImageIndex] = React.useState(0);
+  
+  // Success Modal State
+  const [successModalOpen, setSuccessModalOpen] = React.useState(false);
+  const [currentRequestId, setCurrentRequestId] = React.useState("");
 
   // ── Scroll to top ──
   const [showScrollTop, setShowScrollTop] = React.useState(false);
@@ -349,12 +423,19 @@ export default function Omellets() {
   }, []);
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
+  // Generate Request ID
+  const generateRequestId = () => {
+    const timestamp = Date.now().toString().slice(-6);
+    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    return `ORD-${timestamp}-${random}`;
+  };
+
   React.useEffect(() => {
     if (!lightboxOpen) return;
     const h = (e: KeyboardEvent) => {
-      if (e.key === "Escape")     setLightboxOpen(false);
+      if (e.key === "Escape") setLightboxOpen(false);
       if (e.key === "ArrowRight") setSelectedImageIndex(p => (p + 1) % selectedProductImages.length);
-      if (e.key === "ArrowLeft")  setSelectedImageIndex(p => (p - 1 + selectedProductImages.length) % selectedProductImages.length);
+      if (e.key === "ArrowLeft") setSelectedImageIndex(p => (p - 1 + selectedProductImages.length) % selectedProductImages.length);
     };
     window.addEventListener("keydown", h);
     return () => window.removeEventListener("keydown", h);
@@ -382,40 +463,36 @@ export default function Omellets() {
 
   const openOrderModal = (product: Product) => {
     setSelectedProduct(product);
-    setOrderDetails({ productId: product.ID, productName: product.Name, price: product["Final Selling Price"], quantity: 1, customerName: "", phone: "", address: "", notes: "", includeLogistics: false });
+    setOrderDetails({
+      productId: product.ID, productName: product.Name, price: product["Final Selling Price"], quantity: 1,
+      customerName: "", phone: "", address: "", notes: "", includeLogistics: false
+    });
     onOpen();
   };
 
   const handleOrderSubmit = () => {
+    const requestId = generateRequestId();
+    setCurrentRequestId(requestId);
+    
     const now = new Date();
     const formattedDate = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     const formattedTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-    const message = `🛒 New Order Request | ${formattedDate} at ${formattedTime}\n\nProduct Details |\nID: OMS-00-00-${orderDetails.productId}\nName: ${orderDetails.productName}\nType: ${selectedProduct?.Type}\nSize: ${selectedProduct?.Size}\nPrice: ${orderDetails.price.toLocaleString()} ₭\nQuantity: ${orderDetails.quantity}\n${orderDetails.includeLogistics ? `time_label: ${orderDetails.address}` : ''}\nAdditional Notes: ${orderDetails.notes || 'None'}\n*Logistics services provided free of charge\n____________________________\n${orderDetails.includeLogistics ? ' Pickup at T2 bannakham, sekhodthabong district, Vientiane province, Laos' : ''}`;
+    const message = `🛒 New Order Request | ${formattedDate} at ${formattedTime}\n\n📋 Request ID: ${requestId}\n\nProduct Details |\nID: OMS-00-00-${orderDetails.productId}\nName: ${orderDetails.productName}\nType: ${selectedProduct?.Type}\nSize: ${selectedProduct?.Size}\nPrice: ${orderDetails.price.toLocaleString()} ₭\nQuantity: ${orderDetails.quantity}\n${orderDetails.includeLogistics ? `Pickup: ${orderDetails.address}` : ''}\nAdditional Notes: ${orderDetails.notes || 'None'}\n\n💰 Payment Status: PENDING\nPlease complete payment to confirm your order.`;
+    
     window.open(`https://wa.me/8562055058028?text=${encodeURIComponent(message)}`, '_blank');
     onOpenChange();
+    setSuccessModalOpen(true);
   };
 
-  // ── Cloudinary URL optimizer — high quality, fast delivery ──
+  // ── Cloudinary URL optimizer ──
   function optimizeCloudinaryUrl(url: string, width = 1200): string {
     if (!url || !url.includes("res.cloudinary.com")) return url;
-    return url.replace(
-      "/upload/",
-      `/upload/f_auto,q_auto:best,w_${width},c_limit/`
-    );
-  }
-
-  // ── Tiny blur placeholder (very small, loads instantly) ──
-  function blurPlaceholderUrl(url: string): string {
-    if (!url || !url.includes("res.cloudinary.com")) return url;
-    return url.replace(
-      "/upload/",
-      `/upload/w_20,e_blur:1000,q_1,f_auto/`
-    );
+    return url.replace("/upload/", `/upload/f_auto,q_auto:best,w_${width},c_limit/`);
   }
 
   function getAllImages(product: Product): string[] {
     const images: string[] = [];
-    const keys = ["image_meain","image_1","image_2","image_3","image_4","image_5","image_6","image_7","image_8","image_9","image_10","image_11","image_12","image_13","image_14","image_15"] as const;
+    const keys = ["image_meain", "image_1", "image_2", "image_3", "image_4", "image_5", "image_6", "image_7", "image_8", "image_9", "image_10", "image_11", "image_12", "image_13", "image_14", "image_15"] as const;
     if (product.Images) keys.forEach(k => { const u = product.Images?.[k]; if (u && u.trim() !== "") images.push(optimizeCloudinaryUrl(u.trim())); });
     if (images.length === 0) {
       if (product.Image?.trim()) images.push(optimizeCloudinaryUrl(product.Image.trim()));
@@ -439,14 +516,14 @@ export default function Omellets() {
       <div className="sp-root sp-page">
         <div className="sp-header">
           <div className="sp-header-grid" />
-          <div className="sp-header-orb" style={{ width:440,height:440,top:"-25%",right:"8%",background:"radial-gradient(circle,rgba(13,122,104,.28) 0%,transparent 70%)" }} />
-          <div className="sp-header-orb" style={{ width:280,height:280,bottom:"-35%",left:"4%",background:"radial-gradient(circle,rgba(255,255,255,.05) 0%,transparent 70%)" }} />
+          <div className="sp-header-orb" style={{ width: 440, height: 440, top: "-25%", right: "8%", background: "radial-gradient(circle,rgba(13,122,104,.28) 0%,transparent 70%)" }} />
+          <div className="sp-header-orb" style={{ width: 280, height: 280, bottom: "-35%", left: "4%", background: "radial-gradient(circle,rgba(255,255,255,.05) 0%,transparent 70%)" }} />
           <h1>Omelette<em>'</em>s</h1>
           <p className="sp-header-sub">{t("premium_airplane_models") || "Premium Model Aircraft • Collectors & Enthusiasts"}</p>
           <div className="sp-header-pill"><span className="sp-pill-dot" />✈ Collection Store</div>
         </div>
 
-        <div style={{ maxWidth:1200,margin:"0 auto",padding:"0 20px" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 20px" }}>
           <div className="sp-search-wrap">
             <div className="sp-search">
               <div className="sp-search-glass">
@@ -463,9 +540,9 @@ export default function Omellets() {
 
           {!loading && filteredEntries.length === 0 && (
             <div className="sp-empty">
-              <div style={{ fontSize:"2.8rem",marginBottom:12,opacity:.35 }}>✈</div>
-              <p style={{ fontWeight:700,fontSize:"1rem",marginBottom:6 }}>{t("no_results_found") || "No results found"}</p>
-              <p style={{ fontSize:".85rem" }}>Try a different search term</p>
+              <div style={{ fontSize: "2.8rem", marginBottom: 12, opacity: .35 }}>✈</div>
+              <p style={{ fontWeight: 700, fontSize: "1rem", marginBottom: 6 }}>{t("no_results_found") || "No results found"}</p>
+              <p style={{ fontSize: ".85rem" }}>Try a different search term</p>
             </div>
           )}
 
@@ -479,15 +556,15 @@ export default function Omellets() {
                 const images = getAllImages(entry);
                 const curIdx = imageIndexes[entry.ID] ?? 0;
                 return (
-                  <motion.div key={entry.ID} className="sp-card" style={{ animationDelay:`${idx * 0.055}s` }} whileHover={{ y:-5 }} transition={{ type:"spring",stiffness:280,damping:20 }}>
+                  <motion.div key={entry.ID} className="sp-card" style={{ animationDelay: `${idx * 0.055}s` }} whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 280, damping: 20 }}>
                     <div className="sp-img-zone" onClick={() => { setSelectedProductImages(images); setSelectedImageIndex(curIdx); setLightboxOpen(true); }}>
-                      <div className="sp-img-blur" style={{ backgroundImage:`url(${images[curIdx]})` }} />
+                      <div className="sp-img-blur" style={{ backgroundImage: `url(${images[curIdx]})` }} />
                       <div className="sp-img-dim" />
                       <LazyImage
                         src={images[curIdx]}
-                        alt={`${entry.Name} ${curIdx+1}`}
+                        alt={`${entry.Name} ${curIdx + 1}`}
                         className="sp-img-main"
-                        style={{ position:"relative", zIndex:2 }}
+                        style={{ position: "relative", zIndex: 2 }}
                       />
                       {entry.Status && <div className="sp-status">{entry.Status}</div>}
                       {images.length > 1 && (
@@ -495,21 +572,21 @@ export default function Omellets() {
                           <button className="sp-nav sp-nav-l" onClick={e => { e.stopPropagation(); handlePrevImage(entry.ID, images.length); }}><AiOutlineLeft size={13} /></button>
                           <button className="sp-nav sp-nav-r" onClick={e => { e.stopPropagation(); handleNextImage(entry.ID, images.length); }}><AiOutlineRight size={13} /></button>
                           <div className="sp-img-dots">
-                            {images.slice(0,8).map((_,i) => (
-                              <button key={i} className={`sp-dot${i===curIdx?" on":""}`} onClick={e => { e.stopPropagation(); setImageIndexes(p => ({ ...p,[entry.ID]:i })); }} />
+                            {images.slice(0, 8).map((_, i) => (
+                              <button key={i} className={`sp-dot${i === curIdx ? " on" : ""}`} onClick={e => { e.stopPropagation(); setImageIndexes(p => ({ ...p, [entry.ID]: i })); }} />
                             ))}
                           </div>
                         </>
                       )}
                     </div>
                     <div className="sp-body">
-                      <div style={{ display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:8,flexWrap:"wrap" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8, flexWrap: "wrap" }}>
                         <h3 className="sp-name">{entry.Name}</h3>
                         <AnimatedPrice price={entry["Final Selling Price"]} />
                       </div>
                       <div className="sp-stars">
-                        {[...Array(5)].map((_,i) => <FaStar key={i} size={13} style={{ color:i<(entry.Rating||0)?"#f59e0b":"rgba(0,0,0,.18)" }} />)}
-                        <span className="sp-star-count">({entry.Rating||0}/5)</span>
+                        {[...Array(5)].map((_, i) => <FaStar key={i} size={13} style={{ color: i < (entry.Rating || 0) ? "#f59e0b" : "rgba(0,0,0,.18)" }} />)}
+                        <span className="sp-star-count">({entry.Rating || 0}/5)</span>
                       </div>
                       <div className="sp-meta">
                         <p>{t("id")}: <span>OMS-00-00-{entry.ID}</span></p>
@@ -528,7 +605,7 @@ export default function Omellets() {
             </div>
           )}
 
-          {!loading && <div style={{ paddingBottom:44,display:"flex",justifyContent:"center" }}><div className="sp-footer-bar" /></div>}
+          {!loading && <div style={{ paddingBottom: 44, display: "flex", justifyContent: "center" }}><div className="sp-footer-bar" /></div>}
         </div>
       </div>
 
@@ -539,10 +616,10 @@ export default function Omellets() {
             className="sp-scroll-top"
             onClick={scrollToTop}
             aria-label="Scroll to top"
-            initial={{ opacity:0, y:16, scale:.8 }}
-            animate={{ opacity:1, y:0,  scale:1  }}
-            exit={{    opacity:0, y:16, scale:.8 }}
-            transition={{ duration:.28, ease:[.22,1,.36,1] }}
+            initial={{ opacity: 0, y: 16, scale: .8 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 16, scale: .8 }}
+            transition={{ duration: .28, ease: [.22, 1, .36, 1] }}
           >
             <AiOutlineArrowUp size={18} />
           </motion.button>
@@ -552,11 +629,11 @@ export default function Omellets() {
       {/* ── Order Modal ── */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div className="om-backdrop" initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }} transition={{ duration:.22 }} onClick={onOpenChange}>
-            <div className="om-orb" style={{ width:440,height:440,top:"-18%",left:"-10%",background:"radial-gradient(circle,rgba(13,122,104,.5) 0%,transparent 60%)",filter:"blur(55px)" }} />
-            <div className="om-orb" style={{ width:340,height:340,bottom:"-18%",right:"-6%",background:"radial-gradient(circle,rgba(77,184,168,.35) 0%,transparent 60%)",filter:"blur(48px)" }} />
-            <div className="om-orb" style={{ width:220,height:220,top:"30%",right:"15%",background:"radial-gradient(circle,rgba(10,60,160,.3) 0%,transparent 60%)",filter:"blur(38px)" }} />
-            <motion.div className="om-panel" onClick={e => e.stopPropagation()} initial={{ opacity:0,scale:.95,y:20 }} animate={{ opacity:1,scale:1,y:0 }} exit={{ opacity:0,scale:.95,y:20 }} transition={{ duration:.28,ease:[.22,1,.36,1] }}>
+          <motion.div className="om-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: .22 }} onClick={onOpenChange}>
+            <div className="om-orb" style={{ width: 440, height: 440, top: "-18%", left: "-10%", background: "radial-gradient(circle,rgba(13,122,104,.5) 0%,transparent 60%)", filter: "blur(55px)" }} />
+            <div className="om-orb" style={{ width: 340, height: 340, bottom: "-18%", right: "-6%", background: "radial-gradient(circle,rgba(77,184,168,.35) 0%,transparent 60%)", filter: "blur(48px)" }} />
+            <div className="om-orb" style={{ width: 220, height: 220, top: "30%", right: "15%", background: "radial-gradient(circle,rgba(10,60,160,.3) 0%,transparent 60%)", filter: "blur(38px)" }} />
+            <motion.div className="om-panel" onClick={e => e.stopPropagation()} initial={{ opacity: 0, scale: .95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: .95, y: 20 }} transition={{ duration: .28, ease: [.22, 1, .36, 1] }}>
               <button className="om-close" onClick={onOpenChange} aria-label="Close"><IoClose size={14} /></button>
               <div className="om-header">
                 <div className="om-title">
@@ -568,33 +645,33 @@ export default function Omellets() {
                 <div className="om-summary">
                   <div className="om-sum-label">{t("order_summary")}</div>
                   {([
-                    [t("id"),    `OMS-00-00-${selectedProduct?.ID}`],
-                    [t("name"),  selectedProduct?.Name],
-                    [t("size"),  selectedProduct?.Size],
-                    [t("type"),  selectedProduct?.Type],
+                    [t("id"), `OMS-00-00-${selectedProduct?.ID}`],
+                    [t("name"), selectedProduct?.Name],
+                    [t("size"), selectedProduct?.Size],
+                    [t("type"), selectedProduct?.Type],
                     [t("price"), `${selectedProduct?.["Final Selling Price"].toLocaleString()} ₭`],
-                  ] as [string,string|undefined][]).map(([label,val],i) => (
+                  ] as [string, string | undefined][]).map(([label, val], i) => (
                     <div key={i} className="om-sum-row">{label}: <span className="om-sum-val">{val}</span></div>
                   ))}
                   {orderDetails.includeLogistics && <div className="om-sum-row">{t("time_label")}: <span className="om-sum-val">{orderDetails.address}</span></div>}
                   <div className="om-sum-note">*{t("free_logistics_info")}</div>
                 </div>
-                <div className="om-check-row" onClick={() => setOrderDetails({ ...orderDetails,includeLogistics:!orderDetails.includeLogistics })}>
-                  <div className={`om-check-box${orderDetails.includeLogistics?" checked":""}`}>
-                    {orderDetails.includeLogistics && <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                <div className="om-check-row" onClick={() => setOrderDetails({ ...orderDetails, includeLogistics: !orderDetails.includeLogistics })}>
+                  <div className={`om-check-box${orderDetails.includeLogistics ? " checked" : ""}`}>
+                    {orderDetails.includeLogistics && <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
                   </div>
                   <span className="om-check-label">{t("i_will_pick_up")}</span>
-                  <FaTruck style={{ color:"#4db8a8",flexShrink:0 }} size={14} />
+                  <FaTruck style={{ color: "#4db8a8", flexShrink: 0 }} size={14} />
                 </div>
                 {orderDetails.includeLogistics && (
                   <div>
                     <label className="om-field-label">{t("location-text") || "Pickup Time / Location"}</label>
-                    <textarea className="om-textarea" placeholder={t("pickup_time_instruction") || "Enter the time you will pick up yourself"} value={orderDetails.address} onChange={e => setOrderDetails({ ...orderDetails,address:e.target.value })} rows={3} />
+                    <textarea className="om-textarea" placeholder={t("pickup_time_instruction") || "Enter the time you will pick up yourself"} value={orderDetails.address} onChange={e => setOrderDetails({ ...orderDetails, address: e.target.value })} rows={3} />
                   </div>
                 )}
                 <div>
                   <label className="om-field-label">{t("additional_notes") || "Additional Notes (Optional)"}</label>
-                  <textarea className="om-textarea" placeholder={t("any_special_requests") || "Any special requests or notes..."} value={orderDetails.notes} onChange={e => setOrderDetails({ ...orderDetails,notes:e.target.value })} rows={2} />
+                  <textarea className="om-textarea" placeholder={t("any_special_requests") || "Any special requests or notes..."} value={orderDetails.notes} onChange={e => setOrderDetails({ ...orderDetails, notes: e.target.value })} rows={2} />
                 </div>
               </div>
               <div className="om-footer">
@@ -606,28 +683,35 @@ export default function Omellets() {
         )}
       </AnimatePresence>
 
+      {/* ── Success Modal (Same style as order modal) ── */}
+      <SuccessModal
+        isOpen={successModalOpen}
+        onClose={() => setSuccessModalOpen(false)}
+        requestId={currentRequestId}
+      />
+
       {/* ── Lightbox ── */}
       <AnimatePresence>
         {lightboxOpen && (
-          <motion.div className="sp-lb" initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }} transition={{ duration:.22 }} onClick={() => setLightboxOpen(false)}>
-            <div className="sp-lb-orb" style={{ width:500,height:500,top:"-15%",left:"-8%",background:"radial-gradient(circle,rgba(13,122,104,.4) 0%,transparent 60%)",filter:"blur(60px)" }} />
-            <div className="sp-lb-orb" style={{ width:380,height:380,bottom:"-20%",right:"-5%",background:"radial-gradient(circle,rgba(77,184,168,.28) 0%,transparent 60%)",filter:"blur(50px)" }} />
-            <div className="sp-lb-orb" style={{ width:260,height:260,top:"30%",right:"20%",background:"radial-gradient(circle,rgba(10,60,160,.3) 0%,transparent 60%)",filter:"blur(44px)" }} />
+          <motion.div className="sp-lb" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: .22 }} onClick={() => setLightboxOpen(false)}>
+            <div className="sp-lb-orb" style={{ width: 500, height: 500, top: "-15%", left: "-8%", background: "radial-gradient(circle,rgba(13,122,104,.4) 0%,transparent 60%)", filter: "blur(60px)" }} />
+            <div className="sp-lb-orb" style={{ width: 380, height: 380, bottom: "-20%", right: "-5%", background: "radial-gradient(circle,rgba(77,184,168,.28) 0%,transparent 60%)", filter: "blur(50px)" }} />
+            <div className="sp-lb-orb" style={{ width: 260, height: 260, top: "30%", right: "20%", background: "radial-gradient(circle,rgba(10,60,160,.3) 0%,transparent 60%)", filter: "blur(44px)" }} />
             <button className="sp-lb-close" onClick={e => { e.stopPropagation(); setLightboxOpen(false); }} aria-label="Close"><IoClose size={18} /></button>
-            {selectedProductImages.length > 1 && <div className="sp-lb-counter">{selectedImageIndex+1} / {selectedProductImages.length}</div>}
+            {selectedProductImages.length > 1 && <div className="sp-lb-counter">{selectedImageIndex + 1} / {selectedProductImages.length}</div>}
             {selectedProductImages.length > 1 && (
               <>
-                <button className="sp-lb-nav sp-lb-nav-l" onClick={e => { e.stopPropagation(); setSelectedImageIndex(p => (p-1+selectedProductImages.length)%selectedProductImages.length); }} aria-label="Previous"><AiOutlineLeft size={20} /></button>
-                <button className="sp-lb-nav sp-lb-nav-r" onClick={e => { e.stopPropagation(); setSelectedImageIndex(p => (p+1)%selectedProductImages.length); }} aria-label="Next"><AiOutlineRight size={20} /></button>
+                <button className="sp-lb-nav sp-lb-nav-l" onClick={e => { e.stopPropagation(); setSelectedImageIndex(p => (p - 1 + selectedProductImages.length) % selectedProductImages.length); }} aria-label="Previous"><AiOutlineLeft size={20} /></button>
+                <button className="sp-lb-nav sp-lb-nav-r" onClick={e => { e.stopPropagation(); setSelectedImageIndex(p => (p + 1) % selectedProductImages.length); }} aria-label="Next"><AiOutlineRight size={20} /></button>
               </>
             )}
-            <motion.div className="sp-lb-frame" onClick={e => e.stopPropagation()} key={selectedImageIndex} initial={{ opacity:0,scale:.96 }} animate={{ opacity:1,scale:1 }} exit={{ opacity:0,scale:.96 }} transition={{ duration:.2 }}>
-              <img className="sp-lb-img" src={selectedProductImages[selectedImageIndex]} alt={`Fullscreen view ${selectedImageIndex+1}`} />
+            <motion.div className="sp-lb-frame" onClick={e => e.stopPropagation()} key={selectedImageIndex} initial={{ opacity: 0, scale: .96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: .96 }} transition={{ duration: .2 }}>
+              <img className="sp-lb-img" src={selectedProductImages[selectedImageIndex]} alt={`Fullscreen view ${selectedImageIndex + 1}`} />
             </motion.div>
             {selectedProductImages.length > 1 && (
               <div className="sp-lb-thumbs-wrap" onClick={e => e.stopPropagation()}>
-                {selectedProductImages.map((src,i) => (
-                  <img key={i} src={src} className={`sp-lb-thumb${i===selectedImageIndex?" on":""}`} onClick={() => setSelectedImageIndex(i)} alt={`thumb ${i+1}`} />
+                {selectedProductImages.map((src, i) => (
+                  <img key={i} src={src} className={`sp-lb-thumb${i === selectedImageIndex ? " on" : ""}`} onClick={() => setSelectedImageIndex(i)} alt={`thumb ${i + 1}`} />
                 ))}
               </div>
             )}

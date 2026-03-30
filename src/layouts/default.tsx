@@ -13,18 +13,59 @@ const layoutCSS = `
 
   :root {
     --navbar-h: 64px;
-    --mobile-navbar-h: 56px;  /* usually smaller on mobile */
+    --mobile-navbar-h: 56px;
     --mobile-footer-h: 64px;
     --teal:      #0d7a68;
     --teal-mid:  #4db8a8;
     --teal-pale: #7dd4c8;
+
+    /* ── Footer theme tokens — DARK (default) ── */
+    --ft-bg-base:        #060f0d;
+    --ft-bg-mid:         #07120f;
+    --ft-bg-deep:        #081a15;
+    --ft-border-top:     rgba(13,122,104,.32);
+    --ft-glow-a:         rgba(13,122,104,.16);
+    --ft-glow-b:         rgba(8,61,51,.38);
+    --ft-glow-c:         rgba(13,122,104,.10);
+    --ft-dot-color:      rgba(13,122,104,.12);
+    --ft-desc-color:     rgba(255,255,255,.36);
+    --ft-link-color:     rgba(255,255,255,.4);
+    --ft-link-hover:     rgba(255,255,255,.82);
+    --ft-copy-color:     rgba(255,255,255,.28);
+    --ft-wordmark-from:  #ffffff;
+    --ft-wordmark-mid:   #7dd4c8;
+    --ft-shadow-glow-a:  rgba(13,122,104,.22);
+    --ft-shadow-glow-b:  rgba(13,122,104,.44);
   }
 
-  /* ── prevent horizontal overflow + kill white gap behind mobile pill nav ── */
+  /* ── Footer theme tokens — LIGHT ── */
+  html.light {
+    --ft-bg-base:        #f0faf8;
+    --ft-bg-mid:         #e8f7f4;
+    --ft-bg-deep:        #ddf2ee;
+    --ft-border-top:     rgba(13,122,104,.22);
+    --ft-glow-a:         rgba(13,122,104,.08);
+    --ft-glow-b:         rgba(13,122,104,.12);
+    --ft-glow-c:         rgba(13,122,104,.06);
+    --ft-dot-color:      rgba(13,122,104,.10);
+    --ft-desc-color:     rgba(0,0,0,.52);
+    --ft-link-color:     rgba(0,0,0,.45);
+    --ft-link-hover:     rgba(0,0,0,.85);
+    --ft-copy-color:     rgba(0,0,0,.38);
+    --ft-wordmark-from:  #0a3d33;
+    --ft-wordmark-mid:   #0d7a68;
+    --ft-shadow-glow-a:  rgba(13,122,104,.10);
+    --ft-shadow-glow-b:  rgba(13,122,104,.20);
+  }
+
   html, body {
     overflow-x: hidden;
     max-width: 100vw;
     background-color: #050e0c;
+  }
+
+  html.light body {
+    background-color: #f0faf8;
   }
 
   /* ── Keyframes ── */
@@ -33,8 +74,8 @@ const layoutCSS = `
     100% { background-position:  200% center; }
   }
   @keyframes ftGlow {
-    0%,100% { box-shadow: 0 -3px 32px rgba(13,122,104,.22); }
-    50%     { box-shadow: 0 -3px 52px rgba(13,122,104,.44); }
+    0%,100% { box-shadow: 0 -3px 32px var(--ft-shadow-glow-a); }
+    50%     { box-shadow: 0 -3px 52px var(--ft-shadow-glow-b); }
   }
   @keyframes ftPulse {
     0%,100% { opacity: .45; }
@@ -59,26 +100,25 @@ const layoutCSS = `
   .ft-footer {
     position: relative;
     overflow: hidden;
-    border-top: 1px solid rgba(13,122,104,.32);
+    border-top: 1px solid var(--ft-border-top);
     background:
-      radial-gradient(ellipse 80% 60% at 50% 110%, rgba(13,122,104,.16) 0%, transparent 65%),
-      radial-gradient(ellipse 40% 80% at 8%  50%,  rgba(8,61,51,.38)    0%, transparent 55%),
-      radial-gradient(ellipse 32% 65% at 92% 30%,  rgba(13,122,104,.10) 0%, transparent 55%),
-      linear-gradient(180deg, #060f0d 0%, #07120f 50%, #081a15 100%);
+      radial-gradient(ellipse 80% 60% at 50% 110%, var(--ft-glow-a) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 80% at 8%  50%,  var(--ft-glow-b) 0%, transparent 55%),
+      radial-gradient(ellipse 32% 65% at 92% 30%,  var(--ft-glow-c) 0%, transparent 55%),
+      linear-gradient(180deg, var(--ft-bg-base) 0%, var(--ft-bg-mid) 50%, var(--ft-bg-deep) 100%);
+    transition: background .35s ease, border-color .35s ease, box-shadow .35s ease;
     animation: ftGlow 5s ease-in-out infinite;
     font-family: 'Ubuntu', sans-serif;
     flex-shrink: 0;
   }
 
-  /* dot-grid texture */
   .ft-dotgrid {
     position: absolute; inset: 0; pointer-events: none;
-    background-image: radial-gradient(circle, rgba(13,122,104,.12) 1px, transparent 1px);
+    background-image: radial-gradient(circle, var(--ft-dot-color) 1px, transparent 1px);
     background-size: 28px 28px;
     mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,.4) 35%, rgba(0,0,0,.75) 100%);
   }
 
-  /* corner orbit decoration */
   .ft-orbit-wrap {
     position: absolute;
     bottom: -50px; right: -50px;
@@ -108,15 +148,38 @@ const layoutCSS = `
     gap: 52px;
   }
 
-  /* Brand wordmark */
+  /* ── Brand logo + wordmark row ── */
+  .ft-brand-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+
+  .ft-logo {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    border-radius: 10px;
+    flex-shrink: 0;
+    /* subtle glow to tie into teal theme */
+    filter: drop-shadow(0 0 10px rgba(13,122,104,.55));
+    transition: filter .3s ease;
+  }
+  .ft-logo:hover {
+    filter: drop-shadow(0 0 18px rgba(77,184,168,.75));
+  }
+
+  .ft-brand-text {}
+
   .ft-wordmark {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 2.6rem;
+    font-size: 2.4rem;
     font-weight: 300;
     letter-spacing: 2px;
     line-height: 1;
-    margin-bottom: 6px;
-    background: linear-gradient(135deg, #ffffff 0%, #7dd4c8 42%, #ffffff 100%);
+    margin-bottom: 3px;
+    background: linear-gradient(135deg, var(--ft-wordmark-from) 0%, var(--ft-wordmark-mid) 42%, var(--ft-wordmark-from) 100%);
     background-size: 220% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -130,19 +193,21 @@ const layoutCSS = `
 
   .ft-tagline {
     font-family: 'Cormorant Garamond', serif;
-    font-size: .88rem;
+    font-size: .82rem;
     font-style: italic;
     color: rgba(77,184,168,.65);
     letter-spacing: 1.5px;
-    margin-bottom: 22px;
+    margin-bottom: 0;
   }
 
   .ft-desc {
     font-size: .78rem;
     line-height: 1.8;
-    color: rgba(255,255,255,.36);
+    color: var(--ft-desc-color);
     max-width: 290px;
     margin-bottom: 28px;
+    margin-top: 18px;
+    transition: color .35s ease;
   }
 
   /* live status pill */
@@ -199,7 +264,7 @@ const layoutCSS = `
   }
   .ft-nav-link {
     font-size: .8rem;
-    color: rgba(255,255,255,.4);
+    color: var(--ft-link-color);
     text-decoration: none !important;
     letter-spacing: .3px;
     transition: color .2s ease, padding-left .2s ease;
@@ -217,7 +282,7 @@ const layoutCSS = `
     transition: opacity .2s ease;
   }
   .ft-nav-link:hover {
-    color: rgba(255,255,255,.82) !important;
+    color: var(--ft-link-hover) !important;
     padding-left: 5px;
   }
   .ft-nav-link:hover::before { opacity: 1; }
@@ -246,8 +311,9 @@ const layoutCSS = `
   }
   .ft-copy {
     font-size: .72rem;
-    color: rgba(255,255,255,.28);
+    color: var(--ft-copy-color);
     letter-spacing: .5px;
+    transition: color .35s ease;
   }
   .ft-badges {
     display: flex;
@@ -273,7 +339,6 @@ const layoutCSS = `
     color: rgba(77,184,168,.95);
   }
 
-  /* very bottom accent line */
   .ft-bottom-line {
     height: 2px;
     background: linear-gradient(90deg, transparent, #0d7a68 20%, #4db8a8 50%, #0d7a68 80%, transparent);
@@ -303,10 +368,13 @@ const layoutCSS = `
       align-items: flex-start;
     }
     .ft-divider { padding: 0 20px; }
+    .ft-logo { width: 44px; height: 44px; }
+    .ft-wordmark { font-size: 2rem; }
   }
 `;
 
-
+const LOGO_URL =
+  "https://res.cloudinary.com/deahgtn57/image/upload/v1774000744/omelett%27s/public/logo/ChatGPT_Image_Mar_13_2026_05_25_31_PM_yfp4b7.png";
 
 export default function DefaultLayout({
   children,
@@ -365,8 +433,19 @@ export default function DefaultLayout({
 
           {/* Col 1 — Brand */}
           <div>
-            <div className="ft-wordmark">Omelette<em>'</em>s</div>
-            <div className="ft-tagline">Premium Aviation Collectibles</div>
+            {/* Logo + wordmark side by side */}
+            <div className="ft-brand-row">
+              <img
+                src={LOGO_URL}
+                alt="Omelette's logo"
+                className="ft-logo"
+              />
+              <div className="ft-brand-text">
+                <div className="ft-wordmark">Omelette<em>'</em>s</div>
+                <div className="ft-tagline">Premium Aviation Collectibles</div>
+              </div>
+            </div>
+
             <p className="ft-desc">
               Handcrafted scale models for discerning collectors and aviation
               enthusiasts. Each piece honours the golden age of flight —
@@ -438,7 +517,7 @@ export default function DefaultLayout({
 
         {/* Bottom bar */}
         <div className="ft-bottom-bar">
-          <span className="ft-copy">© 2023–2025 Omelette's · All rights reserved</span>
+          <span className="ft-copy">© 2023–2026 Omelette's · All rights reserved</span>
           <div className="ft-badges">
             <span className="ft-badge">v0.0.1</span>
             <span className="ft-badge">Premium Quality</span>
