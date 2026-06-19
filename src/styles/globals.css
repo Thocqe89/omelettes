@@ -181,3 +181,188 @@ body {
   0%, 60%, 100% { transform: scale(1) }
   80% { transform: scale(1.2) }
 }
+/* ═════════ PREMIUM PROMOTION POST ═════════ */
+
+.promo-premium-wrap{
+  position:relative;
+  overflow:hidden;
+  border-radius:32px;
+
+  border:1px solid rgba(255,210,120,.12);
+
+  background:
+    radial-gradient(circle at top right,
+      rgba(255,210,120,.18),
+      transparent 35%),
+
+    linear-gradient(
+      135deg,
+      #1d1b16 0%,
+      #3f3206 40%,
+      #6f5708 100%
+    );
+
+  box-shadow:
+    0 30px 80px rgba(0,0,0,.35),
+    inset 0 1px 0 rgba(255,255,255,.04);
+}
+
+.promo-gold-light{
+  position:absolute;
+
+  width:420px;
+  height:420px;
+
+  top:-120px;
+  right:-120px;
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(circle,
+      rgba(255,210,120,.22),
+      transparent 70%);
+
+  filter:blur(30px);
+
+  animation:glow 5s ease-in-out infinite;
+}
+
+.promo-image-side{
+  position:relative;
+
+  min-height:540px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:30px;
+}
+
+.promo-image-card{
+  position:relative;
+  z-index:5;
+
+  width:100%;
+  max-width:520px;
+
+  padding:12px;
+
+  border-radius:28px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.08),
+      rgba(255,255,255,.02)
+    );
+
+  backdrop-filter:blur(18px);
+
+  border:1px solid rgba(255,255,255,.08);
+
+  box-shadow:
+    0 25px 60px rgba(0,0,0,.4),
+    inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.promo-main-image{
+  width:100%;
+  height:auto;
+
+  display:block;
+
+  border-radius:22px;
+
+  object-fit:contain;
+}
+
+.promo-overlay-gold{
+  position:absolute;
+  inset:0;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(210,120,10,.25) 0%,
+      transparent 40%
+    );
+
+  pointer-events:none;
+}
+
+.promo-feature-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.promo-shine{
+  position:absolute;
+  top:-50%;
+  left:-120%;
+
+  width:60%;
+  height:200%;
+
+  transform:rotate(20deg);
+
+  background:
+    linear-gradient(
+      to right,
+      transparent,
+      rgba(255,255,255,.12),
+      transparent
+    );
+
+  animation:promoShine 6s linear infinite;
+
+  z-index:10;
+}
+
+@keyframes promoShine{
+  0%{
+    left:-120%;
+  }
+
+  100%{
+    left:160%;
+  }
+}
+
+/* mobile */
+
+@media(max-width:980px){
+
+  .promo-image-side{
+    min-height:420px;
+    padding-top:0;
+  }
+
+  .promo-image-card{
+    max-width:100%;
+  }
+}
+
+@media(max-width:640px){
+
+  .promo-premium-wrap{
+    border-radius:24px;
+  }
+
+  .promo-image-side{
+    min-height:320px;
+    padding:20px;
+    padding-top:0;
+  }
+
+  .promo-image-card{
+    border-radius:22px;
+    padding:8px;
+  }
+
+  .promo-main-image{
+    border-radius:16px;
+  }
+}

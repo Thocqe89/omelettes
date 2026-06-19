@@ -217,7 +217,7 @@ const css = `
     color: #fff;
     text-transform: uppercase;
   }
-  .al-brand span { color: #0d7a68; }
+  .al-brand span { color: #F00000; }
 
   /* ── phase label ── */
   .al-phase {
@@ -375,12 +375,12 @@ export default function Loading({
         <div className="al-ui">
           {/* Brand */}
           <div className="al-brand">
-            Omelette<span>'</span>s
+            Omelette<span className="text-red-700">'</span>s
           </div>
 
           {/* Phase label */}
           <div className="al-phase">
-            ✦ Please Wait
+             Please Wait
           </div>
 
           {/* Progress bar */}

@@ -337,5 +337,6 @@
       "security": "Security",
       "truck": "Truck Delivery",
       "headset": "Headset",
-      "certificate": "Certificate"
+      "certificate": "Certificate",
+      "item": "Item"
 }

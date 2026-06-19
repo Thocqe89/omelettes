@@ -1,61 +1,32 @@
 import { Link } from "@heroui/link";
 import { useEffect, useState } from "react";
+import { 
+  FaTruck,
+  FaLock,
+  FaUndo,
+  FaWhatsapp,
+  FaEnvelope
+} from "react-icons/fa";
+import { RiCustomerService2Fill } from "react-icons/ri";
 
 import { Navbar } from "@/components/navbar";
 import Loading from "@/components/loading";
 import { MobileFooter } from "@/components/MobileFooter";
+import { FaHandshakeAngle, FaHandshakeSimple } from "react-icons/fa6";
 
 /* ─────────────────────────────────────────────────────────
-   Layout + Footer CSS
+   Modern Premium Footer CSS
 ───────────────────────────────────────────────────────── */
 const layoutCSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
 
   :root {
     --navbar-h: 64px;
     --mobile-navbar-h: 56px;
     --mobile-footer-h: 64px;
-    --teal:      #0d7a68;
-    --teal-mid:  #4db8a8;
-    --teal-pale: #7dd4c8;
-
-    /* ── Footer theme tokens — DARK (default) ── */
-    --ft-bg-base:        #060f0d;
-    --ft-bg-mid:         #07120f;
-    --ft-bg-deep:        #081a15;
-    --ft-border-top:     rgba(13,122,104,.32);
-    --ft-glow-a:         rgba(13,122,104,.16);
-    --ft-glow-b:         rgba(8,61,51,.38);
-    --ft-glow-c:         rgba(13,122,104,.10);
-    --ft-dot-color:      rgba(13,122,104,.12);
-    --ft-desc-color:     rgba(255,255,255,.36);
-    --ft-link-color:     rgba(255,255,255,.4);
-    --ft-link-hover:     rgba(255,255,255,.82);
-    --ft-copy-color:     rgba(255,255,255,.28);
-    --ft-wordmark-from:  #ffffff;
-    --ft-wordmark-mid:   #7dd4c8;
-    --ft-shadow-glow-a:  rgba(13,122,104,.22);
-    --ft-shadow-glow-b:  rgba(13,122,104,.44);
-  }
-
-  /* ── Footer theme tokens — LIGHT ── */
-  html.light {
-    --ft-bg-base:        #f0faf8;
-    --ft-bg-mid:         #e8f7f4;
-    --ft-bg-deep:        #ddf2ee;
-    --ft-border-top:     rgba(13,122,104,.22);
-    --ft-glow-a:         rgba(13,122,104,.08);
-    --ft-glow-b:         rgba(13,122,104,.12);
-    --ft-glow-c:         rgba(13,122,104,.06);
-    --ft-dot-color:      rgba(13,122,104,.10);
-    --ft-desc-color:     rgba(0,0,0,.52);
-    --ft-link-color:     rgba(0,0,0,.45);
-    --ft-link-hover:     rgba(0,0,0,.85);
-    --ft-copy-color:     rgba(0,0,0,.38);
-    --ft-wordmark-from:  #0a3d33;
-    --ft-wordmark-mid:   #0d7a68;
-    --ft-shadow-glow-a:  rgba(13,122,104,.10);
-    --ft-shadow-glow-b:  rgba(13,122,104,.20);
+    --primary-green: #0a6455;
+    --primary-green-light: #0e7f6c;
+    --primary-green-dark: #074d41;
   }
 
   html, body {
@@ -63,318 +34,428 @@ const layoutCSS = `
     max-width: 100vw;
     background-color: #050e0c;
   }
-
   html.light body {
-    background-color: #f0faf8;
+    background-color: #fafafa;
   }
 
-  /* ── Keyframes ── */
-  @keyframes ftShimmer {
-    0%   { background-position: -200% center; }
-    100% { background-position:  200% center; }
-  }
-  @keyframes ftGlow {
-    0%,100% { box-shadow: 0 -3px 32px var(--ft-shadow-glow-a); }
-    50%     { box-shadow: 0 -3px 52px var(--ft-shadow-glow-b); }
-  }
-  @keyframes ftPulse {
-    0%,100% { opacity: .45; }
-    50%     { opacity: .85; }
-  }
-  @keyframes ftOrbit {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-  }
-  @keyframes ftDotBlink {
-    0%,100% { opacity: .35; transform: scale(.85); }
-    50%     { opacity: 1;   transform: scale(1.15); }
-  }
-  @keyframes ftLineGrow {
-    from { transform: scaleX(0); }
-    to   { transform: scaleX(1); }
-  }
+  .mobile-content-wrap { padding-bottom: 0; }
 
   /* ══════════════════════════════════════════
-     FOOTER SHELL
+     MODERN PREMIUM FOOTER
   ══════════════════════════════════════════ */
-  .ft-footer {
+  
+  .modern-footer {
+    background: linear-gradient(135deg, #0a0f0e 0%, #0b1512 100%);
     position: relative;
-    overflow: hidden;
-    border-top: 1px solid var(--ft-border-top);
-    background:
-      radial-gradient(ellipse 80% 60% at 50% 110%, var(--ft-glow-a) 0%, transparent 65%),
-      radial-gradient(ellipse 40% 80% at 8%  50%,  var(--ft-glow-b) 0%, transparent 55%),
-      radial-gradient(ellipse 32% 65% at 92% 30%,  var(--ft-glow-c) 0%, transparent 55%),
-      linear-gradient(180deg, var(--ft-bg-base) 0%, var(--ft-bg-mid) 50%, var(--ft-bg-deep) 100%);
-    transition: background .35s ease, border-color .35s ease, box-shadow .35s ease;
-    animation: ftGlow 5s ease-in-out infinite;
-    font-family: 'Ubuntu', sans-serif;
-    flex-shrink: 0;
+    font-family: 'Inter', sans-serif;
+    margin-top: 80px;
   }
-
-  .ft-dotgrid {
-    position: absolute; inset: 0; pointer-events: none;
-    background-image: radial-gradient(circle, var(--ft-dot-color) 1px, transparent 1px);
-    background-size: 28px 28px;
-    mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,.4) 35%, rgba(0,0,0,.75) 100%);
+  
+  html.light .modern-footer {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
   }
-
-  .ft-orbit-wrap {
+  
+  /* Decorative top accent - green only */
+  .footer-accent {
     position: absolute;
-    bottom: -50px; right: -50px;
-    width: 200px; height: 200px;
-    pointer-events: none; opacity: .07;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-green), var(--primary-green-light), var(--primary-green));
   }
-  .ft-orbit-ring {
-    position: absolute; inset: 0;
-    border-radius: 50%;
-    border: 1px solid var(--teal-mid);
-    animation: ftOrbit 24s linear infinite;
+  
+  /* Main container */
+  .footer-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 64px 48px 0;
   }
-  .ft-orbit-ring-2 {
-    position: absolute; inset: 24px;
-    border-radius: 50%;
-    border: 1px dashed var(--teal-mid);
-    animation: ftOrbit 15s linear infinite reverse;
-  }
-
-  /* ── MAIN 4-col GRID — desktop ── */
-  .ft-body {
-    position: relative; z-index: 10;
-    max-width: 1280px; margin: 0 auto;
-    padding: 60px 48px 40px;
+  
+  /* Main footer grid */
+  .footer-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: 52px;
+    grid-template-columns: 1fr 1fr 1fr 1.2fr;
+    gap: 48px;
+    margin-bottom: 48px;
   }
-
-  /* ── Brand logo + wordmark row ── */
-  .ft-brand-row {
+  
+  /* Brand column - centered logo only */
+  .brand-col {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 14px;
-    margin-bottom: 10px;
+    justify-content: flex-start;
   }
-
-  .ft-logo {
-    width: 56px;
-    height: 56px;
+  
+  .logo-row {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .footer-logo-dark,
+  .footer-logo-light {
+    width: 180px;
+    height: 180px;
     object-fit: contain;
-    border-radius: 10px;
-    flex-shrink: 0;
-    /* subtle glow to tie into teal theme */
-    filter: drop-shadow(0 0 10px rgba(13,122,104,.55));
-    transition: filter .3s ease;
   }
-  .ft-logo:hover {
-    filter: drop-shadow(0 0 18px rgba(77,184,168,.75));
-  }
-
-  .ft-brand-text {}
-
-  .ft-wordmark {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 2.4rem;
-    font-weight: 300;
-    letter-spacing: 2px;
-    line-height: 1;
-    margin-bottom: 3px;
-    background: linear-gradient(135deg, var(--ft-wordmark-from) 0%, var(--ft-wordmark-mid) 42%, var(--ft-wordmark-from) 100%);
-    background-size: 220% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: ftShimmer 5s linear infinite;
-  }
-  .ft-wordmark em {
-    -webkit-text-fill-color: #E43636;
-    font-style: italic;
-  }
-
-  .ft-tagline {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: .82rem;
-    font-style: italic;
-    color: rgba(77,184,168,.65);
-    letter-spacing: 1.5px;
-    margin-bottom: 0;
-  }
-
-  .ft-desc {
-    font-size: .78rem;
-    line-height: 1.8;
-    color: var(--ft-desc-color);
-    max-width: 290px;
-    margin-bottom: 28px;
-    margin-top: 18px;
-    transition: color .35s ease;
-  }
-
-  /* live status pill */
-  .ft-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(13,122,104,.14);
-    border: 1px solid rgba(13,122,104,.28);
-    border-radius: 20px;
-    padding: 6px 14px;
-    font-size: .63rem;
+  
+  .footer-logo-dark { display: block; }
+  .footer-logo-light { display: none; }
+  html.light .footer-logo-dark { display: none; }
+  html.light .footer-logo-light { display: block; }
+  
+  /* Column styling */
+  .footer-col h4 {
+    color: #fff;
+    font-size: 1rem;
     font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: rgba(77,184,168,.88);
-  }
-  .ft-status-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: #4db8a8;
-    box-shadow: 0 0 7px rgba(77,184,168,.85);
-    animation: ftDotBlink 2s ease-in-out infinite;
-    flex-shrink: 0;
-  }
-
-  /* nav column heading */
-  .ft-col-title {
-    font-size: .6rem;
-    font-weight: 700;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: var(--teal-mid);
-    margin-bottom: 22px;
+    margin: 0 0 20px 0;
+    letter-spacing: -0.01em;
     position: relative;
-    padding-bottom: 13px;
+    display: inline-block;
+    transition: all 0.3s ease;
   }
-  .ft-col-title::after {
+  
+  .footer-col h4::after {
     content: '';
     position: absolute;
-    bottom: 0; left: 0;
-    height: 1px; width: 26px;
-    background: linear-gradient(90deg, var(--teal), transparent);
-    transform-origin: left;
-    animation: ftLineGrow 1.2s ease both;
+    bottom: -8px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--primary-green-light);
+    transition: width 0.3s ease;
   }
-
-  .ft-nav-list {
+  
+  .footer-col:hover h4::after {
+    width: 100%;
+  }
+  
+  html.light .footer-col h4 {
+    color: #1a1a1a;
+  }
+  
+  .footer-links {
     list-style: none;
-    padding: 0; margin: 0;
+    padding: 0;
+    margin: 0;
     display: flex;
     flex-direction: column;
     gap: 12px;
   }
-  .ft-nav-link {
-    font-size: .8rem;
-    color: var(--ft-link-color);
-    text-decoration: none !important;
-    letter-spacing: .3px;
-    transition: color .2s ease, padding-left .2s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  
+  .footer-links a {
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: inline-block;
+    position: relative;
   }
-  .ft-nav-link::before {
-    content: '';
-    width: 4px; height: 4px;
-    border-radius: 50%;
-    background: var(--teal);
+  
+  .footer-links a::before {
+    content: '→';
+    position: absolute;
+    left: -20px;
     opacity: 0;
-    flex-shrink: 0;
-    transition: opacity .2s ease;
+    transition: all 0.3s ease;
+    color: var(--primary-green-light);
   }
-  .ft-nav-link:hover {
-    color: var(--ft-link-hover) !important;
-    padding-left: 5px;
+  
+  .footer-links a:hover {
+    color: var(--primary-green-light);
+    transform: translateX(8px);
+    padding-left: 8px;
   }
-  .ft-nav-link:hover::before { opacity: 1; }
-
-  /* horizontal rule */
-  .ft-divider {
-    position: relative; z-index: 10;
-    max-width: 1280px; margin: 0 auto;
-    padding: 0 48px;
+  
+  .footer-links a:hover::before {
+    opacity: 1;
+    left: -8px;
   }
-  .ft-divider-line {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(13,122,104,.38) 20%, rgba(77,184,168,.28) 50%, rgba(13,122,104,.38) 80%, transparent);
+  
+  html.light .footer-links a {
+    color: rgba(0,0,0,0.5);
   }
-
-  /* bottom bar */
-  .ft-bottom-bar {
-    position: relative; z-index: 10;
-    max-width: 1280px; margin: 0 auto;
-    padding: 18px 48px 24px;
+  
+  html.light .footer-links a:hover {
+    color: var(--primary-green);
+  }
+  
+  /* Contact info */
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .contact-item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
+    gap: 12px;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.9rem;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  
+  .contact-item:hover {
+    transform: translateX(8px);
+    color: rgba(255,255,255,0.8);
+  }
+  
+  html.light .contact-item {
+    color: rgba(0,0,0,0.5);
+  }
+  
+  html.light .contact-item:hover {
+    color: rgba(0,0,0,0.8);
+  }
+  
+  .contact-icon {
+    font-size: 1.2rem;
+    color: var(--primary-green-light);
+    transition: all 0.3s ease;
+  }
+  
+  .contact-item:hover .contact-icon {
+    transform: scale(1.2) rotate(5deg);
+  }
+  
+  .whatsapp-link {
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: inline-flex;
+    align-items: center;
     gap: 12px;
   }
-  .ft-copy {
-    font-size: .72rem;
-    color: var(--ft-copy-color);
-    letter-spacing: .5px;
-    transition: color .35s ease;
+  
+  .whatsapp-link:hover {
+    color: #25D366;
+    transform: translateX(8px);
   }
-  .ft-badges {
+  
+  .whatsapp-link:hover .contact-icon {
+    transform: scale(1.2) rotate(5deg);
+  }
+  
+  .email-link {
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .email-link:hover {
+    color: var(--primary-green-light);
+    transform: translateX(8px);
+  }
+  
+  .email-link:hover .contact-icon {
+    transform: scale(1.2) rotate(5deg);
+  }
+  
+  html.light .whatsapp-link,
+  html.light .email-link {
+    color: rgba(0,0,0,0.5);
+  }
+  
+  /* Trust badges section */
+  .trust-badges {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    padding: 40px 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 32px;
+  }
+  
+  html.light .trust-badges {
+    border-color: rgba(0,0,0,0.08);
+  }
+  
+  .trust-item {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 14px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
   }
-  .ft-badge {
-    font-size: .58rem;
+  
+  .trust-item:hover {
+    transform: translateY(-6px);
+  }
+  
+  .trust-icon {
+    font-size: 2rem;
+    color: var(--primary-green-light);
+    transition: all 0.3s ease;
+  }
+  
+  .trust-item:hover .trust-icon {
+    transform: scale(1.15) rotate(3deg);
+  }
+  
+  .trust-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .trust-title {
+    color: #fff;
     font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: rgba(77,184,168,.7);
-    background: rgba(13,122,104,.16);
-    border: 1px solid rgba(77,184,168,.18);
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+  }
+  
+  .trust-item:hover .trust-title {
+    color: var(--primary-green-light);
+    transform: translateX(4px);
+  }
+  
+  html.light .trust-title {
+    color: #1a1a1a;
+  }
+  
+  html.light .trust-item:hover .trust-title {
+    color: var(--primary-green);
+  }
+  
+  .trust-sub {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.75rem;
+    transition: all 0.3s ease;
+  }
+  
+  .trust-item:hover .trust-sub {
+    transform: translateX(4px);
+  }
+  
+  html.light .trust-sub {
+    color: rgba(0,0,0,0.5);
+  }
+  
+  /* Bottom bar */
+  .footer-bottom {
+    padding: 24px 0 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  .copyright {
+    color: rgba(255,255,255,0.4);
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+  }
+  
+  .copyright:hover {
+    color: rgba(255,255,255,0.6);
+    transform: translateX(4px);
+  }
+  
+  html.light .copyright {
+    color: rgba(0,0,0,0.4);
+  }
+  
+  html.light .copyright:hover {
+    color: rgba(0,0,0,0.6);
+  }
+  
+  .partner-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(10,100,85,0.1);
     border-radius: 20px;
-    padding: 3px 11px;
-    transition: background .22s, border-color .22s, color .22s;
-    cursor: default;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
-  .ft-badge:hover {
-    background: rgba(13,122,104,.3);
-    border-color: rgba(77,184,168,.4);
-    color: rgba(77,184,168,.95);
+  
+  .partner-badge:hover {
+    transform: translateY(-2px);
+    background: rgba(10,100,85,0.2);
+    box-shadow: 0 4px 12px rgba(10,100,85,0.2);
   }
-
-  .ft-bottom-line {
-    height: 2px;
-    background: linear-gradient(90deg, transparent, #0d7a68 20%, #4db8a8 50%, #0d7a68 80%, transparent);
-    opacity: .55;
+  
+  html.light .partner-badge {
+    color: rgba(0,0,0,0.6);
   }
-
-  /* ══════════════════════════════════════════
-     MOBILE OVERRIDES
-  ══════════════════════════════════════════ */
-
-  .mobile-content-wrap { padding-bottom: 0; }
-
-  @media (max-width: 1023px) {
-    :root { --navbar-h: 56px; }
-    img, video, canvas, svg { max-width: 100%; height: auto; }
+  
+  .partner-badge a {
+    color: var(--primary-green-light);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
   }
-
-  @media (max-width: 639px) {
-    .ft-body {
+  
+  .partner-badge a:hover {
+    text-decoration: underline;
+    transform: translateX(2px);
+    display: inline-block;
+  }
+  
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .footer-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 40px;
+    }
+    
+    .trust-badges {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .footer-logo-dark,
+    .footer-logo-light {
+      width: 140px;
+      height: 140px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .footer-container {
+      padding: 40px 24px 0;
+    }
+    
+    .footer-grid {
       grid-template-columns: 1fr;
-      padding: 32px 20px 24px;
-      gap: 28px;
+      gap: 32px;
     }
-    .ft-bottom-bar {
-      padding: 14px 20px 20px;
+    
+    .trust-badges {
+      grid-template-columns: 1fr;
+    }
+    
+    .footer-bottom {
       flex-direction: column;
-      align-items: flex-start;
+      text-align: center;
     }
-    .ft-divider { padding: 0 20px; }
-    .ft-logo { width: 44px; height: 44px; }
-    .ft-wordmark { font-size: 2rem; }
+    
+    .footer-logo-dark,
+    .footer-logo-light {
+      width: 120px;
+      height: 120px;
+    }
+    
+    .brand-col {
+      align-items: center;
+    }
   }
 `;
 
-const LOGO_URL =
-  "https://res.cloudinary.com/deahgtn57/image/upload/v1774000744/omelett%27s/public/logo/ChatGPT_Image_Mar_13_2026_05_25_31_PM_yfp4b7.png";
+/* Logo URLs - Updated */
+const LOGO_DARK = "https://res.cloudinary.com/deahgtn57/image/upload/v1781425952/omelett%27s/public/logo/web-app%20logo/white-2026.png";
+const LOGO_LIGHT = "https://res.cloudinary.com/deahgtn57/image/upload/v1781425959/omelett%27s/public/logo/web-app%20logo/dark-2026.png";
 
 export default function DefaultLayout({
   children,
@@ -400,10 +481,8 @@ export default function DefaultLayout({
     <div className="relative flex flex-col min-h-screen">
       <style dangerouslySetInnerHTML={{ __html: layoutCSS }} />
 
-      {/* ── Navbar ── */}
       <Navbar />
 
-      {/* ── Main content ── */}
       <main
         className="flex-grow w-full"
         style={{ paddingTop: "var(--navbar-h)" }}
@@ -413,121 +492,111 @@ export default function DefaultLayout({
         </div>
       </main>
 
-      {/* ── Mobile bottom nav — ONLY phone & tablet (< 1024px) ── */}
       <MobileFooter />
 
-      {/* ── Desktop footer — ONLY large screens (≥ 1024px) ── */}
-      <footer className="ft-footer hidden lg:block w-full">
-
-        {/* Background textures */}
-        <div className="ft-dotgrid" />
-
-        {/* Decorative orbit rings bottom-right */}
-        <div className="ft-orbit-wrap">
-          <div className="ft-orbit-ring" />
-          <div className="ft-orbit-ring-2" />
-        </div>
-
-        {/* ── 4-column content grid ── */}
-        <div className="ft-body">
-
-          {/* Col 1 — Brand */}
-          <div>
-            {/* Logo + wordmark side by side */}
-            <div className="ft-brand-row">
-              <img
-                src={LOGO_URL}
-                alt="Omelette's logo"
-                className="ft-logo"
-              />
-              <div className="ft-brand-text">
-                <div className="ft-wordmark">Omelette<em>'</em>s</div>
-                <div className="ft-tagline">Premium Aviation Collectibles</div>
+      {/* Modern Premium Footer */}
+      <footer className="modern-footer hidden lg:block">
+        <div className="footer-accent" />
+        
+        <div className="footer-container">
+          {/* Main Footer Grid */}
+          <div className="footer-grid">
+            {/* Brand Column - Just Logo (No Animation) */}
+            <div className="brand-col">
+              <div className="logo-row">
+                <img src={LOGO_DARK} alt="Omelette's logo" className="footer-logo-dark" />
+                <img src={LOGO_LIGHT} alt="Omelette's logo" className="footer-logo-light" />
               </div>
             </div>
 
-            <p className="ft-desc">
-              Handcrafted scale models for discerning collectors and aviation
-              enthusiasts. Each piece honours the golden age of flight —
-              precision-engineered to the finest detail.
-            </p>
-            <div className="ft-status">
-              <div className="ft-status-dot" />
-              All models in stock
+            {/* Quick Links */}
+            <div className="footer-col">
+              <h4>Shop</h4>
+              <ul className="footer-links">
+                <li><Link href="/Omelette's">Collection</Link></li>
+                <li><Link href="/Omelette's">New Arrivals</Link></li>
+                <li><Link href="/Omelette's">Best Sellers</Link></li>
+                <li><Link href="/Omelette's">Limited Edition</Link></li>
+                <li><Link href="/Omelette's">Gift Sets</Link></li>
+              </ul>
+            </div>
+
+            <div className="footer-col">
+              <h4>Support</h4>
+              <ul className="footer-links">
+                <li><Link href="/about">About Us</Link></li>
+                <li><Link href="/help">FAQ</Link></li>
+                <li><Link href="/help">Shipping Info</Link></li>
+                <li><Link href="/help">Returns & Exchanges</Link></li>
+                <li><Link href="/help">Contact Us</Link></li>
+              </ul>
+            </div>
+
+            {/* Contact Column */}
+            <div className="footer-col">
+              <h4>Connect With Us</h4>
+              <div className="contact-info">
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=omelettes.hub@gmail.com" target="_blank" rel="noopener noreferrer" className="email-link">
+                  <FaEnvelope className="contact-icon" />
+                  <span>omelettes.hub@gmail.com</span>
+                </a>
+                <a href="https://wa.me/8562055058028" target="_blank" rel="noopener noreferrer" className="whatsapp-link">
+                  <FaWhatsapp className="contact-icon" />
+                  <span>+856 20 5505 8028</span>
+                </a>
+                <div className="contact-item">
+                  <RiCustomerService2Fill className="contact-icon" />
+                  <span>24/7 Customer Support</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Col 2 — Explore */}
-          <div>
-            <div className="ft-col-title">Explore</div>
-            <ul className="ft-nav-list">
-              {[
-                { label: "Collection",   href: "/Omelette's" },
-                { label: "New Arrivals", href: "/Omelette's" },
-                { label: "Best Sellers", href: "/Omelette's" },
-                { label: "Gift Sets",    href: "/Omelette's" },
-              ].map(item => (
-                <li key={item.label}>
-                  <Link href={item.href} className="ft-nav-link">{item.label}</Link>
-                </li>
-              ))}
-            </ul>
+          {/* Trust Badges */}
+          <div className="trust-badges">
+            <div className="trust-item">
+              <FaLock className="trust-icon" />
+              <div className="trust-text">
+                <span className="trust-title">Secure Shopping</span>
+                <span className="trust-sub">256-bit SSL Encryption</span>
+              </div>
+            </div>
+            <div className="trust-item">
+              <FaTruck className="trust-icon" />
+              <div className="trust-text">
+                <span className="trust-title">Free Shipping</span>
+                <span className="trust-sub">On orders over $100</span>
+              </div>
+            </div>
+            <div className="trust-item">
+              <FaUndo className="trust-icon" />
+              <div className="trust-text">
+                <span className="trust-title">Easy Returns</span>
+                <span className="trust-sub">Hassle-free returns</span>
+              </div>
+            </div>
+            <div className="trust-item">
+             <FaHandshakeAngle className="trust-icon" />
+              <div className="trust-text">
+                <span className="trust-title">Partner With Us</span>
+                <span className="trust-sub">Become an affiliate partner →</span>
+              </div>
+            </div>
           </div>
 
-          {/* Col 3 — Company */}
-          <div>
-            <div className="ft-col-title">Company</div>
-            <ul className="ft-nav-list">
-              {[
-                { label: "About Us",  href: "/about" },
-                { label: "Our Story", href: "/about" },
-                { label: "Contact",   href: "/help" },
-                { label: "FAQ",       href: "/help" },
-              ].map(item => (
-                <li key={item.label}>
-                  <Link href={item.href} className="ft-nav-link">{item.label}</Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Col 4 — Information */}
-          <div>
-            <div className="ft-col-title">Information</div>
-            <ul className="ft-nav-list">
-              {[
-                { label: "Shipping Policy", href: "/help" },
-                { label: "Returns",         href: "/help" },
-                { label: "Authenticity",    href: "/about" },
-                { label: "Care Guide",      href: "/help" },
-              ].map(item => (
-                <li key={item.label}>
-                  <Link href={item.href} className="ft-nav-link">{item.label}</Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-        </div>
-
-        {/* Divider */}
-        <div className="ft-divider">
-          <div className="ft-divider-line" />
-        </div>
-
-        {/* Bottom bar */}
-        <div className="ft-bottom-bar">
-          <span className="ft-copy">© 2023–2026 Omelette's · All rights reserved</span>
-          <div className="ft-badges">
-            <span className="ft-badge">v0.0.1</span>
-            <span className="ft-badge">Premium Quality</span>
-            <span className="ft-badge">Certified Authentic</span>
+          {/* Bottom Bar */}
+          <div className="footer-bottom">
+            <div className="copyright">
+              © 2023–2026 Omelette's Premium Collectibles. All rights reserved.
+            </div>
+            <div className="partner-badge">
+              <span> Want to partner? Contact us at</span>
+              <a href="https://mail.google.com/mail/?view=cm&fs=1&to=omelettes.hub@gmail.com" target="_blank" rel="noopener noreferrer">
+                omelettes.hub@gmail.com
+              </a>
+            </div>
           </div>
         </div>
-
-        {/* Bottom accent line */}
-        <div className="ft-bottom-line" />
-
       </footer>
     </div>
   );

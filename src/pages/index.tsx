@@ -4,13 +4,24 @@ import { Link } from "@heroui/link";
 import DefaultLayout from "@/layouts/default";
 import AirplaneLoading from "@/components/loading";
 import { useTranslation } from "react-i18next";
-import {
-  AiOutlineRight,
-  AiOutlineClose,
-  AiOutlineLeft,
-  AiOutlineRight as RightArrow,
+import { 
+  AiOutlineRight, 
+  AiOutlineClose, 
+  AiOutlineLeft, 
+  AiOutlineGift, 
+  AiOutlineCheck, 
+  AiOutlineStar,
+  AiOutlineSound,
+  AiOutlineMuted,
+  AiOutlineHeart,
+  AiFillHeart,
+  AiOutlineShareAlt,
+  AiOutlineFullscreen,
+  AiOutlineFullscreenExit
 } from "react-icons/ai";
 import { Helmet } from "react-helmet-async";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaHeart } from "react-icons/fa";
 
 interface Product {
   ID: string;
@@ -18,663 +29,514 @@ interface Product {
   Images?: { image_meain?: string | null };
 }
 
+interface TikTokVideo {
+  id: number;
+  url: string;
+  title: string;
+  likes: number;
+  liked: boolean;
+}
+
 const AIRLINES = [
-  {
-    id: "thai",
-    name: "Thai Airways",
-    country: "Thailand",
-    desc: "Thailand's flag carrier, known for its graceful service and iconic purple-gold livery across Asia and beyond.",
-    logo: "https://res.cloudinary.com/deahgtn57/image/upload/v1749979001/omelett%27s/public/c919/thai_yomquy.png",
-    plane: "https://res.cloudinary.com/deahgtn57/image/upload/v1749978991/omelett%27s/public/c919/115_mwwmjj.png",
-    scale: "1:200", length: "34 cm", edition: "Limited",
-    accent: "rgba(120,60,180,.18)",
-  },
-  {
-    id: "emirates",
-    name: "Emirates",
-    country: "UAE",
-    desc: "Dubai's world-renowned airline — synonymous with luxury, the A380, and connecting 150+ destinations globally.",
-    logo: "https://res.cloudinary.com/deahgtn57/image/upload/v1749978995/omelett%27s/public/c919/emirates_vpql4a.png",
-    plane: "https://res.cloudinary.com/deahgtn57/image/upload/v1749978988/omelett%27s/public/c919/103_qxckbi.png",
-    scale: "1:200", length: "36 cm", edition: "Premium",
-    accent: "rgba(180,30,40,.18)",
-  },
-  {
-    id: "qatar",
-    name: "Qatar Airways",
-    country: "Qatar",
-    desc: "Award-winning airline of Qatar, celebrated for its five-star onboard experience and deep maroon livery.",
-    logo: "https://res.cloudinary.com/deahgtn57/image/upload/v1749978999/omelett%27s/public/c919/Qatar-Airways-Logo_p6p1ud.png",
-    plane: "https://res.cloudinary.com/deahgtn57/image/upload/v1749978989/omelett%27s/public/c919/105_xitts5.png",
-    scale: "1:200", length: "33 cm", edition: "Collector",
-    accent: "rgba(100,10,30,.22)",
-  },
-  {
-    id: "lao",
-    name: "Lao Airlines",
-    country: "Laos",
-    desc: "Lao PDR's national carrier, connecting Southeast Asia with warm Lao hospitality at 30,000 feet.",
-    logo: "https://res.cloudinary.com/deahgtn57/image/upload/v1749978996/omelett%27s/public/c919/logo-laoairlines_rmrpmm.png",
-    plane: "https://res.cloudinary.com/deahgtn57/image/upload/v1749979263/omelett%27s/public/c919/109_sqz5zm.png",
-    scale: "1:200", length: "30 cm", edition: "Special",
-    accent: "rgba(13,122,104,.2)",
-  },
-  {
-    id: "comac",
-    name: "Comac C919",
-    country: "China",
-    desc: "China's first domestically produced narrow-body jet — a landmark milestone in commercial aviation history.",
-    logo: "https://res.cloudinary.com/deahgtn57/image/upload/v1749978995/omelett%27s/public/c919/Comac-Logo-768x432_jsuohq.png",
-    plane: "https://res.cloudinary.com/deahgtn57/image/upload/v1749978988/omelett%27s/public/c919/104_kukfrn.png",
-    scale: "1:200", length: "32 cm", edition: "Historic",
-    accent: "rgba(200,30,30,.15)",
-  },
+  { id:"thai",name:"Thai Airways",country:"Thailand",desc:"Thailand's flag carrier, known for its graceful service and iconic purple-gold livery across Asia and beyond.",logo:"https://res.cloudinary.com/deahgtn57/image/upload/v1749979001/omelett%27s/public/c919/thai_yomquy.png",plane:"https://res.cloudinary.com/deahgtn57/image/upload/v1749978991/omelett%27s/public/c919/115_mwwmjj.png",scale:"1:200",length:"34 cm",edition:"Limited" },
+  { id:"emirates",name:"Emirates",country:"UAE",desc:"Dubai's world-renowned airline — synonymous with luxury, the A380, and connecting 150+ destinations globally.",logo:"https://res.cloudinary.com/deahgtn57/image/upload/v1749978995/omelett%27s/public/c919/emirates_vpql4a.png",plane:"https://res.cloudinary.com/deahgtn57/image/upload/v1749978988/omelett%27s/public/c919/103_qxckbi.png",scale:"1:200",length:"36 cm",edition:"Premium" },
+  { id:"qatar",name:"Qatar Airways",country:"Qatar",desc:"Award-winning airline of Qatar, celebrated for its five-star onboard experience and deep maroon livery.",logo:"https://res.cloudinary.com/deahgtn57/image/upload/v1749978999/omelett%27s/public/c919/Qatar-Airways-Logo_p6p1ud.png",plane:"https://res.cloudinary.com/deahgtn57/image/upload/v1749978989/omelett%27s/public/c919/105_xitts5.png",scale:"1:200",length:"33 cm",edition:"Collector" },
+  { id:"lao",name:"Lao Airlines",country:"Laos",desc:"Lao PDR's national carrier, connecting Southeast Asia with warm Lao hospitality at 30,000 feet.",logo:"https://res.cloudinary.com/deahgtn57/image/upload/v1749978996/omelett%27s/public/c919/logo-laoairlines_rmrpmm.png",plane:"https://res.cloudinary.com/deahgtn57/image/upload/v1749979263/omelett%27s/public/c919/109_sqz5zm.png",scale:"1:200",length:"30 cm",edition:"Special" },
+  { id:"comac",name:"Comac C919",country:"China",desc:"China's first domestically produced narrow-body jet — a landmark milestone in commercial aviation history.",logo:"https://res.cloudinary.com/deahgtn57/image/upload/v1749978995/omelett%27s/public/c919/Comac-Logo-768x432_jsuohq.png",plane:"https://res.cloudinary.com/deahgtn57/image/upload/v1749978988/omelett%27s/public/c919/104_kukfrn.png",scale:"1:200",length:"32 cm",edition:"Historic" },
 ];
 
-const globalStyles = `
-  @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Syne:wght@400;600;700;800&display=swap');
-  :root {
-    --teal:       #0d7a68;
-    --teal2:      #0a6455;
-    --teal3:      #083d33;
-    --teal-light: #e6f4f1;
-    --teal-mid:   #4db8a8;
-    --teal-pale:  #7dd4c8;
-    --teal-glow:  rgba(13,122,104,.28);
-  }
-  *, *::before, *::after {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    box-sizing: border-box;
-  }
-  html {
-    scroll-behavior: smooth;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  /* ── Keyframes ── */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(32px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-  @keyframes shimmerTeal {
-    0%   { background-position: -200% center; }
-    100% { background-position:  200% center; }
-  }
-  @keyframes kenBurns {
-    0%   { transform: scale(1)    translate(0,0); }
-    50%  { transform: scale(1.05) translate(-1%,-.5%); }
-    100% { transform: scale(1)    translate(0,0); }
-  }
-  @keyframes glowPulse {
-    0%,100% { opacity: .2; }
-    50%     { opacity: .38; }
-  }
-  @keyframes pulseRing {
-    0%   { box-shadow: 0 0 0 0 var(--teal-glow); }
-    70%  { box-shadow: 0 0 0 14px rgba(13,122,104,0); }
-    100% { box-shadow: 0 0 0 0 rgba(13,122,104,0); }
-  }
-  @keyframes rotateSlow {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-  }
-  @keyframes heroFlyIn {
-    0%   { opacity: 0; transform: translateX(60px) translateY(20px) scale(.95) rotate(2deg); }
-    60%  { opacity: 1; transform: translateX(-4px) translateY(-3px) scale(1.01) rotate(-.3deg); }
-    100% { opacity: 1; transform: translateX(0) translateY(0) scale(1) rotate(0deg); }
-  }
-  @keyframes badgeIconPop {
-    0%   { transform: scale(1); }
-    50%  { transform: scale(1.16); }
-    100% { transform: scale(1); }
-  }
-  @keyframes countUp {
-    from { transform: translateY(8px); opacity: 0; }
-    to   { transform: translateY(0);   opacity: 1; }
-  }
-  @keyframes alModalIn {
-    from { opacity: 0; transform: scale(.93) translateY(20px); }
-    to   { opacity: 1; transform: scale(1) translateY(0); }
-  }
-  @keyframes alBackdrop {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-  @keyframes alPlaneIn {
-    from { opacity: 0; transform: translateX(50px) scale(.94) rotate(2deg); }
-    to   { opacity: 1; transform: translateX(0) scale(1) rotate(0deg); }
-  }
-  @keyframes alLogoIn {
-    from { opacity: 0; transform: translateY(-10px) scale(.9); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-  }
-  @keyframes alShimmer {
-    0%   { background-position: -300% center; }
-    100% { background-position:  300% center; }
-  }
-  .hero-img-wrap  { animation: heroFlyIn 1.1s cubic-bezier(.22,1,.36,1) both; }
-  .hero-img-inner { animation: kenBurns 14s ease-in-out infinite; }
-  .hero-glow-pulse { animation: glowPulse 4s ease-in-out infinite; }
-  .badge-icon:hover { animation: badgeIconPop .35s ease; }
-  /* ── Reveal on scroll ── */
-  .reveal {
-    opacity: 0; transform: translateY(28px);
-    transition: opacity .65s cubic-bezier(.22,1,.36,1), transform .65s cubic-bezier(.22,1,.36,1);
-  }
-  .reveal.visible { opacity: 1; transform: translateY(0); }
-  .reveal-left {
-    opacity: 0; transform: translateX(-36px);
-    transition: opacity .65s cubic-bezier(.22,1,.36,1), transform .65s cubic-bezier(.22,1,.36,1);
-  }
-  .reveal-left.visible { opacity: 1; transform: translateX(0); }
-  .reveal-right {
-    opacity: 0; transform: translateX(36px);
-    transition: opacity .65s cubic-bezier(.22,1,.36,1), transform .65s cubic-bezier(.22,1,.36,1);
-  }
-  .reveal-right.visible { opacity: 1; transform: translateX(0); }
-  .reveal-delay-1 { transition-delay: .1s !important; }
-  .reveal-delay-2 { transition-delay: .2s !important; }
-  .reveal-delay-3 { transition-delay: .32s !important; }
-  .reveal-delay-4 { transition-delay: .44s !important; }
-  .reveal-delay-5 { transition-delay: .56s !important; }
-  /* ── Hero entrance ── */
-  .fade-up   { animation: fadeUp .7s ease both; }
-  .fade-up-1 { animation: fadeUp .7s .10s ease both; }
-  .fade-up-2 { animation: fadeUp .7s .22s ease both; }
-  .fade-up-3 { animation: fadeUp .7s .38s ease both; }
-  .fade-up-4 { animation: fadeUp .7s .54s ease both; }
-  .fade-up-5 { animation: fadeUp .7s .70s ease both; }
-  .teal-shimmer {
-    background: linear-gradient(135deg, #ffffff 0%, var(--teal-pale) 45%, #ffffff 100%);
-    background-size: 220% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmerTeal 5s linear infinite;
-  }
-  .section-label {
-    font-size: .7rem;
-    font-weight: 700;
-    letter-spacing: 5px;
-    text-transform: uppercase;
-    color: var(--teal);
-    display: inline-block;
-    background: rgba(13,122,104,0.1);
-    padding: 4px 12px;
-    border-radius: 20px;
-    margin-bottom: 16px;
-  }
-  .dark .section-label { color: var(--teal-mid); background: rgba(77,184,168,0.1); }
-  .teal-bar {
-    height: 3px; width: 52px;
-    background: linear-gradient(90deg, var(--teal), var(--teal-mid));
-    border-radius: 2px; margin-bottom: 18px;
-  }
-  .card-lift {
-    transition: transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s ease;
-    will-change: transform;
-  }
-  .card-lift:hover {
-    transform: translateY(-7px);
-    box-shadow: 0 24px 56px rgba(0,0,0,.14) !important;
-  }
-  .icon-pulse { animation: pulseRing 2.6s infinite; }
-  .slide-track {
-    display: flex; gap: 20px; overflow-x: auto;
-    scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; padding-bottom: 8px;
-    padding-left: 1px; padding-right: 16px;
-  }
-  .slide-track::-webkit-scrollbar { display: none; }
-  .slide-track > * { scroll-snap-align: start; flex-shrink: 0; }
-  .display-card .display-overlay { opacity: 0; transition: opacity .3s ease; }
-  .display-card:hover .display-overlay { opacity: 1; }
-  .thin-scroll::-webkit-scrollbar { width: 4px; }
-  .thin-scroll::-webkit-scrollbar-track { background: transparent; }
-  .thin-scroll::-webkit-scrollbar-thumb { background: var(--teal); border-radius: 4px; }
-  .stat-val {
-    font-size: clamp(2.2rem, 4.5vw, 3.2rem);
-    font-weight: 700; line-height: 1; color: #fff;
-    animation: countUp .5s ease both;
-  }
-  .arrow-btn {
-    width: 38px; height: 38px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: all .25s ease;
-    border: 2px solid var(--teal); background: transparent; color: var(--teal);
-  }
-  .arrow-btn:hover { background: var(--teal); color: #fff; }
-  .arrow-btn.filled { background: var(--teal); color: #fff; }
-  .arrow-btn.filled:hover { opacity: .85; }
-  .carousel-slide { position: absolute; inset: 0; transition: opacity .9s cubic-bezier(.4,0,.2,1); }
-  section { isolation: isolate; }
+const styles = `
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
-  /* ─────────────────────────────────────────────────────
-     AIRLINE SECTION — FOLLOWS LIGHT/DARK MODE
-  ───────────────────────────────────────────────────── */
-  .al-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 16px;
-    margin-top: 40px;
-  }
-  @media (max-width: 900px) { .al-grid { grid-template-columns: repeat(3, 1fr); } }
-  @media (max-width: 560px) { .al-grid { grid-template-columns: repeat(2, 1fr) !important; } }
+:root {
+  --p:#0d7a68;--p2:#0a6455;--a:#4db8a8;--a2:#7dd4c8;--r:#E43636;
+  --bg:#ffffff;--bg2:#f7faf9;--bg3:#eef5f3;
+  --tx:#1a2e2a;--tx2:#3d5c55;--tx3:#6b8f86;
+  --bd:rgba(13,122,104,.12);--cd:#ffffff;
+  --glass:rgba(255,255,255,.8);
+  --sh:0 4px 24px rgba(0,0,0,.06);--sh2:0 12px 40px rgba(0,0,0,.08);
+}
+.dark{
+  --bg:#0a1210;--bg2:#0e1a17;--bg3:#12221d;
+  --tx:#e8f5f1;--tx2:#9dbcb4;--tx3:#6b8f86;
+  --bd:rgba(77,184,168,.12);--cd:rgba(255,255,255,.04);
+  --glass:rgba(255,255,255,.06);
+  --sh:0 4px 24px rgba(0,0,0,.2);--sh2:0 12px 40px rgba(0,0,0,.3);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0}
+.ix,.ix *{font-family:'Noto Sans Lao','Inter',-apple-system,sans-serif}
 
-  .al-card {
-    position: relative;
-    border-radius: 16px;
-    border: 1px solid rgba(13,122,104,.15);
-    background: #fff;
-    padding: 24px 16px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow: hidden;
-  }
-  .dark .al-card {
-    background: rgba(255,255,255,.04);
-    border-color: rgba(13,122,104,.2);
-  }
-  .al-card:hover {
-    border-color: #0d7a68;
-    transform: translateY(-5px);
-    box-shadow: 0 12px 36px rgba(13,122,104,.12);
-  }
-  .dark .al-card:hover {
-    border-color: var(--teal-mid);
-    box-shadow: 0 12px 36px rgba(0,0,0,.3);
-    background: rgba(13,122,104,.06);
-  }
-  .al-card-logo {
-    width: 100%;
-    height: 48px;
-    object-fit: contain;
-    transition: all 0.3s ease;
-    position: relative;
-    z-index: 1;
-  }
-  .al-card:hover .al-card-logo {
-    transform: scale(1.06);
-  }
-  .al-card-name {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: #374151;
-    transition: color 0.25s;
-    text-align: center;
-    position: relative;
-    z-index: 1;
-    line-height: 1.4;
-  }
-  .dark .al-card-name { color: rgba(255,255,255,.8); }
-  .al-card:hover .al-card-name { color: #0d7a68; }
-  .dark .al-card:hover .al-card-name { color: #fff; }
+@keyframes shim{0%{background-position:-200% center}100%{background-position:200% center}}
+@keyframes drift{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes glow{0%,100%{opacity:.06}50%{opacity:.15}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes sweep{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+@keyframes popIn{from{opacity:0;transform:scale(.92) translateY(16px)}to{opacity:1;transform:none}}
+@keyframes slideR{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes ken{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes modalPop{from{opacity:0;transform:scale(.94) translateY(14px)}to{opacity:1;transform:none}}
+@keyframes barGlow{0%{background-position:-300% center}100%{background-position:300% center}}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes shimmerGold{0%{background-position:-200% center}100%{background-position:200% center}}
+@keyframes floatSlow{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-6px) rotate(1deg)}}
+@keyframes orbPulse{0%,100%{opacity:.06}50%{opacity:.15}}
+@keyframes scan{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes pulseRing{0%{transform:scale(0.95);opacity:0.5}50%{transform:scale(1);opacity:1}100%{transform:scale(0.95);opacity:0.5}}
+@keyframes heartBurst{0%{transform:scale(1)}25%{transform:scale(1.4)}50%{transform:scale(0.9)}75%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes floatHeart{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-80px) scale(0);opacity:0}}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
 
-  .al-card-hint {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    color: rgba(13,122,104,.4);
-    transition: all 0.25s;
-    position: relative;
-    z-index: 1;
-  }
-  .dark .al-card-hint { color: rgba(77,184,168,.35); }
-  .al-card-hint-dot {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: #0d7a68;
-    flex-shrink: 0;
-    opacity: .5;
-    transition: opacity .25s;
-  }
-  .al-card:hover .al-card-hint {
-    color: #0d7a68;
-    gap: 8px;
-  }
-  .dark .al-card:hover .al-card-hint { color: var(--teal-mid); }
-  .al-card:hover .al-card-hint-dot { opacity: 1; }
+.shim{background:linear-gradient(120deg,var(--p),var(--a2) 40%,var(--p));background-size:220% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shim 4s linear infinite}
+.dark .shim{background:linear-gradient(120deg,#fff,var(--a2) 40%,#fff);background-size:220% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shim 4s linear infinite}
 
-  /* ─────────────────────────────────────────────────────
-     AIRLINE MODAL — FOLLOWS LIGHT/DARK MODE
-  ───────────────────────────────────────────────────── */
-  .al-modal-backdrop {
-    position: fixed; inset: 0; z-index: 99999;
-    background: rgba(0,0,0,.5);
-    backdrop-filter: blur(12px);
-    animation: alBackdrop .22s ease both;
-    display: flex; align-items: center; justify-content: center;
-    padding: 20px;
+/* ═══ HERO ═══ */
+.hro{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden;background:var(--bg)}
+.hro::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 80% 60% at 50% 30%,rgba(13,122,104,.06) 0%,transparent 70%)}
+.dark .hro::before{background:radial-gradient(ellipse 80% 60% at 50% 30%,rgba(13,122,104,.15) 0%,transparent 70%)}
+.dark .hro{background:linear-gradient(170deg,#060e0c 0%,#0a1814 50%,#060e0c 100%)}
+
+.hro-mesh{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(13,122,104,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(13,122,104,.04) 1px,transparent 1px);background-size:72px 72px}
+.dark .hro-mesh{background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px)}
+
+.hro-orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(80px);animation:orbPulse 6s ease-in-out infinite}
+.hro-ring{position:absolute;border-radius:50%;border:1px solid rgba(13,122,104,.07);pointer-events:none;animation:spin 50s linear infinite}
+
+.hro-scan-line{position:relative;height:1px;max-width:400px;margin:0 auto 24px;background:var(--bd);overflow:hidden}
+.hro-scan-line::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,var(--a),transparent);animation:scan 3s linear infinite}
+
+.hro-fade{position:absolute;bottom:0;left:0;right:0;height:120px;background:linear-gradient(to bottom,transparent,var(--bg));pointer-events:none}
+
+/* ═══ TIKTOK VIDEO CAROUSEL ═══ */
+.tiktok-carousel{position:relative;border-radius:20px;overflow:hidden;background:#000;margin:0 auto;box-shadow:0 20px 60px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.08)}
+.tiktok-carousel:fullscreen {
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  border-radius: 0 !important;
+  aspect-ratio: auto !important;
+  width: 100vw !important;
+  height: 100vh !important;
+}
+.tiktok-carousel:fullscreen .tiktok-video-wrapper {
+  width: 100vw !important;
+  height: 100vh !important;
+}
+.tiktok-carousel:fullscreen .tiktok-video {
+  object-fit: contain !important;
+}
+.tiktok-video-wrapper{position:relative;width:100%;height:100%;overflow:hidden}
+.tiktok-video{width:100%;height:100%;object-fit:cover;display:block}
+.tiktok-overlay{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.6) 100%)}
+.tiktok-gradient-top{position:absolute;top:0;left:0;right:0;height:60%;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.3) 0%,transparent 100%)}
+.tiktok-progress{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,.2);z-index:15}
+.tiktok-progress-bar{height:100%;background:linear-gradient(90deg,var(--p),var(--a));transition:width .1s linear;border-radius:0 2px 2px 0}
+.tiktok-dots{position:absolute;top:16px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:20;pointer-events:auto}
+.tiktok-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.3);border:none;padding:0;cursor:pointer;transition:all .3s}
+.tiktok-dot.active{background:#fff;width:24px;border-radius:3px}
+
+/* TikTok Controls */
+.tiktok-controls-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:20;pointer-events:auto;display:flex;gap:20px;align-items:center}
+.tiktok-control-btn{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.15);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;cursor:pointer;transition:all .3s}
+.tiktok-control-btn:hover{background:rgba(255,255,255,.3);transform:scale(1.08)}
+
+/* TikTok Bottom Controls */
+.tiktok-bottom-controls{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:12px;z-index:20;pointer-events:auto}
+.tiktok-bottom-btn{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.12);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;cursor:pointer;transition:all .25s}
+.tiktok-bottom-btn:hover{background:rgba(255,255,255,.25);transform:scale(1.05)}
+.tiktok-bottom-btn.sound-btn{background:rgba(255,255,255,.08)}
+.tiktok-bottom-btn.sound-btn.on{background:rgba(13,122,104,.3);border-color:rgba(13,122,104,.4)}
+.tiktok-bottom-btn.fullscreen-btn{background:rgba(255,255,255,.08)}
+.tiktok-bottom-btn.fullscreen-btn.on{background:rgba(13,122,104,.3);border-color:rgba(13,122,104,.4)}
+
+/* TikTok Navigation Arrows */
+.tiktok-nav-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:25;pointer-events:auto;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;cursor:pointer;transition:all .3s}
+.tiktok-nav-arrow:hover{background:rgba(0,0,0,.8);transform:translateY(-50%) scale(1.08)}
+.tiktok-nav-arrow.prev{left:12px}
+.tiktok-nav-arrow.next{right:12px}
+.tiktok-nav-arrow:disabled{opacity:0.3;cursor:not-allowed;transform:translateY(-50%) scale(0.95)}
+
+/* TikTok Side Actions */
+.tiktok-actions{position:absolute;right:12px;bottom:100px;display:flex;flex-direction:column;gap:20px;z-index:20;pointer-events:auto}
+.tiktok-action-btn{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;color:#fff;cursor:pointer;transition:all .3s;padding:4px;position:relative}
+.tiktok-action-btn .icon-wrap{width:44px;height:44px;border-radius:50%;backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:20px;transition:all .3s;background:rgba(255,255,255,.08)}
+.tiktok-action-btn:hover .icon-wrap{background:rgba(255,255,255,.2);transform:scale(1.05)}
+.tiktok-action-btn .count{font-size:11px;font-weight:600;letter-spacing:.3px;color:rgba(255,255,255,.8)}
+
+/* Like Button - Green Theme */
+.tiktok-action-btn.like-btn .icon-wrap{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:#fff}
+.tiktok-action-btn.like-btn:hover .icon-wrap{background:rgba(255,255,255,.2);transform:scale(1.08)}
+.tiktok-action-btn.like-btn .icon-wrap.liked{background:rgba(13,122,104,.9);border-color:#0d7a68;color:#fff;animation:heartBurst .4s ease}
+.tiktok-action-btn.like-btn .icon-wrap.liked .like-icon{animation:heartBurst .4s ease;display:inline-block;color:#fff}
+.tiktok-action-btn.like-btn .count.liked{color:#0d7a68}
+.tiktok-action-btn .float-hearts{position:absolute;pointer-events:none}
+.tiktok-action-btn .float-heart{position:absolute;color:#0d7a68;font-size:20px;animation:floatHeart 1s ease-out forwards}
+
+/* Share Button */
+.tiktok-action-btn.share-btn .icon-wrap{background:rgba(77,184,168,.12);border-color:rgba(77,184,168,.15);color:#4db8a8}
+.tiktok-action-btn.share-btn:hover .icon-wrap{background:rgba(77,184,168,.2);transform:scale(1.08)}
+.tiktok-share-tooltip{position:absolute;bottom:100%;right:50%;transform:translateX(50%);background:rgba(0,0,0,.85);color:#fff;padding:6px 14px;border-radius:10px;font-size:11px;white-space:nowrap;margin-bottom:10px;animation:slideUp .3s ease;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.08)}
+
+/* TikTok Info */
+.tiktok-info{position:absolute;bottom:76px;left:16px;right:64px;z-index:20;pointer-events:none}
+.tiktok-info-title{color:#fff;font-size:15px;font-weight:700;text-shadow:0 2px 8px rgba(0,0,0,.5);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.tiktok-info-title .verified{color:var(--p);font-size:12px}
+.tiktok-info-sub{color:rgba(255,255,255,.7);font-size:11px;text-shadow:0 2px 8px rgba(0,0,0,.5)}
+.tiktok-info-sub span{margin:0 6px}
+
+/* section */
+.sec{position:relative;padding:clamp(56px,9vw,88px) 0;background:var(--bg);transition:background .3s}
+.sec-alt{background:var(--bg2)}
+.sec-grad{background:var(--bg)}
+.dark .sec-grad{background:radial-gradient(ellipse 70% 50% at 30% 40%,rgba(13,122,104,.12) 0%,transparent 60%),radial-gradient(ellipse 55% 60% at 80% 70%,rgba(8,61,51,.08) 0%,transparent 55%),var(--bg)}
+
+/* typography */
+.h1{font-family:'Inter','Noto Sans Lao',sans-serif;font-size:clamp(2.5rem,6vw,4.5rem);font-weight:900;line-height:.9;letter-spacing:-2px;color:var(--tx)}
+.h2{font-family:'Inter','Noto Sans Lao',sans-serif;font-size:clamp(1.5rem,3.5vw,2.4rem);font-weight:700;color:var(--tx);line-height:1.12;letter-spacing:-.5px}
+.tag{font-size:.58rem;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;color:var(--p);display:inline-block;padding:5px 14px;border-radius:20px;background:rgba(13,122,104,.06);border:1px solid rgba(13,122,104,.1)}
+.dark .tag{color:var(--a);background:rgba(77,184,168,.08);border-color:rgba(77,184,168,.15)}
+.bar{height:3px;width:36px;border-radius:2px;background:linear-gradient(90deg,var(--p),var(--a))}
+.body{font-size:.9rem;color:var(--tx3);line-height:1.7;max-width:480px}
+
+/* pill (hero) */
+.hero-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:20px;background:rgba(13,122,104,.08);border:1px solid rgba(13,122,104,.15);color:var(--p);font-size:.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+.dark .hero-pill{background:rgba(13,122,104,.14);border-color:rgba(13,122,104,.28);color:var(--a2)}
+
+/* stat */
+.st{font-size:clamp(1.4rem,3vw,2.2rem);font-weight:800;line-height:1;color:var(--tx)}
+
+/* card */
+.cd{background:var(--cd);border:1px solid var(--bd);border-radius:18px;overflow:hidden;box-shadow:var(--sh);transition:all .32s cubic-bezier(.22,1,.36,1)}
+.cd:hover{transform:translateY(-5px);box-shadow:var(--sh2);border-color:rgba(13,122,104,.18)}
+
+/* slide */
+.stk{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:6px;padding-right:16px}
+.stk::-webkit-scrollbar{display:none}
+.stk>*{scroll-snap-align:start;flex-shrink:0}
+
+/* arrows */
+.nav-btn{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .25s;border:1.5px solid var(--bd);background:var(--cd);color:var(--tx3)}
+.nav-btn:hover{background:var(--p);color:#fff;border-color:var(--p)}
+
+/* display overlay */
+.dsp-card .dsp-ov{opacity:0;transition:opacity .3s}
+.dsp-card:hover .dsp-ov{opacity:1}
+
+/* btn */
+.btn-main{display:inline-flex;align-items:center;gap:9px;padding:13px 30px;border-radius:50px;border:none;cursor:pointer;font-family:inherit;font-size:.88rem;font-weight:600;color:#fff;background:linear-gradient(135deg,var(--p),var(--p2));box-shadow:0 6px 24px rgba(13,122,104,.3);transition:all .25s;text-decoration:none;letter-spacing:.2px}
+.btn-main:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(13,122,104,.45)}
+
+/* corners */
+.corner{position:absolute;width:18px;height:18px;border-color:rgba(13,122,104,.4);border-style:solid;pointer-events:none;z-index:5}
+
+/* quality icon */
+.q-ico{width:42px;height:42px;border-radius:12px;background:var(--p);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 14px rgba(13,122,104,.2)}
+
+/* airline modal */
+.al-bk{position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.5);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:16px}
+.dark .al-bk{background:rgba(0,0,0,.7)}
+.al-m{position:relative;width:100%;max-width:880px;background:var(--bg);border:1px solid var(--bd);border-radius:20px;overflow:hidden;box-shadow:var(--sh2);animation:modalPop .32s cubic-bezier(.22,1,.36,1) both}
+.dark .al-m{background:var(--bg2)}
+.al-m-top{height:3px;background:linear-gradient(90deg,transparent,var(--p) 20%,var(--a) 50%,var(--p) 80%,transparent);background-size:300% auto;animation:barGlow 3s linear infinite}
+.al-m-hdr{padding:22px 26px 0;display:flex;justify-content:space-between;align-items:flex-start}
+.al-m-ey{font-size:.58rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--p);margin-bottom:3px}
+.dark .al-m-ey{color:var(--a)}
+.al-m-tt{font-size:1.4rem;font-weight:800;color:var(--tx);letter-spacing:-.4px}
+.al-m-tt span{color:var(--p)}.dark .al-m-tt span{color:var(--a)}
+.al-m-x{width:30px;height:30px;border-radius:50%;background:rgba(228,54,54,.06);border:1px solid rgba(228,54,54,.15);color:var(--tx3);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .25s;flex-shrink:0}
+.al-m-x:hover{background:#E43636;border-color:#E43636;color:#fff;transform:rotate(90deg)}
+.al-tabs{display:flex;gap:7px;padding:16px 26px 0;overflow-x:auto;scrollbar-width:none}
+.al-tabs::-webkit-scrollbar{display:none}
+.al-tab{display:flex;align-items:center;gap:7px;padding:5px 11px;border-radius:10px;border:1px solid var(--bd);background:transparent;cursor:pointer;transition:all .25s;white-space:nowrap;flex-shrink:0}
+.al-tab:hover{border-color:rgba(13,122,104,.25);background:rgba(13,122,104,.04)}
+.al-tab.on{border-color:var(--p);background:rgba(13,122,104,.08)}
+.dark .al-tab.on{background:rgba(13,122,104,.16);border-color:var(--a)}
+.al-tab img{height:18px;max-width:40px;object-fit:contain}
+.al-tab span{font-size:.68rem;font-weight:600;color:var(--tx3);transition:color .2s}
+.al-tab:hover span,.al-tab.on span{color:var(--p)}
+.dark .al-tab:hover span,.dark .al-tab.on span{color:#fff}
+.al-body{display:grid;grid-template-columns:1fr 1.15fr;gap:22px;padding:18px 26px 22px;align-items:center;min-height:240px}
+.al-logo{height:40px;max-width:160px;object-fit:contain;margin-bottom:10px}
+.al-nm{font-size:1.2rem;font-weight:800;color:var(--tx);margin-bottom:2px}
+.al-co{font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--p);font-weight:600;opacity:.7;margin-bottom:10px}
+.dark .al-co{color:var(--a)}
+.al-desc{font-size:.84rem;line-height:1.55;color:var(--tx3);margin-bottom:16px;max-width:270px}
+.al-sp-tag{font-size:.56rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--p);opacity:.6;display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.dark .al-sp-tag{color:var(--a)}
+.al-sp-tag::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--bd),transparent)}
+.al-sps{display:flex;gap:20px}
+.al-sp-v{font-size:1rem;font-weight:800;color:var(--p);line-height:1.2;margin-bottom:2px}
+.dark .al-sp-v{color:var(--a)}
+.al-sp-l{font-size:.56rem;letter-spacing:1px;text-transform:uppercase;color:var(--tx3);font-weight:500}
+.al-plane{position:relative;border-radius:14px;overflow:hidden;background:var(--bg3);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;min-height:200px;padding:16px}
+.dark .al-plane{background:rgba(13,122,104,.04)}
+.al-plane-g{position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 60%,rgba(13,122,104,.05) 0%,transparent 70%);pointer-events:none}
+.dark .al-plane-g{background:radial-gradient(ellipse 70% 55% at 50% 60%,rgba(13,122,104,.1) 0%,transparent 70%)}
+.al-plane img{width:100%;max-height:180px;object-fit:contain;position:relative;z-index:1;filter:drop-shadow(0 6px 14px rgba(0,0,0,.08));animation:slideR .5s cubic-bezier(.22,1,.36,1) both}
+.dark .al-plane img{filter:drop-shadow(0 6px 14px rgba(0,0,0,.25))}
+.al-dots{display:flex;justify-content:center;gap:6px;padding:12px 0 18px;border-top:1px solid var(--bd);margin:0 26px}
+.al-dot{height:5px;width:5px;border-radius:3px;background:var(--bd);cursor:pointer;border:none;padding:0;transition:all .25s}
+.al-dot.on{background:var(--p);width:22px}.dark .al-dot.on{background:var(--a)}
+
+/* ═══ PROMOTION - BEAUTIFUL GLASS STYLE ═══ */
+.promo-glass{background:var(--glass);border:1px solid var(--bd);backdrop-filter:blur(20px) saturate(1.3);box-shadow:var(--sh2);border-radius:24px;overflow:hidden;position:relative}
+.promo-glass::before{content:'';position:absolute;top:0;left:12%;right:12%;height:1px;background:linear-gradient(90deg,transparent,rgba(13,122,104,.1),transparent);pointer-events:none}
+.dark .promo-glass{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)}
+.promo-glass .promo-orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(80px);animation:orbPulse 6s ease-in-out infinite}
+.promo-glass .promo-orb-1{width:350px;height:350px;top:-80px;right:-80px;background:radial-gradient(circle,rgba(13,122,104,.08),transparent 70%)}
+.promo-glass .promo-orb-2{width:250px;height:250px;bottom:-60px;left:-60px;background:radial-gradient(circle,rgba(77,184,168,.06),transparent 70%);animation-delay:3s}
+.dark .promo-glass .promo-orb-1{background:radial-gradient(circle,rgba(13,122,104,.15),transparent 70%)}
+.dark .promo-glass .promo-orb-2{background:radial-gradient(circle,rgba(77,184,168,.1),transparent 70%)}
+.promo-glass .dots-bg{position:absolute;inset:0;pointer-events:none;opacity:.02;background-image:radial-gradient(circle,var(--tx) 1px,transparent 1px);background-size:40px 40px}
+.dark .promo-glass .dots-bg{opacity:.03}
+.promo-glass .scan-line{position:absolute;bottom:0;left:10%;right:10%;height:1px;background:var(--bd);overflow:hidden}
+.promo-glass .scan-line::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,var(--a),transparent);animation:scan 3s linear infinite}
+
+.promo-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(13,122,104,.06);border:1px solid rgba(13,122,104,.12);padding:5px 14px;border-radius:100px;font-size:.55rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--p)}
+.dark .promo-badge{background:rgba(77,184,168,.08);border-color:rgba(77,184,168,.12);color:var(--a)}
+.promo-title{font-size:clamp(1.6rem,3.2vw,2.6rem);font-weight:800;line-height:1.05;letter-spacing:-.5px;color:var(--tx)}
+.promo-title .gold{color:var(--p)}
+.dark .promo-title .gold{color:var(--a)}
+.promo-desc{color:var(--tx3);font-size:.9rem;line-height:1.7}
+.promo-feature{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:12px;background:var(--cd);border:1px solid var(--bd);transition:all .3s}
+.promo-feature:hover{transform:translateX(6px);border-color:rgba(13,122,104,.2);box-shadow:var(--sh)}
+.promo-feature-icon{width:36px;height:36px;border-radius:50%;background:rgba(13,122,104,.06);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;color:var(--p)}
+.dark .promo-feature-icon{background:rgba(77,184,168,.12);color:var(--a)}
+.promo-feature-text{font-size:.85rem;font-weight:500;color:var(--tx2)}
+.promo-image-wrap{position:relative;display:flex;align-items:center;justify-content:center;padding:16px;cursor:pointer}
+.promo-image-wrap .click-hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.4);backdrop-filter:blur(8px);padding:3px 12px;border-radius:20px;color:rgba(255,255,255,.5);font-size:.55rem;border:1px solid rgba(255,255,255,.05);pointer-events:none}
+.promo-image{max-height:260px;width:auto;object-fit:contain;filter:drop-shadow(0 8px 24px rgba(13,122,104,.06));transition:transform .3s}
+.promo-image:hover{transform:scale(1.02)}
+.promo-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+.promo-grid-item{display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:8px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04)}
+.promo-grid-item span{font-size:.65rem;color:rgba(255,255,255,.4);font-weight:400}
+
+/* ═══ PROMO MODAL ═══ */
+.promo-modal-backdrop{position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.85);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;padding:20px}
+.promo-modal-content{position:relative;max-width:900px;width:100%;max-height:90vh;overflow:auto}
+.promo-modal-content img{width:100%;height:auto;border-radius:16px;box-shadow:0 40px 80px rgba(0,0,0,.5)}
+.promo-modal-close{position:absolute;top:-48px;right:0;background:none;border:none;color:rgba(255,255,255,.5);font-size:28px;cursor:pointer;transition:color .3s;padding:8px}
+.promo-modal-close:hover{color:#fff}
+.promo-modal-hint{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.5);backdrop-filter:blur(8px);padding:6px 18px;border-radius:20px;color:rgba(255,255,255,.4);font-size:.7rem;border:1px solid rgba(255,255,255,.05)}
+
+/* ═══ MOBILE SPACING FOR VIDEO ═══ */
+.tiktok-section-wrapper {
+  padding-bottom: clamp(80px, 15vh, 120px);
+}
+
+@media(max-width:640px){
+  .h1{letter-spacing:-1px}
+  .hro{min-height:auto}
+  .sec{padding:clamp(44px,8vw,72px) 0}
+  .al-body{grid-template-columns:1fr;gap:14px;padding:14px 18px 18px}
+  .al-m-hdr{padding:16px 18px 0}
+  .al-tabs{padding:12px 18px 0}
+  .al-dots{margin:0 18px}
+  .al-plane{min-height:160px}
+  .al-desc{max-width:100%}
+  .promo-image{max-height:200px}
+  .promo-modal-content{max-width:100%}
+  .promo-modal-close{top:-40px;font-size:22px}
+  .promo-grid{grid-template-columns:1fr 1fr}
+  .tiktok-carousel{max-width:100% !important;border-radius:12px}
+  .tiktok-actions{right:8px;gap:16px}
+  .tiktok-action-btn .icon-wrap{width:38px;height:38px;font-size:16px}
+  .tiktok-info{left:12px;right:56px}
+  .tiktok-control-btn{width:44px;height:44px;font-size:18px}
+  .tiktok-nav-arrow{width:28px;height:28px;font-size:12px}
+  .tiktok-nav-arrow.prev{left:6px}
+  .tiktok-nav-arrow.next{right:6px}
+  
+  /* Extra bottom padding for mobile to avoid footer overlap */
+  .tiktok-section-wrapper {
+    padding-bottom: clamp(100px, 20vh, 140px);
   }
-  .dark .al-modal-backdrop {
-    background: rgba(0,0,0,.7);
+}
+
+/* iPad and tablet */
+@media(min-width:641px) and (max-width:1024px) {
+  .tiktok-section-wrapper {
+    padding-bottom: clamp(60px, 10vh, 100px);
   }
-  .al-modal {
-    position: relative;
-    width: 100%; max-width: 920px;
-    background: #fff;
-    border: 1px solid rgba(13,122,104,.15);
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 30px 80px rgba(0,0,0,.15);
-    animation: alModalIn .38s cubic-bezier(.22,1,.36,1) both;
-  }
-  .dark .al-modal {
-    background: #1f2937;
-    border-color: rgba(13,122,104,.25);
-    box-shadow: 0 30px 80px rgba(0,0,0,.5);
-  }
-  .al-modal-topbar {
-    height: 3px;
-    background: linear-gradient(90deg,
-      transparent, #0d7a68 20%, #4db8a8 50%, #0d7a68 80%, transparent
-    );
-    background-size: 300% auto;
-    animation: alShimmer 3.5s linear infinite;
-  }
-  .al-modal-header {
-    padding: 28px 32px 0;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-  }
-  .al-modal-eyebrow {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: #0d7a68;
-    margin-bottom: 6px;
-  }
-  .dark .al-modal-eyebrow { color: var(--teal-mid); }
-  .al-modal-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: #111827;
-    letter-spacing: -0.5px;
-    line-height: 1.2;
-  }
-  .dark .al-modal-title { color: #fff; }
-  .al-modal-title-accent {
-    color: #0d7a68;
-  }
-  .dark .al-modal-title-accent {
-    background: linear-gradient(120deg, #0d7a68, #4db8a8, #7dd4c8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .al-modal-close {
-    width: 34px; height: 34px; border-radius: 50%;
-    background: rgba(228,54,54,.08);
-    border: 1px solid rgba(228,54,54,.2);
-    color: #999;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 18px; line-height: 1;
-    transition: all 0.25s ease; flex-shrink: 0;
-  }
-  .dark .al-modal-close { background: rgba(228,54,54,.15); border-color: rgba(228,54,54,.3); color: rgba(255,255,255,.6); }
-  .al-modal-close:hover {
-    background: #E43636; border-color: #E43636; color: #fff;
-    transform: scale(1.08) rotate(90deg);
-  }
-  /* Tabs */
-  .al-tabs {
-    display: flex; gap: 8px;
-    padding: 20px 32px 0;
-    overflow-x: auto; scrollbar-width: none;
-  }
-  .al-tabs::-webkit-scrollbar { display: none; }
-  .al-tab {
-    display: flex; align-items: center; gap: 8px;
-    padding: 7px 14px; border-radius: 10px;
-    border: 1px solid rgba(0,0,0,.08);
-    background: transparent;
-    cursor: pointer; transition: all 0.25s ease;
-    white-space: nowrap; flex-shrink: 0;
-  }
-  .dark .al-tab { border-color: rgba(255,255,255,.1); }
-  .al-tab:hover {
-    border-color: rgba(13,122,104,.3);
-    background: rgba(13,122,104,.04);
-  }
-  .dark .al-tab:hover { background: rgba(13,122,104,.1); border-color: rgba(13,122,104,.3); }
-  .al-tab.active {
-    border-color: #0d7a68;
-    background: rgba(13,122,104,.08);
-  }
-  .dark .al-tab.active { background: rgba(13,122,104,.2); border-color: var(--teal-mid); }
-  .al-tab-logo {
-    height: 20px; max-width: 44px; object-fit: contain;
-    transition: all 0.2s;
-  }
-  .al-tab-name {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.72rem; font-weight: 600;
-    color: #6b7280;
-    transition: color 0.2s;
-  }
-  .dark .al-tab-name { color: rgba(255,255,255,.5); }
-  .al-tab:hover .al-tab-name,
-  .al-tab.active .al-tab-name { color: #0d7a68; }
-  .dark .al-tab:hover .al-tab-name,
-  .dark .al-tab.active .al-tab-name { color: #fff; }
-  /* Body */
-  .al-modal-body {
-    display: grid; grid-template-columns: 1fr 1.2fr;
-    gap: 28px; padding: 24px 32px 28px;
-    align-items: center; min-height: 270px;
-  }
-  .al-airline-logo-big {
-    height: 48px; max-width: 180px; object-fit: contain;
-    margin-bottom: 14px;
-    animation: alLogoIn .35s cubic-bezier(.22,1,.36,1) both;
-  }
-  .al-airline-name-big {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.4rem; font-weight: 800;
-    color: #111827; margin-bottom: 4px;
-    letter-spacing: -0.3px;
-  }
-  .dark .al-airline-name-big { color: #fff; }
-  .al-airline-country {
-    font-size: 0.65rem; letter-spacing: 2px;
-    text-transform: uppercase; color: #0d7a68;
-    margin-bottom: 14px; font-weight: 600; opacity: .7;
-  }
-  .dark .al-airline-country { color: var(--teal-mid); }
-  .al-airline-desc {
-    font-size: 0.88rem; line-height: 1.6;
-    color: #6b7280; margin-bottom: 22px;
-    max-width: 280px;
-  }
-  .dark .al-airline-desc { color: rgba(255,255,255,.55); }
-  .al-specs-label {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.6rem; font-weight: 700;
-    letter-spacing: 2px; text-transform: uppercase;
-    color: #0d7a68; opacity: .6;
-    display: flex; align-items: center; gap: 12px;
-    margin-bottom: 14px;
-  }
-  .dark .al-specs-label { color: var(--teal-mid); }
-  .al-specs-label::after {
-    content: ''; flex: 1; height: 1px;
-    background: linear-gradient(90deg, rgba(13,122,104,.2), transparent);
-  }
-  .dark .al-specs-label::after { background: linear-gradient(90deg, rgba(13,122,104,.4), transparent); }
-  .al-specs { display: flex; gap: 24px; }
-  .al-spec-val {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.1rem; font-weight: 800;
-    color: #0d7a68; line-height: 1.2; margin-bottom: 3px;
-  }
-  .dark .al-spec-val { color: var(--teal-mid); }
-  .al-spec-label {
-    font-size: 0.6rem; letter-spacing: 1px;
-    text-transform: uppercase; color: #9ca3af; font-weight: 500;
-  }
-  .dark .al-spec-label { color: rgba(255,255,255,.35); }
-  /* Plane panel */
-  .al-plane-panel {
-    position: relative; border-radius: 16px; overflow: hidden;
-    background: #f3faf8;
-    border: 1px solid rgba(13,122,104,.1);
-    display: flex; align-items: center; justify-content: center;
-    min-height: 220px; padding: 20px;
-  }
-  .dark .al-plane-panel {
-    background: rgba(13,122,104,.06);
-    border-color: rgba(13,122,104,.15);
-  }
-  .al-plane-glow {
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse 75% 55% at 50% 65%, rgba(13,122,104,.08) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .dark .al-plane-glow {
-    background: radial-gradient(ellipse 75% 55% at 50% 65%, rgba(13,122,104,.15) 0%, transparent 70%);
-  }
-  .al-plane-grid {
-    position: absolute; inset: 0; pointer-events: none;
-    background-image:
-      linear-gradient(rgba(13,122,104,.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(13,122,104,.04) 1px, transparent 1px);
-    background-size: 28px 28px;
-    opacity: .5;
-  }
-  .al-plane-img {
-    width: 100%; max-height: 200px; object-fit: contain;
-    position: relative; z-index: 1;
-    filter: drop-shadow(0 8px 20px rgba(0,0,0,.12));
-    animation: alPlaneIn .6s cubic-bezier(.22,1,.36,1) both;
-  }
-  .dark .al-plane-img { filter: drop-shadow(0 8px 20px rgba(0,0,0,.4)); }
-  /* Dots */
-  .al-dots {
-    display: flex; justify-content: center; gap: 7px;
-    padding: 16px 0 22px;
-    border-top: 1px solid rgba(0,0,0,.06);
-    margin: 0 32px;
-  }
-  .dark .al-dots { border-top-color: rgba(255,255,255,.06); }
-  .al-dot {
-    height: 6px; border-radius: 3px;
-    background: #d1d5db;
-    cursor: pointer; border: none; padding: 0;
-    transition: all 0.25s cubic-bezier(.22,1,.36,1);
-    width: 6px;
-  }
-  .dark .al-dot { background: rgba(255,255,255,.15); }
-  .al-dot.active { background: #0d7a68; width: 26px; }
-  .dark .al-dot.active { background: var(--teal-mid); }
-  .al-dot:hover:not(.active) { background: #9ca3af; transform: scale(1.2); }
-  .dark .al-dot:hover:not(.active) { background: rgba(255,255,255,.3); }
-  /* Mobile */
-  @media (max-width: 640px) {
-    .al-modal-body { grid-template-columns: 1fr; padding: 20px 20px 24px; gap: 20px; }
-    .al-modal-header { padding: 20px 20px 0; }
-    .al-tabs { padding: 16px 20px 0; }
-    .al-plane-panel { min-height: 180px; }
-    .al-airline-desc { max-width: 100%; }
-    .al-modal-title { font-size: 1.4rem; }
-    .al-dots { margin: 0 20px; }
-  }
-  /* ── Display card hover ── */
-  .display-card .display-overlay { opacity: 0; transition: opacity .3s ease; }
-  .display-card:hover .display-overlay { opacity: 1; }
-  /* ── Mobile ── */
-  @media (max-width: 640px) {
-    .hero-h1 { font-size: clamp(3rem, 14vw, 4.8rem) !important; }
-    .section-label { font-size: 0.65rem; letter-spacing: 4px; }
-  }
+}
 `;
 
-const TealCorners = () => (
+const Corners = () => (
   <>
-    {(["tl","tr","bl","br"] as const).map(p => (
-      <div key={p} className="absolute pointer-events-none" style={{
-        width: 20, height: 20,
-        top:    p[0]==="t" ? 10 : "auto",
-        bottom: p[0]==="b" ? 10 : "auto",
-        left:   p[1]==="l" ? 10 : "auto",
-        right:  p[1]==="r" ? 10 : "auto",
-        borderColor: "rgba(13,122,104,.5)",
-        borderStyle: "solid",
-        borderWidth: p==="tl" ? "2px 0 0 2px" : p==="tr" ? "2px 2px 0 0" : p==="bl" ? "0 0 2px 2px" : "0 2px 2px 0",
-        zIndex: 10,
+    {(["tl","tr","bl","br"] as const).map(c => (
+      <div key={c} className="corner" style={{
+        top:c[0]==="t"?8:"auto", bottom:c[0]==="b"?8:"auto",
+        left:c[1]==="l"?8:"auto", right:c[1]==="r"?8:"auto",
+        borderWidth:c==="tl"?"2px 0 0 2px":c==="tr"?"2px 2px 0 0":c==="bl"?"0 0 2px 2px":"0 2px 2px 0",
       }} />
     ))}
   </>
 );
 
-const SectionHeader = ({
-  label, title, subtitle, className = "",
-}: { label: string; title: string; subtitle?: string; className?: string }) => (
-  <div className={className}>
-    <span className="section-label">{label}</span>
-    <h2 className="font-bold text-gray-900 dark:text-white leading-tight" style={{ fontSize: "clamp(1.8rem,4.5vw,2.8rem)", letterSpacing: "-0.02em" }}>
-      {title}
-    </h2>
-    <div className="teal-bar mt-3" />
-    {subtitle && (
-      <p className="text-gray-500 dark:text-gray-400 mt-2" style={{ fontSize: "1rem", maxWidth: 520, lineHeight: 1.5 }}>
-        {subtitle}
-      </p>
-    )}
-  </div>
-);
-
-const SlideArrows = ({
-  extra, onScroll,
-}: {
-  trackRef: React.RefObject<HTMLDivElement>;
-  extra?: React.ReactNode;
-  onScroll: (dir: "left" | "right") => void;
-}) => (
-  <div className="flex items-center gap-3 flex-shrink-0">
-    <button className="arrow-btn" onClick={() => onScroll("left")}><AiOutlineLeft size={17} /></button>
-    <button className="arrow-btn filled" onClick={() => onScroll("right")}><RightArrow size={17} /></button>
-    {extra}
-  </div>
-);
+const ani = (d = 0) => ({
+  initial: { opacity: 0, y: 22 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: .55, ease: "easeOut" as const, delay: d },
+});
 
 export default function IndexPage() {
   const { t } = useTranslation();
-  const [products,       setProducts]       = useState<Product[]>([]);
-  const [loading,        setLoading]        = useState(true);
-  const [hoveredCard,    setHoveredCard]    = useState<number | null>(null);
-  const [statsTriggered, setStatsTriggered] = useState(false);
-  const [collectors,     setCollectors]     = useState(0);
-  const [models,         setModels]         = useState(0);
-  const [satisfaction,   setSatisfaction]   = useState(0);
-  const [selectedImage,  setSelectedImage]  = useState<number | null>(null);
-  const [isModalOpen,    setIsModalOpen]    = useState(false);
-  const [currentSlide,   setCurrentSlide]   = useState(0);
-  const [airlineModal,   setAirlineModal]   = useState(false);
-  const [activeAirline,  setActiveAirline]  = useState(0);
-
-  const productsTrackRef = useRef<HTMLDivElement>(null!);
-  const displayTrackRef  = useRef<HTMLDivElement>(null!);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [hovered, setHovered] = useState<number|null>(null);
+  const [counters, setCounters] = useState({ collectors:0, models:0, sat:0 });
+  const [selImg, setSelImg] = useState<number|null>(null);
+  const [modalOn, setModalOn] = useState(false);
+  const [slide, setSlide] = useState(0);
+  const [alModal, setAlModal] = useState(false);
+  const [alIdx, setAlIdx] = useState(0);
+  const [promoModalOpen, setPromoModalOpen] = useState(false);
+  const [videoProgress, setVideoProgress] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isSoundOn, setIsSoundOn] = useState(false);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [showControls, setShowControls] = useState(true);
+  const [floatingHearts, setFloatingHearts] = useState<{id: number; x: number; y: number}[]>([]);
+  const [shareTooltip, setShareTooltip] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isVideoLoading, setIsVideoLoading] = useState(false);
+  const prodRef = useRef<HTMLDivElement>(null!);
+  const dispRef = useRef<HTMLDivElement>(null!);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const API_URL = import.meta.env.VITE_PRODUCT_DETAILS_API;
 
-  const carouselImages = [
+  // TikTok videos data
+  const [tiktokVideos, setTiktokVideos] = useState<TikTokVideo[]>([
+    {
+      id: 1,
+      url: "https://res.cloudinary.com/deahgtn57/video/upload/v1781868187/omelett%27s/public/video/Initial_Scene_-_2026-06-05_202606051358_do1wke.mp4",
+      title: "Premium Aircraft Models 1",
+      likes: 1247,
+      liked: false,
+    },
+    {
+      id: 2,
+      url: "https://res.cloudinary.com/deahgtn57/video/upload/v1781868191/omelett%27s/public/video/Untitled_Scene_06-06_08_20_39_202606061539_nr4hs5.mp4",
+      title: "Premium Aircraft Models 2",
+      likes: 980,
+      liked: false,
+    },
+    {
+      id: 3,
+      url: "https://res.cloudinary.com/deahgtn57/video/upload/v1781868188/omelett%27s/public/video/Initial_Scene_-_2026-06-07_202606071613_vdnalm.mp4",
+      title: "Premium Aircraft Models 3",
+      likes: 756,
+      liked: false,
+    },
+    {
+      id: 4,
+      url: "https://res.cloudinary.com/deahgtn57/video/upload/v1781868174/omelett%27s/public/video/Boeing_777_lifts_off_night_202606121842_ns7bwf.mp4",
+      title: "Premium Aircraft Models 4",
+      likes: 1532,
+      liked: false,
+    },
+    {
+      id: 5,
+      url: "https://res.cloudinary.com/deahgtn57/video/upload/v1781868184/omelett%27s/public/video/Initial_Scene_-_2026-06-04_202606042354_ob6ohj.mp4",
+      title: "Premium Aircraft Models 5",
+      likes: 642,
+      liked: false,
+    },
+    {
+      id: 6,
+      url: "https://res.cloudinary.com/deahgtn57/video/upload/v1781868181/omelett%27s/public/video/Initial_Scene_-_2026-06-01_202606011937_it9htk.mp4",
+      title: "Premium Aircraft Models 6",
+      likes: 843,
+      liked: false,
+    },
+    {
+      id: 7,
+      url: "https://res.cloudinary.com/deahgtn57/video/upload/v1781868178/omelett%27s/public/video/COMAC_C919_Lao_Airlines_China_202606140148_g8dpm3.mp4",
+      title: "Premium Aircraft Models 7",
+      likes: 1098,
+      liked: false,
+    },
+    {
+      id: 8,
+      url: "https://res.cloudinary.com/deahgtn57/video/upload/v1781868177/omelett%27s/public/video/Aircraft_ceremony_at_internation__202606140137_f9u5zv.mp4",
+      title: "Premium Aircraft Models 8",
+      likes: 532,
+      liked: false,
+    },
+    {
+      id: 9,
+      url: "https://res.cloudinary.com/deahgtn57/video/upload/v1781868176/omelett%27s/public/video/Aircraft_rolling_out_of_factory_202606140147_y0hi6o.mp4",
+      title: "Premium Aircraft Models 9",
+      likes: 1290,
+      liked: false,
+    },
+    {
+      id: 10,
+      url: "https://res.cloudinary.com/deahgtn57/video/upload/v1781868175/omelett%27s/public/video/COMAC_C919_flying_above_Laos_202606140137_y3qkc8.mp4",
+      title: "Premium Aircraft Models 10",
+      likes: 721,
+      liked: false,
+    },
+    {
+      id: 11,
+      url: "https://res.cloudinary.com/deahgtn57/video/upload/v1781868175/omelett%27s/public/video/Airbus_A380_taxiing_airport_night_202606111645_x6vn78.mp4",
+      title: "Premium Aircraft Models 11",
+      likes: 864,
+      liked: false,
+    },
+    {
+      id: 12,
+      url: "https://res.cloudinary.com/deahgtn57/video/upload/v1781868172/omelett%27s/public/video/Airbus_A380_landing_at_night_202606111633_qd9es0.mp4",
+      title: "Premium Aircraft Models 12",
+      likes: 944,
+      liked: false,
+    },
+    {
+      id: 13,
+      url: "https://res.cloudinary.com/deahgtn57/video/upload/v1781868171/omelett%27s/public/video/3_202606082244_bpmky7.mp4",
+      title: "Premium Aircraft Models 13",
+      likes: 1102,
+      liked: false,
+    },
+    {
+      id: 14,
+      url: "https://res.cloudinary.com/deahgtn57/video/upload/v1781868169/omelett%27s/public/video/4_202606082244_i8j6l7.mp4",
+      title: "Premium Aircraft Models 14",
+      likes: 675,
+      liked: false,
+    },
+    {
+      id: 15,
+      url: "https://res.cloudinary.com/deahgtn57/video/upload/v1781868166/omelett%27s/public/video/7_202606082244_c28wmj.mp4",
+      title: "Premium Aircraft Models 15",
+      likes: 1375,
+      liked: false,
+    },
+    {
+      id: 16,
+      url: "https://res.cloudinary.com/deahgtn57/video/upload/v1781874747/omelett%27s/public/video/LANEXANG_AIRWAYS_Boeing_777_MAX_202606071809_cktsoa.mp4",
+      title: "Premium Aircraft Models 16",
+      likes: 1375,
+      liked: false,
+    },
+    {
+      id: 17,
+      url: "https://res.cloudinary.com/deahgtn57/video/upload/v1781874746/omelett%27s/public/video/Boeing_777_MAX_parked_airport_202606071726_202606071809_kgwl6c.mp4",
+      title: "Premium Aircraft Models 17",
+      likes: 1375,
+      liked: false,
+    },
+    {
+      id: 18,
+      url: "https://res.cloudinary.com/deahgtn57/video/upload/v1781874747/omelett%27s/public/video/Boeing_777_MAX_assembly_factory_202606071809_craxjw.mp4",
+      title: "Premium Aircraft Models 18",
+      likes: 1375,
+      liked: false,
+    },
+  ]);
+
+  const carousel = [
     "https://res.cloudinary.com/deahgtn57/image/upload/v1749979209/omelett%27s/public/image/3_b5k3zn.jpg",
     "https://res.cloudinary.com/deahgtn57/image/upload/v1769274064/omelett%27s/public/index%20page/WhatsApp_Image_2026-01-24_at_23.38.46_1_uxdsmf.jpg",
     "https://res.cloudinary.com/deahgtn57/image/upload/v1769280092/omelett%27s/public/index%20page/WhatsApp_Image_2025-07-17_at_17.19.02_763328b6_yyn5j8.jpg",
@@ -689,562 +551,1032 @@ export default function IndexPage() {
     "https://res.cloudinary.com/deahgtn57/image/upload/v1769280086/omelett%27s/public/index%20page/WhatsApp_Image_2025-07-17_at_17.18.59_526cb521_b7v8t5.jpg",
   ];
 
-  const displaySettings = [
-    { title: "Executive Office Desk", description: "Perfect for CEO offices and corporate executives", image: "https://res.cloudinary.com/deahgtn57/image/upload/v1768752540/omelett%27s/public/index%20page/Gemini_Generated_Image_7iobqh7iobqh7iob_icvb7s.png", features: ["Creates professional impression","Excellent conversation starter","Enhances executive decor"] },
-    { title: "Hotel Lobby Display", description: "Creates an impressive first impression for luxury hotels", image: "https://res.cloudinary.com/deahgtn57/image/upload/v1768752541/omelett%27s/public/index%20page/Gemini_Generated_Image_siz6n9siz6n9siz6_1_otwyyi.png", features: ["Impressive entrance display","Luxury ambiance enhancer","Guest conversation piece"] },
-    { title: "Restaurant & Café Tables", description: "Enhances dining experience with aviation elegance", image: "https://res.cloudinary.com/deahgtn57/image/upload/v1768898745/omelett%27s/public/index%20page/Gemini_Generated_Image_9yzxph9yzxph9yzx_qddg29.png", features: ["Unique table centerpiece","Enhances dining atmosphere","Memorable customer experience"] },
-    { title: "Home Library & Study", description: "Adds sophistication to personal collections", image: "https://res.cloudinary.com/deahgtn57/image/upload/v1768898745/omelett%27s/public/index%20page/Gemini_Generated_Image_5x190o5x190o5x19_jsfors.png", features: ["Personal collection showcase","Intellectual ambiance","Conversation starter"] },
-    { title: "Conference Room Centerpiece", description: "Elevates business meetings and presentations", image: "https://res.cloudinary.com/deahgtn57/image/upload/v1768899031/omelett%27s/public/index%20page/Gemini_Generated_Image_nq65ulnq65ulnq65_wggw70.png", features: ["Professional meeting ambiance","Inspires innovation","Project success symbol"] },
-    { title: "Luxury Gift", description: "The perfect premium gift for aviation enthusiasts", image: "https://res.cloudinary.com/deahgtn57/image/upload/v1768899543/omelett%27s/public/index%20page/Gemini_Generated_Image_s2daccs2daccs2da_vgtpw1.png", features: ["Premium gift packaging","Elegant presentation","Memorable for any occasion"] },
+  const displays = [
+    { title:"Executive Office Desk",desc:"Perfect for CEO offices and corporate executives",img:"https://res.cloudinary.com/deahgtn57/image/upload/v1768752540/omelett%27s/public/index%20page/Gemini_Generated_Image_7iobqh7iobqh7iob_icvb7s.png",feats:["Creates professional impression","Excellent conversation starter","Enhances executive decor"] },
+    { title:"Hotel Lobby Display",desc:"Creates an impressive first impression for luxury hotels",img:"https://res.cloudinary.com/deahgtn57/image/upload/v1768752541/omelett%27s/public/index%20page/Gemini_Generated_Image_siz6n9siz6n9siz6_1_otwyyi.png",feats:["Impressive entrance display","Luxury ambiance enhancer","Guest conversation piece"] },
+    { title:"Restaurant & Café Tables",desc:"Enhances dining experience with aviation elegance",img:"https://res.cloudinary.com/deahgtn57/image/upload/v1768898745/omelett%27s/public/index%20page/Gemini_Generated_Image_9yzxph9yzxph9yzx_qddg29.png",feats:["Unique table centerpiece","Enhances dining atmosphere","Memorable customer experience"] },
+    { title:"Home Library & Study",desc:"Adds sophistication to personal collections",img:"https://res.cloudinary.com/deahgtn57/image/upload/v1768898745/omelett%27s/public/index%20page/Gemini_Generated_Image_5x190o5x190o5x19_jsfors.png",feats:["Personal collection showcase","Intellectual ambiance","Conversation starter"] },
+    { title:"Conference Room Centerpiece",desc:"Elevates business meetings and presentations",img:"https://res.cloudinary.com/deahgtn57/image/upload/v1768899031/omelett%27s/public/index%20page/Gemini_Generated_Image_nq65ulnq65ulnq65_wggw70.png",feats:["Professional meeting ambiance","Inspires innovation","Project success symbol"] },
+    { title:"Luxury Gift",desc:"The perfect premium gift for aviation enthusiasts",img:"https://res.cloudinary.com/deahgtn57/image/upload/v1768899543/omelett%27s/public/index%20page/Gemini_Generated_Image_s2daccs2daccs2da_vgtpw1.png",feats:["Premium gift packaging","Elegant presentation","Memorable for any occasion"] },
   ];
 
-  const qualityFeatures = [
-    { title: "Precision Engineering",  desc: "0.01mm tolerance in manufacturing" },
-    { title: "Premium Materials",      desc: "Aerospace-grade metals and finishes" },
-    { title: "Artisan Detailing",      desc: "Hand-finished by master craftsmen" },
-    { title: "Certified Authenticity", desc: "Documented provenance for each piece" },
+  const quality = [
+    { title:"Precision Engineering", desc:"0.01mm tolerance in manufacturing" },
+    { title:"Premium Materials", desc:"Aerospace-grade metals and finishes" },
+    { title:"Artisan Detailing", desc:"Hand-finished by master craftsmen" },
+    { title:"Certified Authenticity", desc:"Documented provenance for each piece" },
   ];
+
+  // Fullscreen functions
+  const toggleFullscreen = useCallback(() => {
+    const videoElement = videoRef.current;
+    if (!videoElement) return;
+
+    if (!document.fullscreenElement) {
+      const container = videoElement.closest('.tiktok-carousel');
+      if (container?.requestFullscreen) {
+        container.requestFullscreen().catch(() => {});
+      }
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen?.().catch(() => {});
+      setIsFullscreen(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("visible"); }),
-      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
-    );
-    document.querySelectorAll(".reveal, .reveal-left, .reveal-right")
-      .forEach(el => observer.observe(el));
-    return () => observer.disconnect();
-  }, [loading]);
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
 
+  // fetch products
   useEffect(() => {
     (async () => {
       try {
         setLoading(true);
-        const res = await fetch(`${API_URL}?nocache=${Date.now()}`);
-        const data = await res.json();
-        if (data.success && Array.isArray(data.products)) {
-          setProducts(data.products.slice(0, 6).map((p: any) => ({
-            ID: p.ID, Name: p.Name, Images: p.Images || {},
-          })));
-        }
+        const r = await fetch(`${API_URL}?t=${Date.now()}`);
+        const d = await r.json();
+        if (d.success && Array.isArray(d.products))
+          setProducts(d.products.slice(0, 6).map((p: any) => ({ ID: p.ID, Name: p.Name, Images: p.Images || {} })));
       } catch { setProducts([]); }
       finally { setLoading(false); }
     })();
   }, [API_URL]);
 
+  // counters
   useEffect(() => {
-    const id = setTimeout(() => setStatsTriggered(true), 700);
-    return () => clearTimeout(id);
+    const t = setTimeout(() => {
+      [{ k:"collectors" as const,end:1000,inc:25,ms:18 },{ k:"models" as const,end:50,inc:1,ms:30 },{ k:"sat" as const,end:98,inc:2,ms:22 }]
+        .forEach(({ k,end,inc,ms }) => { let v=0; const id=setInterval(() => { v+=inc; if(v>=end){setCounters(p=>({...p,[k]:end}));clearInterval(id);}else setCounters(p=>({...p,[k]:v})); },ms); });
+    }, 600);
+    return () => clearTimeout(t);
   }, []);
 
-  useEffect(() => {
-    if (!statsTriggered) return;
-    [
-      { s: setCollectors,   end: 1000, inc: 25,  ms: 18 },
-      { s: setModels,       end: 50,   inc: 1,   ms: 30 },
-      { s: setSatisfaction, end: 98,   inc: 2,   ms: 22 },
-    ].forEach(({ s, end, inc, ms }) => {
-      let v = 0;
-      const id = setInterval(() => {
-        v += inc;
-        if (v >= end) { s(end); clearInterval(id); } else s(v);
-      }, ms);
-    });
-  }, [statsTriggered]);
+  // Hero carousel auto-slide
+  useEffect(() => { 
+    const id = setInterval(() => setSlide(p => (p + 1) % carousel.length), 4000); 
+    return () => clearInterval(id); 
+  }, []);
 
-  const openModal = (i: number) => { setSelectedImage(i); setIsModalOpen(true); document.body.style.overflow = "hidden"; };
-  const closeModal = useCallback(() => { setIsModalOpen(false); setSelectedImage(null); document.body.style.overflow = "unset"; }, []);
-  const nextImg = useCallback(() => setSelectedImage(p => p !== null ? (p + 1) % displaySettings.length : 0), []);
-  const prevImg = useCallback(() => setSelectedImage(p => p !== null ? (p - 1 + displaySettings.length) % displaySettings.length : 0), []);
-  const openAirlineModal = useCallback((idx: number) => { setActiveAirline(idx); setAirlineModal(true); document.body.style.overflow = "hidden"; }, []);
-  const closeAirlineModal = useCallback(() => { setAirlineModal(false); document.body.style.overflow = ""; }, []);
+  // Video navigation functions
+  const goToPreviousVideo = useCallback(() => {
+    const prevIndex = (currentVideoIndex - 1 + tiktokVideos.length) % tiktokVideos.length;
+    setCurrentVideoIndex(prevIndex);
+    const video = videoRef.current;
+    if (video) {
+      setIsVideoLoading(true);
+      video.load();
+      setTimeout(() => {
+        video.play().catch(() => {});
+      }, 100);
+      setVideoProgress(0);
+    }
+  }, [currentVideoIndex, tiktokVideos.length]);
 
+  const goToNextVideo = useCallback(() => {
+    const nextIndex = (currentVideoIndex + 1) % tiktokVideos.length;
+    setCurrentVideoIndex(nextIndex);
+    const video = videoRef.current;
+    if (video) {
+      setIsVideoLoading(true);
+      video.load();
+      setTimeout(() => {
+        video.play().catch(() => {});
+      }, 100);
+      setVideoProgress(0);
+    }
+  }, [currentVideoIndex, tiktokVideos.length]);
+
+  // ============ VIDEO AUTO-PLAY SEQUENCE ============
   useEffect(() => {
-    const h = (e: KeyboardEvent) => {
-      if (isModalOpen) {
-        if (e.key === "Escape")     closeModal();
-        if (e.key === "ArrowRight") nextImg();
-        if (e.key === "ArrowLeft")  prevImg();
-      }
-      if (airlineModal) {
-        if (e.key === "Escape")     closeAirlineModal();
-        if (e.key === "ArrowRight") setActiveAirline(p => (p + 1) % AIRLINES.length);
-        if (e.key === "ArrowLeft")  setActiveAirline(p => (p - 1 + AIRLINES.length) % AIRLINES.length);
+    const videoElement = videoRef.current;
+    if (!videoElement) return;
+
+    let autoAdvanceTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    const handleTimeUpdate = () => {
+      if (videoElement.duration) {
+        setVideoProgress((videoElement.currentTime / videoElement.duration) * 100);
       }
     };
-    window.addEventListener("keydown", h);
-    return () => window.removeEventListener("keydown", h);
-  }, [isModalOpen, airlineModal, closeModal, nextImg, prevImg, closeAirlineModal]);
 
-  useEffect(() => {
-    const id = setInterval(() => setCurrentSlide(p => (p + 1) % carouselImages.length), 3500);
-    return () => clearInterval(id);
+    const handlePlay = () => {
+      setIsPlaying(true);
+      setIsVideoLoading(false);
+    };
+
+    const handlePause = () => {
+      setIsPlaying(false);
+    };
+
+    const handleWaiting = () => {
+      setIsVideoLoading(true);
+    };
+
+    const handleCanPlay = () => {
+      setIsVideoLoading(false);
+    };
+
+    const handleEnded = () => {
+      setVideoProgress(0);
+      // Auto-advance to next video after a short delay
+      if (autoAdvanceTimeout) clearTimeout(autoAdvanceTimeout);
+      autoAdvanceTimeout = setTimeout(() => {
+        const nextIndex = (currentVideoIndex + 1) % tiktokVideos.length;
+        setCurrentVideoIndex(nextIndex);
+        if (videoElement) {
+          setIsVideoLoading(true);
+          videoElement.load();
+          setTimeout(() => {
+            videoElement.play().catch(() => {});
+          }, 100);
+          setVideoProgress(0);
+        }
+      }, 800);
+    };
+
+    videoElement.addEventListener('timeupdate', handleTimeUpdate);
+    videoElement.addEventListener('play', handlePlay);
+    videoElement.addEventListener('pause', handlePause);
+    videoElement.addEventListener('waiting', handleWaiting);
+    videoElement.addEventListener('canplay', handleCanPlay);
+    videoElement.addEventListener('ended', handleEnded);
+
+    // Initial play with sound off by default
+    videoElement.muted = true;
+    videoElement.play().catch(() => {});
+
+    // Hide controls after 3 seconds of inactivity
+    let hideTimeout: ReturnType<typeof setTimeout>;
+    const resetTimer = () => {
+      setShowControls(true);
+      clearTimeout(hideTimeout);
+      hideTimeout = setTimeout(() => setShowControls(false), 3000);
+    };
+
+    const handleInteraction = () => resetTimer();
+    videoElement.addEventListener('click', handleInteraction);
+    videoElement.addEventListener('touchstart', handleInteraction);
+    resetTimer();
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            videoElement.play().catch(() => {});
+          } else {
+            videoElement.pause();
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    observer.observe(videoElement);
+    
+    return () => {
+      observer.disconnect();
+      videoElement.removeEventListener('timeupdate', handleTimeUpdate);
+      videoElement.removeEventListener('play', handlePlay);
+      videoElement.removeEventListener('pause', handlePause);
+      videoElement.removeEventListener('waiting', handleWaiting);
+      videoElement.removeEventListener('canplay', handleCanPlay);
+      videoElement.removeEventListener('ended', handleEnded);
+      videoElement.removeEventListener('click', handleInteraction);
+      videoElement.removeEventListener('touchstart', handleInteraction);
+      clearTimeout(hideTimeout);
+      if (autoAdvanceTimeout) clearTimeout(autoAdvanceTimeout);
+      videoElement.pause();
+    };
+  }, [currentVideoIndex, tiktokVideos.length]);
+
+  // modal handlers
+  const openDsp = (i: number) => { setSelImg(i); setModalOn(true); document.body.style.overflow="hidden"; };
+  const closeDsp = useCallback(() => { setModalOn(false); setSelImg(null); document.body.style.overflow=""; }, []);
+  const nextDsp = useCallback(() => setSelImg(p => p!==null?(p+1)%displays.length:0), []);
+  const prevDsp = useCallback(() => setSelImg(p => p!==null?(p-1+displays.length)%displays.length:0), []);
+  const openAl = useCallback((i: number) => { setAlIdx(i); setAlModal(true); document.body.style.overflow="hidden"; }, []);
+  const closeAl = useCallback(() => { setAlModal(false); document.body.style.overflow=""; }, []);
+
+  // Video control functions
+  const togglePlay = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
   }, []);
 
-  const scrollSlide = (ref: React.RefObject<HTMLDivElement>, dir: "left" | "right") => {
-    if (!ref.current) return;
-    ref.current.scrollBy({ left: dir === "left" ? -(ref.current.clientWidth * 0.75) : (ref.current.clientWidth * 0.75), behavior: "smooth" });
+  const restartVideo = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.currentTime = 0;
+    video.play().catch(() => {});
+  }, []);
+
+  const toggleSound = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = !video.muted;
+    setIsSoundOn(!video.muted);
+  }, [isSoundOn]);
+
+  const handleLike = useCallback((index: number) => {
+    setTiktokVideos(prev => {
+      const newVideos = [...prev];
+      const video = newVideos[index];
+      if (video.liked) {
+        video.likes -= 1;
+      } else {
+        video.likes += 1;
+        const heartId = Date.now();
+        setFloatingHearts(prev => [...prev, { id: heartId, x: Math.random() * 40 + 30, y: Math.random() * 40 + 30 }]);
+        setTimeout(() => {
+          setFloatingHearts(prev => prev.filter(h => h.id !== heartId));
+        }, 1000);
+      }
+      video.liked = !video.liked;
+      return newVideos;
+    });
+  }, []);
+
+  const handleShare = useCallback(async () => {
+    const video = tiktokVideos[currentVideoIndex];
+    const shareData = {
+      title: video.title,
+      text: `Check out this amazing video! ${video.title}`,
+      url: window.location.href,
+    };
+    
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(`${shareData.text}\n${shareData.url}`);
+        setShareTooltip(true);
+        setTimeout(() => setShareTooltip(false), 2000);
+      }
+    } catch (error) {
+      // User cancelled or error
+    }
+  }, [currentVideoIndex, tiktokVideos]);
+
+  const goToVideo = useCallback((index: number) => {
+    if (index === currentVideoIndex) return;
+    setCurrentVideoIndex(index);
+    const video = videoRef.current;
+    if (video) {
+      setIsVideoLoading(true);
+      video.load();
+      setTimeout(() => {
+        video.play().catch(() => {});
+      }, 100);
+      setVideoProgress(0);
+    }
+  }, [currentVideoIndex]);
+
+  // keyboard
+  useEffect(() => {
+    const h = (e: KeyboardEvent) => {
+      if (modalOn) { if(e.key==="Escape")closeDsp(); if(e.key==="ArrowRight")nextDsp(); if(e.key==="ArrowLeft")prevDsp(); }
+      if (alModal) { if(e.key==="Escape")closeAl(); if(e.key==="ArrowRight")setAlIdx(p=>(p+1)%AIRLINES.length); if(e.key==="ArrowLeft")setAlIdx(p=>(p-1+AIRLINES.length)%AIRLINES.length); }
+      if (promoModalOpen) { if(e.key==="Escape")setPromoModalOpen(false); }
+      if (!modalOn && !alModal && !promoModalOpen) {
+        if (e.key === ' ') {
+          e.preventDefault();
+          togglePlay();
+        }
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          goToNextVideo();
+        }
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          goToPreviousVideo();
+        }
+      }
+    };
+    window.addEventListener("keydown",h);
+    return () => window.removeEventListener("keydown",h);
+  }, [modalOn,alModal,closeDsp,nextDsp,prevDsp,closeAl,promoModalOpen,togglePlay,goToNextVideo,goToPreviousVideo]);
+
+  // body lock
+  useEffect(() => {
+    document.body.style.overflow = modalOn||alModal||promoModalOpen ? "hidden" : "";
+    return () => { document.body.style.overflow=""; };
+  }, [modalOn,alModal,promoModalOpen]);
+
+  const scroll = (ref: React.RefObject<HTMLDivElement>, dir: "l"|"r") => {
+    ref.current?.scrollBy({ left: dir==="l" ? -(ref.current.clientWidth*.75) : (ref.current.clientWidth*.75), behavior:"smooth" });
   };
 
   return (
     <DefaultLayout>
-      <style dangerouslySetInnerHTML={{ __html: globalStyles }} />
+      <style dangerouslySetInnerHTML={{ __html: styles }} />
       <Helmet>
         <title>{t("home.title")}</title>
         <meta name="description" content={t("home.description")} />
       </Helmet>
 
-      {/* ══════════════════════════════════════════
-          § 1  HERO (unchanged)
-      ══════════════════════════════════════════ */}
-      <section className="relative min-h-screen flex items-center overflow-hidden bg-[#050e0c] dark:bg-[#030a08]">
-        <div className="absolute inset-0 pointer-events-none z-0">
-          <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 78% 56% at 64% 36%,rgba(13,122,104,.52) 0%,transparent 68%),radial-gradient(ellipse 55% 72% at 10% 80%,rgba(8,61,51,.6) 0%,transparent 60%),linear-gradient(160deg,#050e0c 0%,#0c1d1a 50%,#050e0c 100%)" }} />
-          <div className="absolute inset-0 opacity-[.03]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.2) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.2) 1px,transparent 1px)", backgroundSize: "64px 64px" }} />
-          <div className="absolute rounded-full blur-3xl" style={{ width: 380, height: 380, top: "4%", right: "6%", background: "radial-gradient(circle,rgba(13,122,104,.2) 0%,transparent 70%)" }} />
-          <div className="absolute rounded-full blur-3xl" style={{ width: 300, height: 300, bottom: "14%", left: "4%", background: "radial-gradient(circle,rgba(13,122,104,.15) 0%,transparent 70%)" }} />
-          <div className="absolute hidden lg:block" style={{ width: 520, height: 520, top: "50%", right: "-60px", transform: "translateY(-50%)", border: "1px solid rgba(13,122,104,.1)", borderRadius: "50%", animation: "rotateSlow 45s linear infinite" }}>
-            <div style={{ position: "absolute", width: 370, height: 370, top: "50%", left: "50%", transform: "translate(-50%,-50%)", border: "1px dashed rgba(13,122,104,.06)", borderRadius: "50%" }} />
+      <div className="ix">
+        {/* ═══ HERO ═══ */}
+        <section className="hro">
+          <div className="hro-mesh" />
+          <div className="hro-orb" style={{ width:450,height:450,top:"5%",right:"8%",background:"radial-gradient(circle,rgba(13,122,104,.12) 0%,transparent 70%)" }} />
+          <div className="hro-orb" style={{ width:300,height:300,bottom:"12%",left:"5%",background:"radial-gradient(circle,rgba(77,184,168,.08) 0%,transparent 70%)",animationDelay:"3s" }} />
+          <div className="hro-ring hidden lg:block" style={{ width:500,height:500,top:"50%",right:"-40px",transform:"translateY(-50%)" }}>
+            <div style={{ position:"absolute",width:360,height:360,top:"50%",left:"50%",transform:"translate(-50%,-50%)",border:"1px dashed rgba(13,122,104,.04)",borderRadius:"50%" }} />
           </div>
-        </div>
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 py-24 lg:py-32">
-          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
-            <div className="lg:w-1/2 text-white">
-              <div className="fade-up inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-8" style={{ background: "rgba(13,122,104,.18)", border: "1px solid rgba(13,122,104,.38)", color: "#7dd4c8", fontSize: ".72rem", fontWeight: 700, letterSpacing: "3px", textTransform: "uppercase" }}>
-                ✦ {t("premiumCollection")} ✦
-              </div>
-              <h1 className="hero-h1 fade-up-1 font-bold leading-none mb-2" style={{ fontSize: "clamp(3.6rem,8vw,7rem)", letterSpacing: "-1px" }}>
-                <span className="teal-shimmer">Omelette</span>
-                <span style={{ color: "#E43636" }}>'</span>
-                <span className="teal-shimmer">s</span>
-              </h1>
-              <div className="teal-bar fade-up-1" />
-              <p className="fade-up-2 leading-relaxed mb-10 text-white/60" style={{ fontSize: "1.03rem", maxWidth: 480 }}>
-                {t("intro")}
-              </p>
-              <div className="fade-up-3">
-                <Link href="/Omelette's" style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "linear-gradient(135deg,#0d7a68,#0a6455)", color: "#fff", padding: "14px 32px", borderRadius: 8, fontWeight: 600, fontSize: ".95rem", letterSpacing: ".4px", boxShadow: "0 8px 28px rgba(13,122,104,.45)", transition: "box-shadow .3s, transform .3s", textDecoration: "none" }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = "0 12px 42px rgba(13,122,104,.65)"; (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 28px rgba(13,122,104,.45)"; (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; }}
+
+          <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 py-12 lg:py-20">
+            <div className="hro-scan-line" />
+            
+            {/* ═══ HERO IMAGE CAROUSEL ═══ */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6 }}
+              className="relative rounded-2xl overflow-hidden mb-8"
+              style={{ 
+                aspectRatio: "16/9",
+                background: "rgba(0,0,0,.2)",
+                border: "1px solid rgba(255,255,255,.06)",
+                boxShadow: "0 20px 60px rgba(0,0,0,.4)"
+              }}
+            >
+              {carousel.map((img, index) => (
+                <motion.div
+                  key={index}
+                  className="absolute inset-0"
+                  initial={{ opacity: 0, scale: 1.05 }}
+                  animate={{ 
+                    opacity: index === slide ? 1 : 0,
+                    scale: index === slide ? 1 : 1.05
+                  }}
+                  transition={{ duration: 0.8, ease: "easeInOut" }}
+                  style={{ zIndex: index === slide ? 1 : 0 }}
                 >
-                  {t("viewModels")} <AiOutlineRight size={18} />
-                </Link>
-              </div>
-              <div className="fade-up-4 flex gap-8 mt-14 flex-wrap">
-                {[
-                  { val: `${collectors}+`,   label: t("collectors") },
-                  { val: `${models}+`,       label: t("models") },
-                  { val: `${satisfaction}%`, label: t("satisfaction") },
-                ].map((s, i) => (
-                  <div key={i}>
-                    <div className="stat-val">{s.val}</div>
-                    <div style={{ fontSize: ".68rem", letterSpacing: "2px", textTransform: "uppercase", color: "rgba(255,255,255,.38)", marginTop: 3 }}>{s.label}</div>
-                  </div>
+                  <Image 
+                    isBlurred 
+                    className="w-full h-full object-cover"
+                    src={img} 
+                    alt={`Product ${index + 1}`} 
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                </motion.div>
+              ))}
+              
+              {/* Dots */}
+              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
+                {carousel.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setSlide(index)}
+                    className="transition-all duration-300 rounded-full"
+                    style={{
+                      width: index === slide ? "28px" : "8px",
+                      height: "8px",
+                      background: index === slide ? "var(--p)" : "rgba(255,255,255,.3)",
+                      border: "none",
+                      cursor: "pointer"
+                    }}
+                  />
                 ))}
               </div>
-            </div>
-            <div className="lg:w-1/2 flex justify-center w-full">
-              <div className="hero-img-wrap relative w-full max-w-lg">
-                <div className="hero-glow-pulse absolute -inset-5 rounded-3xl blur-2xl pointer-events-none" style={{ background: "linear-gradient(135deg,#0d7a68,#4db8a8)" }} />
-                <div className="absolute -inset-2 rounded-2xl pointer-events-none" style={{ border: "1px solid rgba(13,122,104,.18)", borderRadius: 20 }} />
-                <div className="relative rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(13,122,104,.35)", background: "rgba(255,255,255,.03)", backdropFilter: "blur(4px)", padding: 5, boxShadow: "0 24px 64px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06)" }}>
-                  <div className="hero-img-inner rounded-xl overflow-hidden" style={{ willChange: "transform" }}>
-                    <Image isBlurred className="w-full h-full object-cover rounded-xl block" style={{ display: "block", width: "100%", height: "auto" }}
-                      src="https://res.cloudinary.com/deahgtn57/image/upload/v1768754623/omelett%27s/public/index%20page/A380-Emirates_ptqbpz.png"
-                      alt="Premium Aircraft Model — A380 Emirates"
-                    />
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none rounded-b-xl" style={{ background: "linear-gradient(to top, rgba(5,14,12,.55), transparent)" }} />
-                  <TealCorners />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none" style={{ background: "linear-gradient(to bottom,transparent,#050e0c)" }} />
-      </section>
+              
+              <Corners />
+            </motion.div>
 
-      {/* ══════════════════════════════════════════
-          § 2  CURATED EXCELLENCE (unchanged)
-      ══════════════════════════════════════════ */}
-      <section className="bg-white dark:bg-gray-900 transition-colors duration-500" style={{ paddingTop: "clamp(72px, 10vw, 96px)", paddingBottom: "clamp(72px, 10vw, 96px)" }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 reveal">
-            <SectionHeader label={t("featuredCollection")} title={t("curatedExcellence")} subtitle={t("discoverPremiumSelection")} />
-            <SlideArrows trackRef={productsTrackRef} onScroll={(dir) => scrollSlide(productsTrackRef, dir)} extra={
-              <Link href="/Omelette's" className="hidden sm:inline-flex items-center gap-1" style={{ color: "#0d7a68", fontWeight: 600, fontSize: ".85rem", textDecoration: "none", letterSpacing: ".3px" }}>
-                {t("viewFullCollection")} <AiOutlineRight size={14} />
-              </Link>
-            } />
-          </div>
-          {loading ? (
-            <div className="flex justify-center items-center h-64">
-              <AirplaneLoading isLoading={true} fullScreen={false} message="Loading models..." />
+            {/* Hero Content */}
+            <div className="text-center">
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="hero-pill mx-auto mb-4"
+                style={{ display: "inline-flex" }}
+              >
+                ✦ {t("premiumCollection") || "Premium Collection"} ✦
+              </motion.div>
+
+              <motion.h1 
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+                className="h1"
+              >
+                <span className="shim">Omelette</span>
+                <span style={{ WebkitTextFillColor:"var(--r)" }}>'</span>
+                <span className="shim">s</span>
+              </motion.h1>
+
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+                className="flex justify-center"
+              >
+                <div className="bar" />
+              </motion.div>
+
+              <motion.p 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+                className="body"
+                style={{ margin:"16px auto 24px", textAlign:"center" }}
+              >
+                Premium 1:200 scale aircraft models. Crafted with precision for collectors and aviation enthusiasts.
+              </motion.p>
+
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.5 }}
+              >
+                <Link href="/Omelette's" className="btn-main" style={{ borderRadius:8 }}>
+                  {t("viewModels") || "View Collection"} <AiOutlineRight size={17} />
+                </Link>
+              </motion.div>
+
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7, duration: 0.5 }}
+                className="flex justify-center gap-8 md:gap-12 mt-10"
+              >
+                {[
+                  { val:`${counters.collectors}+`, lbl:t("collectors") || "Collectors" },
+                  { val:`${counters.models}+`, lbl:t("models") || "Models" },
+                  { val:`${counters.sat}%`, lbl:t("satisfaction") || "Satisfaction" },
+                ].map((s,i) => (
+                  <div key={i} className="text-center">
+                    <div className="st">{s.val}</div>
+                    <div style={{ fontSize:".6rem",letterSpacing:"2px",textTransform:"uppercase",color:"var(--tx3)",marginTop:2 }}>{s.lbl}</div>
+                  </div>
+                ))}
+              </motion.div>
             </div>
-          ) : (
-            <div ref={productsTrackRef} className="slide-track reveal reveal-delay-1">
-              {products.map((product, index) => (
-                <div key={product.ID} className="card-lift rounded-2xl overflow-hidden group bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700"
-                  style={{ width: "clamp(240px, 75vw, 310px)", boxShadow: "0 4px 18px rgba(0,0,0,.07)" }}
-                  onMouseEnter={() => setHoveredCard(index)}
-                  onMouseLeave={() => setHoveredCard(null)}
-                >
-                  <div className="relative overflow-hidden" style={{ aspectRatio: "1/1" }}>
-                    <Image isBlurred className="w-full h-full object-cover"
-                      style={{ transform: hoveredCard === index ? "scale(1.07)" : "scale(1)", transition: "transform .55s cubic-bezier(.22,1,.36,1)" }}
-                      src={product.Images?.image_meain || "/placeholder.jpg"} alt={product.Name}
-                    />
-                    <div className="absolute inset-0 flex items-end justify-center pb-5" style={{ background: hoveredCard === index ? "linear-gradient(to top,rgba(5,14,12,.72) 0%,transparent 55%)" : "transparent", transition: "background .35s ease" }}>
-                      {hoveredCard === index && (
-                        <Link href={`/product/${product.ID}`} style={{ background: "#0d7a68", color: "#fff", padding: "8px 20px", borderRadius: 6, fontWeight: 600, fontSize: ".8rem", letterSpacing: ".4px", textDecoration: "none", animation: "fadeUp .22s ease" }}>
-                          {t("viewDetails")} →
-                        </Link>
-                      )}
+          </div>
+          <div className="hro-fade" />
+        </section>
+
+        {/* ═══ CURATED EXCELLENCE ═══ */}
+        <section className="sec sec-alt">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-8">
+              <motion.div {...ani()}>
+                <span className="tag">{t("featuredCollection")}</span>
+                <h2 className="h2 mt-3">{t("curatedExcellence")}</h2>
+                <div className="bar mt-2" />
+                <p className="body mt-1">{t("discoverPremiumSelection")}</p>
+              </motion.div>
+              <motion.div {...ani(.1)} className="flex items-center gap-3 flex-shrink-0">
+                <button className="nav-btn" onClick={() => scroll(prodRef,"l")}><AiOutlineLeft size={16} /></button>
+                <button className="nav-btn" onClick={() => scroll(prodRef,"r")} style={{ background:"var(--p)",color:"#fff",borderColor:"var(--p)" }}><AiOutlineRight size={16} /></button>
+                <Link href="/Omelette's" className="hidden sm:inline-flex items-center gap-1" style={{ color:"var(--p)",fontWeight:600,fontSize:".84rem",textDecoration:"none" }}>
+                  {t("viewFullCollection")} <AiOutlineRight size={13} />
+                </Link>
+              </motion.div>
+            </div>
+
+            {loading ? (
+              <div className="flex justify-center items-center h-64">
+                <AirplaneLoading isLoading fullScreen={false} message="Loading models..." />
+              </div>
+            ) : (
+              <motion.div {...ani(.12)} ref={prodRef} className="stk">
+                {products.map((p,i) => (
+                  <div key={p.ID} className="cd" style={{ width:"clamp(240px,72vw,300px)" }}
+                    onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)}>
+                    <div className="relative overflow-hidden" style={{ aspectRatio:"1/1" }}>
+                      <Image isBlurred className="w-full h-full object-cover"
+                        style={{ transform:hovered===i?"scale(1.05)":"scale(1)",transition:"transform .5s cubic-bezier(.22,1,.36,1)" }}
+                        src={p.Images?.image_meain || "/placeholder.jpg"} alt={p.Name} />
+                      <div className="absolute inset-0 flex items-end justify-center pb-5" style={{ background:hovered===i?"linear-gradient(to top,rgba(4,11,9,.65),transparent 55%)":"transparent",transition:"background .35s" }}>
+                        {hovered===i && (
+                          <Link href={`/product/${p.ID}`} style={{ background:"#fff",color:"var(--p)",padding:"7px 18px",borderRadius:50,fontWeight:600,fontSize:".78rem",textDecoration:"none",animation:"fadeUp .2s ease" }}>
+                            {t("viewDetails")} →
+                          </Link>
+                        )}
+                      </div>
+                      <div className="absolute top-3 left-3" style={{ background:"var(--p)",color:"#fff",fontSize:".56rem",fontWeight:700,letterSpacing:"1.5px",textTransform:"uppercase",padding:"3px 9px",borderRadius:50 }}>
+                        {t("aircraftModel")}
+                      </div>
                     </div>
-                    <div className="absolute top-3 left-3" style={{ background: "#0d7a68", color: "#fff", fontSize: ".6rem", fontWeight: 700, letterSpacing: "1.5px", textTransform: "uppercase", padding: "3px 9px", borderRadius: 4 }}>
-                      {t("aircraftModel")}
+                    <div className="p-4">
+                      <h3 className="font-semibold truncate" style={{ fontSize:".95rem",color:"var(--tx)" }}>{p.Name}</h3>
+                      <p style={{ fontSize:".74rem",color:"var(--tx3)",marginBottom:8 }}>{t("premiumScaleModel")}</p>
+                      <div className="flex items-center justify-between">
+                        <span style={{ fontSize:".68rem",color:"#f59e0b" }}>★★★★★</span>
+                        <span style={{ fontSize:".76rem",color:"var(--p)",fontWeight:700 }}>287,000K</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="p-5">
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1 truncate" style={{ fontSize: "1rem" }}>{product.Name}</h3>
-                    <p className="text-gray-400 dark:text-gray-500 mb-3" style={{ fontSize: ".78rem" }}>{t("premiumScaleModel")}</p>
-                    <div className="flex items-center justify-between">
-                      <span style={{ fontSize: ".7rem", color: "#f59e0b", letterSpacing: "1px" }}>★★★★★</span>
-                      <span style={{ fontSize: ".78rem", color: "#0d7a68", fontWeight: 700 }}>287,000K</span>
+                ))}
+                <Link href="/Omelette's" className="flex-shrink-0 rounded-2xl overflow-hidden flex flex-col items-center justify-center"
+                  style={{ width:"clamp(180px,18vw,220px)",background:"linear-gradient(135deg,var(--p),var(--p2))",minHeight:300,textDecoration:"none",color:"#fff",gap:10,padding:24,transition:"transform .3s" }}
+                  onMouseEnter={e => (e.currentTarget as HTMLElement).style.transform="translateY(-5px)"}
+                  onMouseLeave={e => (e.currentTarget as HTMLElement).style.transform="translateY(0)"}>
+                  <div style={{ width:46,height:46,borderRadius:"50%",border:"2px solid rgba(255,255,255,.4)",display:"flex",alignItems:"center",justifyContent:"center" }}>
+                    <AiOutlineRight size={18} />
+                  </div>
+                  <span style={{ fontWeight:600,fontSize:".84rem",textAlign:"center",lineHeight:1.3 }}>{t("viewFullCollection")}</span>
+                </Link>
+              </motion.div>
+            )}
+
+            <div className="sm:hidden text-center mt-8">
+              <Link href="/Omelette's" className="btn-main" style={{ padding:"11px 26px" }}>
+                {t("viewFullCollection")} <AiOutlineRight size={15} />
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* ═══ PERFECT DISPLAY ═══ */}
+        <section className="sec sec-grad relative overflow-hidden">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-8">
+              <motion.div {...ani()}>
+                <span className="tag">{t("perfectDisplay")}</span>
+                <h2 className="h2 mt-3">{t("whereToDisplay")}</h2>
+                <div className="bar mt-2" />
+                <p className="body mt-1">{t("premiumAircraftModels")}</p>
+              </motion.div>
+              <motion.div {...ani(.1)} className="flex items-center gap-3 flex-shrink-0">
+                <button className="nav-btn" onClick={() => scroll(dispRef,"l")}><AiOutlineLeft size={16} /></button>
+                <button className="nav-btn" onClick={() => scroll(dispRef,"r")} style={{ background:"var(--p)",color:"#fff",borderColor:"var(--p)" }}><AiOutlineRight size={16} /></button>
+              </motion.div>
+            </div>
+
+            <motion.div {...ani(.12)} ref={dispRef} className="stk">
+              {displays.map((d,i) => (
+                <div key={i} className="dsp-card cd cursor-pointer" style={{ width:"clamp(220px,68vw,280px)" }} onClick={() => openDsp(i)}>
+                  <div className="relative overflow-hidden" style={{ aspectRatio:"1/1" }}>
+                    <Image isBlurred className="w-full h-full object-cover" src={d.img} alt={d.title} />
+                    <div className="dsp-ov absolute inset-0 flex items-center justify-center" style={{ background:"rgba(4,11,9,.45)",backdropFilter:"blur(2px)" }}>
+                      <span style={{ background:"rgba(255,255,255,.92)",color:"var(--p)",fontWeight:700,fontSize:".68rem",letterSpacing:"1.5px",textTransform:"uppercase",padding:"6px 14px",borderRadius:50 }}>
+                        {t("clickToView")||"View →"}
+                      </span>
                     </div>
+                    <div className="absolute top-3 right-3" style={{ width:24,height:24,borderRadius:"50%",background:"var(--p)",color:"#fff",fontWeight:700,fontSize:".64rem",display:"flex",alignItems:"center",justifyContent:"center" }}>{i+1}</div>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-semibold truncate" style={{ fontSize:".92rem",color:"var(--tx)" }}>{t(d.title)}</h3>
+                    <p style={{ fontSize:".72rem",color:"var(--tx3)",lineHeight:1.4 }}>{t(d.desc)}</p>
                   </div>
                 </div>
               ))}
-              <Link href="/Omelette's" className="flex-shrink-0 rounded-2xl overflow-hidden flex flex-col items-center justify-center"
-                style={{ width: "clamp(190px,20vw,230px)", background: "linear-gradient(135deg,#0d7a68,#0a6455)", minHeight: 320, textDecoration: "none", color: "#fff", gap: 12, padding: 28, transition: "transform .35s cubic-bezier(.22,1,.36,1)" }}
-                onMouseEnter={e => (e.currentTarget as HTMLElement).style.transform = "translateY(-6px)"}
-                onMouseLeave={e => (e.currentTarget as HTMLElement).style.transform = "translateY(0)"}
-              >
-                <div style={{ width: 50, height: 50, borderRadius: "50%", border: "2px solid rgba(255,255,255,.5)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <AiOutlineRight size={20} />
-                </div>
-                <span style={{ fontWeight: 600, fontSize: ".88rem", textAlign: "center", lineHeight: 1.35 }}>{t("viewFullCollection")}</span>
-              </Link>
-            </div>
-          )}
-          <div className="sm:hidden text-center mt-8 reveal">
-            <Link href="/Omelette's" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#0d7a68", color: "#fff", padding: "12px 28px", borderRadius: 8, fontWeight: 600, fontSize: ".9rem", textDecoration: "none" }}>
-              {t("viewFullCollection")} <AiOutlineRight size={16} />
-            </Link>
-          </div>
-        </div>
-      </section>
+            </motion.div>
 
-      {/* ══════════════════════════════════════════
-          § 2.5  AIRLINE COLLECTION — ✅ FIXED: FOLLOWS LIGHT/DARK MODE
-      ══════════════════════════════════════════ */}
-      <section className="bg-gray-50 dark:bg-gray-800 transition-colors duration-500" style={{ paddingTop: "clamp(72px, 10vw, 96px)", paddingBottom: "clamp(72px, 10vw, 96px)" }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
-          <div className="reveal text-center">
-            <SectionHeader
-              label="Aviation Fleet"
-              title="Our Model Airlines"
-              subtitle="Explore our precision-crafted scale models for each featured airline"
-            />
-          </div>
-          <div className="al-grid reveal reveal-delay-1">
-            {AIRLINES.map((airline, i) => (
-              <div key={airline.id} className="al-card" onClick={() => openAirlineModal(i)}>
-                <img src={airline.logo} alt={airline.name} className="al-card-logo" />
-                <div className="al-card-name">{airline.name}</div>
-                <div className="al-card-hint">
-                  <span className="al-card-hint-dot" />
-                  View model
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+            {/* ═══ PROMOTION - BEAUTIFUL GLASS STYLE ═══ */}
+            <motion.div {...ani(.15)} className="promo-glass mt-12">
+              <div className="promo-orb promo-orb-1" />
+              <div className="promo-orb promo-orb-2" />
+              <div className="dots-bg" />
+              <div className="scan-line" />
+              
+              <div className="grid lg:grid-cols-2 gap-8 p-8 lg:p-12 relative z-10">
+                {/* LEFT CONTENT */}
+                <div className="flex flex-col justify-center">
+                  <motion.div
+                    initial={{ opacity:0, y:20 }}
+                    whileInView={{ opacity:1, y:0 }}
+                    transition={{ duration:.6 }}
+                    className="promo-badge"
+                  >
+                    <AiOutlineGift size={14} /> {t("perfectGiftPackaging") || "Gift Packaging"}
+                  </motion.div>
 
-      {/* ══════════════════════════════════════════
-          § 3  PERFECT DISPLAY (unchanged)
-      ══════════════════════════════════════════ */}
-      <section className="bg-white dark:bg-gray-900 transition-colors duration-500" style={{ paddingTop: "clamp(72px, 10vw, 96px)", paddingBottom: "clamp(72px, 10vw, 96px)" }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 reveal">
-            <SectionHeader label={t("perfectDisplay")} title={t("whereToDisplay")} subtitle={t("premiumAircraftModels")} />
-            <SlideArrows trackRef={displayTrackRef} onScroll={(dir) => scrollSlide(displayTrackRef, dir)} />
-          </div>
-          <div ref={displayTrackRef} className="slide-track reveal reveal-delay-1">
-            {displaySettings.map((s, i) => (
-              <div key={i} className="display-card card-lift rounded-2xl overflow-hidden cursor-pointer bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600"
-                style={{ width: "clamp(220px, 72vw, 295px)", boxShadow: "0 4px 16px rgba(0,0,0,.07)" }}
-                onClick={() => openModal(i)}
-              >
-                <div className="relative overflow-hidden" style={{ aspectRatio: "1/1" }}>
-                  <Image isBlurred className="w-full h-full object-cover" style={{ transition: "transform .5s cubic-bezier(.22,1,.36,1)" }} src={s.image} alt={s.title} />
-                  <div className="display-overlay absolute inset-0 flex items-center justify-center" style={{ background: "rgba(5,14,12,.5)", backdropFilter: "blur(2px)" }}>
-                    <span style={{ background: "rgba(255,255,255,.92)", color: "#0d7a68", fontWeight: 700, fontSize: ".7rem", letterSpacing: "1.5px", textTransform: "uppercase", padding: "6px 14px", borderRadius: 6 }}>
-                      {t("clickToView") || "View →"}
-                    </span>
-                  </div>
-                  <div className="absolute top-3 right-3" style={{ width: 25, height: 25, borderRadius: "50%", background: "#0d7a68", color: "#fff", fontWeight: 700, fontSize: ".66rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    {i + 1}
-                  </div>
-                </div>
-                <div className="p-4 dark:bg-gray-700">
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-1 truncate" style={{ fontSize: ".97rem" }}>{t(s.title)}</h3>
-                  <p className="text-gray-400 dark:text-gray-400 leading-snug" style={{ fontSize: ".76rem" }}>{t(s.description)}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          {/* Gift packaging strip */}
-          <div className="mt-14 rounded-2xl overflow-hidden border border-[#0d7a68]/20 reveal" style={{ background: "linear-gradient(135deg,#050e0c 0%,#0c1d1a 100%)" }}>
-            <div className="grid lg:grid-cols-2">
-              <div className="p-10 lg:p-14 flex flex-col justify-center">
-                <span className="section-label mb-3" style={{ color: "#4db8a8" }}>{t("perfectGiftPackaging")}</span>
-                <h3 className="font-bold text-white leading-tight mb-4" style={{ fontSize: "clamp(1.6rem,3vw,2.3rem)" }}>{t("premiumGiftPresentation")}</h3>
-                <p style={{ color: "rgba(255,255,255,.52)", fontSize: ".92rem", lineHeight: 1.65, marginBottom: 18 }}>{t("eachAircraftModelComes")}</p>
-                {[
-                  { dot: "#0d7a68", label: t("premiumGiftBox") },
-                  { dot: "#4db8a8", label: t("personalizedCard") },
-                  { dot: "#7dd4c8", label: t("elegantPackaging") },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-3 mb-2">
-                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: item.dot, flexShrink: 0 }} />
-                    <span style={{ color: "rgba(255,255,255,.62)", fontSize: ".86rem" }}>{item.label}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="relative overflow-hidden" style={{ minHeight: 260 }}>
-                <Image className="w-full h-full object-cover" style={{ minHeight: 260 }}
-                  src="https://res.cloudinary.com/deahgtn57/image/upload/v1769274064/omelett%27s/public/index%20page/WhatsApp_Image_2026-01-24_at_23.39.01_1_p6ptma.jpg"
-                  alt={t("premiumGiftPackaging")}
-                />
-                <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(90deg,#050e0c 0%,transparent 40%)" }} />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+                  <motion.h3
+                    initial={{ opacity:0, y:20 }}
+                    whileInView={{ opacity:1, y:0 }}
+                    transition={{ duration:.7, delay:.1 }}
+                    className="promo-title mt-4"
+                  >
+                    {t("premiumGiftPresentation") || "The Perfect"} <br />
+                    <span className="gold">{t("premiumGift") || "Premium Gift"}</span>
+                  </motion.h3>
 
-      {/* ══════════════════════════════════════════
-          § 4  CRAFTSMANSHIP + CAROUSEL (unchanged)
-      ══════════════════════════════════════════ */}
-      <section className="py-24 bg-gray-50 dark:bg-gray-800 transition-colors duration-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="relative reveal-left">
-              <div className="relative rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(13,122,104,.18)", boxShadow: "0 18px 56px rgba(0,0,0,.11)" }}>
-                <div style={{ aspectRatio: "4/3", position: "relative" }}>
-                  {carouselImages.map((img, i) => (
-                    <div key={i} className="carousel-slide" style={{ opacity: i === currentSlide ? 1 : 0, zIndex: i === currentSlide ? 1 : 0 }}>
-                      <Image isBlurred className="w-full h-full object-cover" src={img} alt={`Photo ${i + 1}`} />
-                    </div>
-                  ))}
-                </div>
-                <div className="absolute bottom-4 left-1/2 flex gap-1.5 z-10" style={{ transform: "translateX(-50%)" }}>
-                  {carouselImages.map((_, i) => (
-                    <button key={i} onClick={() => setCurrentSlide(i)} style={{ height: 5, width: i === currentSlide ? 22 : 5, borderRadius: 3, background: i === currentSlide ? "#0d7a68" : "rgba(255,255,255,.42)", border: "none", cursor: "pointer", transition: "all .4s cubic-bezier(.22,1,.36,1)", padding: 0 }} />
-                  ))}
-                </div>
-                <TealCorners />
-              </div>
-              <div className="absolute -bottom-5 -right-5 hidden sm:flex items-center gap-3 px-5 py-4 rounded-xl z-10 bg-white dark:bg-gray-900" style={{ border: "1px solid rgba(13,122,104,.28)", boxShadow: "0 10px 34px rgba(0,0,0,.1)" }}>
-                <span style={{ fontSize: "1.6rem", fontWeight: 700, color: "#0d7a68", lineHeight: 1 }}>{currentSlide + 1}</span>
-                <div>
-                  <div className="text-gray-400 dark:text-gray-500" style={{ fontSize: ".62rem", letterSpacing: "1.5px", textTransform: "uppercase" }}>of {carouselImages.length}</div>
-                  <div style={{ fontSize: ".7rem", color: "#4db8a8", fontWeight: 600 }}>Photos</div>
-                </div>
-              </div>
-            </div>
-            <div className="reveal-right">
-              <SectionHeader label={t("craftsmanship")} title={t("uncompromisingQuality")} subtitle={t("eachModelIsTestament")} />
-              <div className="flex flex-col gap-5 mt-2">
-                {qualityFeatures.map((f, i) => (
-                  <div key={i} className="flex items-start gap-4">
-                    <div className="icon-pulse flex-shrink-0 flex items-center justify-center rounded-xl" style={{ width: 44, height: 44, background: "#0d7a68" }}>
-                      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900 dark:text-white mb-0.5" style={{ fontSize: ".97rem" }}>{t(f.title)}</h4>
-                      <p className="text-gray-500 dark:text-gray-400" style={{ fontSize: ".82rem" }}>{t(f.desc)}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <Link href="/about" className="mt-8 inline-flex items-center gap-2" style={{ color: "#0d7a68", fontWeight: 600, fontSize: ".92rem", textDecoration: "none", transition: "gap .25s ease" }}
-                onMouseEnter={e => (e.currentTarget as HTMLElement).style.gap = "10px"}
-                onMouseLeave={e => (e.currentTarget as HTMLElement).style.gap = "8px"}
-              >
-                {t("show_details")}
-                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+                  <motion.p
+                    initial={{ opacity:0, y:20 }}
+                    whileInView={{ opacity:1, y:0 }}
+                    transition={{ duration:.7, delay:.2 }}
+                    className="promo-desc mt-3"
+                  >
+                    {t("eachAircraftModelComes") || "Each model comes beautifully packaged in a premium gift box, making it the perfect present for any aviation enthusiast."}
+                  </motion.p>
 
-      {/* ══════════════════════════════════════════
-          § 5  CTA (unchanged)
-      ══════════════════════════════════════════ */}
-      <section className="relative py-28 overflow-hidden" style={{ background: "linear-gradient(135deg,#050e0c 0%,#0c1d1a 55%,#083d33 100%)" }}>
-        <div className="absolute inset-0 opacity-[.04] pointer-events-none" style={{ backgroundImage: "radial-gradient(circle at 1px 1px,#0d7a68 1px,transparent 0)", backgroundSize: "44px 44px" }} />
-        <div className="absolute rounded-full blur-3xl pointer-events-none" style={{ width: 500, height: 500, top: "50%", left: "50%", transform: "translate(-50%,-50%)", background: "radial-gradient(circle,rgba(13,122,104,.14) 0%,transparent 70%)" }} />
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <span className="section-label mb-5 text-center reveal" style={{ color: "#4db8a8" }}>✦ Join The Community ✦</span>
-          <h2 className="font-bold text-white mb-4 leading-tight reveal reveal-delay-1" style={{ fontSize: "clamp(2rem,6vw,3.6rem)" }}>{t("beginYourCollection")}</h2>
-          <p className="mb-10 mx-auto reveal reveal-delay-2" style={{ color: "rgba(255,255,255,.52)", fontSize: "1rem", lineHeight: 1.7, maxWidth: 520 }}>{t("joinCollectorsWorldwide")}</p>
-          <div className="reveal reveal-delay-3">
-            <Link href="/help" style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "linear-gradient(135deg,#0d7a68,#0a6455)", color: "#fff", padding: "15px 40px", borderRadius: 8, fontWeight: 700, fontSize: ".95rem", letterSpacing: ".4px", textDecoration: "none", boxShadow: "0 8px 32px rgba(13,122,104,.4)", transition: "box-shadow .3s, transform .3s" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = "0 12px 48px rgba(13,122,104,.6)"; (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 32px rgba(13,122,104,.4)"; (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; }}
-            >
-              {t("contact_us")} <AiOutlineRight size={16} />
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 pt-12 reveal reveal-delay-4" style={{ borderTop: "1px solid rgba(255,255,255,.08)" }}>
-            {[
-              { label: t("freeShipping"), svg: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4db8a8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg> },
-              { label: t("authenticityGuarantee"), svg: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4db8a8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z"/><path d="M9 12l2 2 4-4"/></svg> },
-              { label: t("securePayment"), svg: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4db8a8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> },
-              { label: t("support247"), svg: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4db8a8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> },
-            ].map((b, i) => (
-              <div key={i} className="text-center badge-icon flex flex-col items-center gap-2">
-                <div style={{ width: 54, height: 54, borderRadius: "50%", background: "rgba(13,122,104,.15)", border: "1px solid rgba(13,122,104,.3)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 6px", transition: "background .25s, transform .3s cubic-bezier(.22,1,.36,1)" }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(13,122,104,.3)"; (e.currentTarget as HTMLElement).style.transform = "scale(1.1)"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(13,122,104,.15)"; (e.currentTarget as HTMLElement).style.transform = "scale(1)"; }}
-                >
-                  {b.svg}
-                </div>
-                <div style={{ fontSize: ".68rem", color: "rgba(255,255,255,.5)", letterSpacing: "1px", textTransform: "uppercase", lineHeight: 1.4 }}>{b.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+                  <motion.div
+                    initial={{ opacity:0, y:20 }}
+                    whileInView={{ opacity:1, y:0 }}
+                    transition={{ duration:.7, delay:.3 }}
+                    className="flex flex-col gap-2 mt-4"
+                  >
+                    {[
+                      { icon: "🎁", label: t("premiumGiftBox") || "Premium Gift Box" },
+                      { icon: "💌", label: t("personalizedCard") || "Personalized Card" },
+                      { icon: "✨", label: t("elegantPackaging") || "Elegant Packaging" },
+                      { icon: "🔒", label: "Certificate of Authenticity" },
+                    ].map((item, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity:0, x:-20 }}
+                        whileInView={{ opacity:1, x:0 }}
+                        transition={{ duration:.4, delay: .4 + idx * .08 }}
+                        className="promo-feature"
+                      >
+                        <div className="promo-feature-icon">{item.icon}</div>
+                        <span className="promo-feature-text">{item.label}</span>
+                      </motion.div>
+                    ))}
+                  </motion.div>
 
-      {/* ══════════════════════════════════════════
-          DISPLAY SETTINGS MODAL (unchanged)
-      ══════════════════════════════════════════ */}
-      {isModalOpen && selectedImage !== null && (
-        <>
-          <div style={{ position: "fixed", inset: 0, zIndex: 99999, background: "rgba(5,14,12,.92)", backdropFilter: "blur(8px)", animation: "fadeIn .25s ease both" }} onClick={closeModal} />
-          <div style={{ position: "fixed", inset: 0, zIndex: 100000, display: "flex", alignItems: "center", justifyContent: "center", padding: "env(safe-area-inset-top, 12px) 12px env(safe-area-inset-bottom, 12px) 12px" }}>
-            <div className="relative w-full overflow-hidden flex flex-col lg:flex-row" style={{ maxWidth: 980, maxHeight: "calc(100vh - 24px)", background: "#fff", borderRadius: 16, border: "1px solid rgba(13,122,104,.18)", boxShadow: "0 40px 100px rgba(0,0,0,.5)", animation: "fadeUp .3s cubic-bezier(.22,1,.36,1) both" }}>
-              <button onClick={closeModal} style={{ position: "absolute", top: 12, right: 12, zIndex: 60, background: "#E43636", color: "#fff", border: "none", borderRadius: "50%", width: 33, height: 33, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "transform .2s" }}
-                onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.1)")}
-                onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}
-              >
-                <AiOutlineClose size={14} />
-              </button>
-              <div style={{ position: "absolute", top: 12, left: 12, zIndex: 60, background: "rgba(5,14,12,.72)", color: "#fff", fontSize: ".7rem", fontWeight: 600, padding: "3px 10px", borderRadius: 20 }}>
-                {selectedImage + 1} / {displaySettings.length}
-              </div>
-              <button onClick={e => { e.stopPropagation(); prevImg(); }} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", zIndex: 60, background: "rgba(255,255,255,.92)", border: "none", borderRadius: "50%", width: 33, height: 33, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", boxShadow: "0 3px 12px rgba(0,0,0,.14)", transition: "transform .2s" }}
-                onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-50%) scale(1.1)")}
-                onMouseLeave={e => (e.currentTarget.style.transform = "translateY(-50%) scale(1)")}
-              >
-                <AiOutlineLeft size={14} />
-              </button>
-              <button onClick={e => { e.stopPropagation(); nextImg(); }} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", zIndex: 60, background: "rgba(255,255,255,.92)", border: "none", borderRadius: "50%", width: 33, height: 33, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", boxShadow: "0 3px 12px rgba(0,0,0,.14)", transition: "transform .2s" }}
-                onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-50%) scale(1.1)")}
-                onMouseLeave={e => (e.currentTarget.style.transform = "translateY(-50%) scale(1)")}
-              >
-                <RightArrow size={14} />
-              </button>
-              <div className="lg:w-1/2 flex items-center justify-center p-6" style={{ background: "#e6f4f1", minHeight: 250 }}>
-                <Image isBlurred className="w-full object-contain rounded-xl" style={{ maxHeight: "56vh", animation: "fadeIn .35s ease" }} src={displaySettings[selectedImage].image} alt={displaySettings[selectedImage].title} />
-              </div>
-              <div className="lg:w-1/2 p-7 overflow-y-auto thin-scroll flex flex-col" style={{ maxHeight: "calc(100vh - 24px)" }}>
-                <span style={{ display: "inline-block", background: "#0d7a68", color: "#fff", fontSize: ".63rem", fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", padding: "4px 11px", borderRadius: 4, marginBottom: 12, alignSelf: "flex-start" }}>
-                  {displaySettings[selectedImage].title === "Luxury Gift" ? t("premiumGift") || "Premium Gift" : t("displaySetting") || "Display Setting"}
-                </span>
-                <h3 className="font-bold text-gray-900 mb-2 leading-snug" style={{ fontSize: "clamp(1.35rem,3vw,1.9rem)" }}>{t(displaySettings[selectedImage].title)}</h3>
-                <p className="text-gray-500 mb-5 leading-relaxed" style={{ fontSize: ".9rem" }}>{t(displaySettings[selectedImage].description)}</p>
-                <h4 style={{ fontSize: ".7rem", fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: "#0d7a68", marginBottom: 10 }}>{t("keyFeatures") || "Key Features"}</h4>
-                <div className="flex flex-col gap-3 mb-6">
-                  {displaySettings[selectedImage].features.map((f, i) => (
-                    <div key={i} className="flex items-start gap-3">
-                      <div style={{ width: 19, height: 19, borderRadius: "50%", background: "#0d7a68", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
-                        <svg width="9" height="9" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                  {/* Trust badges grid */}
+                  <motion.div
+                    initial={{ opacity:0, y:20 }}
+                    whileInView={{ opacity:1, y:0 }}
+                    transition={{ duration:.6, delay:.5 }}
+                    className="promo-grid"
+                  >
+                    {["Free Shipping", "24/7 Support", "Authenticity", "Secure Payment"].map((item, idx) => (
+                      <div key={idx} className="promo-grid-item">
+                        <AiOutlineCheck size={10} style={{ color: "rgba(13,122,104,.4)" }} />
+                        <span>{item}</span>
                       </div>
-                      <span className="text-gray-600" style={{ fontSize: ".84rem" }}>{t(f)}</span>
+                    ))}
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity:0, y:20 }}
+                    whileInView={{ opacity:1, y:0 }}
+                    transition={{ duration:.6, delay:.6 }}
+                    className="mt-6"
+                  >
+                    <Link href="/Omelette's" className="btn-main" style={{ padding:"12px 28px" }}>
+                      Browse Collection <AiOutlineRight size={15} />
+                    </Link>
+                  </motion.div>
+                </div>
+
+                {/* RIGHT IMAGE */}
+                <div 
+                  className="promo-image-wrap"
+                  onClick={() => setPromoModalOpen(true)}
+                >
+                  <motion.div
+                    animate={{ y: [0, -6, 0] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    className="relative"
+                  >
+                    <Image
+                      className="promo-image"
+                      src="https://res.cloudinary.com/deahgtn57/image/upload/v1779621029/omelett%27s/public/promotion_post/84_tana7u.png"
+                      alt={t("premiumGiftPackaging") || "Premium Gift Packaging"}
+                    />
+                    <div className="click-hint">🔍 Click to enlarge</div>
+                  </motion.div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ═══ CRAFTSMANSHIP - TIKTOK VIDEO WITH LIKE & SHARE ═══ */}
+        <section className="sec sec-alt tiktok-section-wrapper">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              {/* Quality Content */}
+              <motion.div {...ani()}>
+                <span className="tag">{t("craftsmanship")}</span>
+                <h2 className="h2 mt-3">{t("uncompromisingQuality")}</h2>
+                <div className="bar mt-2" />
+                <p className="body mt-1 mb-6">{t("eachModelIsTestament")}</p>
+
+                <div className="flex flex-col gap-5">
+                  {quality.map((f,i) => (
+                    <div key={i} className="flex items-start gap-4">
+                      <div className="q-ico">
+                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold mb-0.5" style={{ fontSize:".92rem",color:"var(--tx)" }}>{t(f.title)}</h4>
+                        <p style={{ fontSize:".8rem",color:"var(--tx3)" }}>{t(f.desc)}</p>
+                      </div>
                     </div>
                   ))}
                 </div>
-                <div style={{ borderTop: "1px solid rgba(0,0,0,.08)", paddingTop: 13, marginTop: "auto" }}>
-                  <p style={{ fontSize: ".66rem", color: "rgba(0,0,0,.32)", letterSpacing: "1.5px", textTransform: "uppercase", marginBottom: 8 }}>{t("otherDisplaySettings") || "Other Settings"}</p>
+
+                <Link href="/about" className="mt-7 inline-flex items-center gap-2" style={{ color:"var(--p)",fontWeight:600,fontSize:".88rem",textDecoration:"none" }}>
+                  {t("show_details")}
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </Link>
+              </motion.div>
+
+              {/* TikTok Video */}
+              <motion.div {...ani(.1)} className="flex justify-center">
+                <div 
+                  className="tiktok-carousel"
+                  style={{ 
+                    aspectRatio: "9/16",
+                    maxWidth: "320px",
+                    width: "100%"
+                  }}
+                >
+                  <div className="tiktok-video-wrapper">
+                    <video
+                      ref={videoRef}
+                      className="tiktok-video"
+                      playsInline
+                      autoPlay
+                      muted
+                      key={currentVideoIndex}
+                      poster="https://res.cloudinary.com/deahgtn57/image/upload/v1757573548/omelett%27s/public/image/fly_h2va9e.png"
+                    >
+                      <source 
+                        src={tiktokVideos[currentVideoIndex].url} 
+                        type="video/mp4" 
+                      />
+                      Your browser does not support the video tag.
+                    </video>
+
+                    {/* Loading overlay */}
+                    {isVideoLoading && (
+                      <div className="absolute inset-0 flex items-center justify-center z-30 bg-black/50">
+                        <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
+                      </div>
+                    )}
+
+                    {/* Navigation Arrows - Next & Previous */}
+                    <button 
+                      className="tiktok-nav-arrow prev"
+                      onClick={goToPreviousVideo}
+                      aria-label="Previous video"
+                    >
+                      <AiOutlineLeft size={20} />
+                    </button>
+                    <button 
+                      className="tiktok-nav-arrow next"
+                      onClick={goToNextVideo}
+                      aria-label="Next video"
+                    >
+                      <AiOutlineRight size={20} />
+                    </button>
+
+                    <div className="tiktok-gradient-top" />
+                    <div className="tiktok-overlay" />
+
+                    <div className="tiktok-progress">
+                      <div className="tiktok-progress-bar" style={{ width: `${videoProgress}%` }} />
+                    </div>
+
+                    {tiktokVideos.length > 1 && (
+                      <div className="tiktok-dots">
+                        {tiktokVideos.map((_, index) => (
+                          <button
+                            key={index}
+                            className={`tiktok-dot ${currentVideoIndex === index ? 'active' : ''}`}
+                            onClick={() => goToVideo(index)}
+                          />
+                        ))}
+                      </div>
+                    )}
+
+                    {showControls && (
+                      <div className="tiktok-controls-center">
+                        <button className="tiktok-control-btn" onClick={togglePlay}>
+                          {isPlaying ? '⏸' : '▶'}
+                        </button>
+                      </div>
+                    )}
+
+                    <div className="tiktok-bottom-controls">
+                      <button className="tiktok-bottom-btn" onClick={togglePlay}>
+                        {isPlaying ? '⏸' : '▶'}
+                      </button>
+                      <button className="tiktok-bottom-btn" onClick={restartVideo}>
+                        ⟳
+                      </button>
+                      <button 
+                        className={`tiktok-bottom-btn sound-btn ${isSoundOn ? 'on' : ''}`}
+                        onClick={toggleSound}
+                      >
+                        {isSoundOn ? <AiOutlineSound size={16} /> : <AiOutlineMuted size={16} />}
+                      </button>
+                      <button 
+                        className={`tiktok-bottom-btn fullscreen-btn ${isFullscreen ? 'on' : ''}`}
+                        onClick={toggleFullscreen}
+                      >
+                        {isFullscreen ? <AiOutlineFullscreenExit size={16} /> : <AiOutlineFullscreen size={16} />}
+                      </button>
+                    </div>
+
+                    {/* Side Actions - Like & Share with Green Theme */}
+                    <div className="tiktok-actions">
+                      {/* Like Button - Turns GREEN when clicked */}
+                      <button 
+                        className="tiktok-action-btn like-btn"
+                        onClick={() => handleLike(currentVideoIndex)}
+                      >
+                        <div className={`icon-wrap ${tiktokVideos[currentVideoIndex].liked ? 'liked' : ''}`}>
+                          {tiktokVideos[currentVideoIndex].liked ? (
+                            <AiFillHeart size={20} className="like-icon" />
+                          ) : (
+                            <AiOutlineHeart size={20} />
+                          )}
+                        </div>
+                        <span className={`count ${tiktokVideos[currentVideoIndex].liked ? 'liked' : ''}`}>
+                          {tiktokVideos[currentVideoIndex].likes.toLocaleString()}
+                        </span>
+                      </button>
+
+                      {/* Share Button */}
+                      <button 
+                        className="tiktok-action-btn share-btn"
+                        onClick={handleShare}
+                        style={{ position: 'relative' }}
+                      >
+                        <div className="icon-wrap">
+                          <AiOutlineShareAlt size={20} />
+                        </div>
+                        <span className="count">Share</span>
+                        {shareTooltip && (
+                          <div className="tiktok-share-tooltip">
+                            Copied to clipboard!
+                          </div>
+                        )}
+                      </button>
+                    </div>
+
+                    {/* Floating Hearts Animation */}
+                    {floatingHearts.map(heart => (
+                      <div
+                        key={heart.id}
+                        style={{
+                          position: 'absolute',
+                          right: `${heart.x}px`,
+                          bottom: `${heart.y}px`,
+                          zIndex: 30,
+                          pointerEvents: 'none',
+                          fontSize: '24px',
+                          color: '#0d7a68',
+                          animation: 'floatHeart 1s ease-out forwards'
+                        }}
+                      >
+                        <FaHeart size={26} color="#0d7a68" />
+                      </div>
+                    ))}
+                  </div>
+
+                  <Corners />
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {/* ═══ DISPLAY MODAL ═══ */}
+      <AnimatePresence>
+        {modalOn && selImg !== null && (
+          <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }} style={{ position:"fixed",inset:0,zIndex:99999,background:"rgba(0,0,0,.85)",backdropFilter:"blur(10px)",display:"flex",alignItems:"center",justifyContent:"center",padding:12 }} onClick={closeDsp}>
+            <motion.div initial={{ opacity:0,scale:.94,y:16 }} animate={{ opacity:1,scale:1,y:0 }} exit={{ opacity:0,scale:.94,y:16 }} transition={{ duration:.25 }}
+              className="relative w-full overflow-hidden flex flex-col lg:flex-row" style={{ maxWidth:940,maxHeight:"calc(100vh - 24px)",background:"var(--bg)",borderRadius:18,border:"1px solid var(--bd)",boxShadow:"0 40px 100px rgba(0,0,0,.5)" }}
+              onClick={e => e.stopPropagation()}>
+              <button onClick={closeDsp} style={{ position:"absolute",top:12,right:12,zIndex:60,background:"#E43636",color:"#fff",border:"none",borderRadius:"50%",width:32,height:32,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer" }}>
+                <AiOutlineClose size={13} />
+              </button>
+              <div style={{ position:"absolute",top:12,left:12,zIndex:60,background:"rgba(0,0,0,.6)",color:"#fff",fontSize:".68rem",fontWeight:600,padding:"3px 10px",borderRadius:20 }}>
+                {selImg+1} / {displays.length}
+              </div>
+              <button onClick={e => { e.stopPropagation(); prevDsp(); }} style={{ position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",zIndex:60,background:"var(--bg)",border:"1px solid var(--bd)",borderRadius:"50%",width:32,height:32,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer" }}>
+                <AiOutlineLeft size={13} />
+              </button>
+              <button onClick={e => { e.stopPropagation(); nextDsp(); }} style={{ position:"absolute",right:12,top:"50%",transform:"translateY(-50%)",zIndex:60,background:"var(--bg)",border:"1px solid var(--bd)",borderRadius:"50%",width:32,height:32,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer" }}>
+                <AiOutlineRight size={13} />
+              </button>
+              <div className="lg:w-1/2 flex items-center justify-center p-6" style={{ background:"var(--bg3)",minHeight:240 }}>
+                <Image isBlurred className="w-full object-contain rounded-xl" style={{ maxHeight:"54vh" }} src={displays[selImg].img} alt={displays[selImg].title} />
+              </div>
+              <div className="lg:w-1/2 p-6 overflow-y-auto flex flex-col" style={{ maxHeight:"calc(100vh - 24px)" }}>
+                <span style={{ display:"inline-block",background:"var(--p)",color:"#fff",fontSize:".6rem",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",padding:"3px 10px",borderRadius:50,marginBottom:12,alignSelf:"flex-start" }}>
+                  {displays[selImg].title==="Luxury Gift"?t("premiumGift")||"Premium Gift":t("displaySetting")||"Display Setting"}
+                </span>
+                <h3 className="font-bold mb-2 leading-snug" style={{ fontSize:"clamp(1.2rem,2.8vw,1.7rem)",color:"var(--tx)" }}>{t(displays[selImg].title)}</h3>
+                <p style={{ fontSize:".86rem",color:"var(--tx3)",lineHeight:1.6,marginBottom:16 }}>{t(displays[selImg].desc)}</p>
+                <h4 style={{ fontSize:".64rem",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"var(--p)",marginBottom:10 }}>{t("keyFeatures")||"Key Features"}</h4>
+                <div className="flex flex-col gap-3 mb-5">
+                  {displays[selImg].feats.map((f,i) => (
+                    <div key={i} className="flex items-start gap-3">
+                      <div style={{ width:18,height:18,borderRadius:"50%",background:"var(--p)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1 }}>
+                        <svg width="8" height="8" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
+                      </div>
+                      <span style={{ fontSize:".82rem",color:"var(--tx3)" }}>{t(f)}</span>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ borderTop:"1px solid var(--bd)",paddingTop:12,marginTop:"auto" }}>
+                  <p style={{ fontSize:".6rem",color:"var(--tx3)",opacity:.5,letterSpacing:"1.5px",textTransform:"uppercase",marginBottom:7 }}>{t("otherDisplaySettings")||"Other Settings"}</p>
                   <div className="grid grid-cols-6 gap-1.5">
-                    {displaySettings.map((ds, i) => (
-                      <button key={i} onClick={() => setSelectedImage(i)} style={{ padding: 0, border: i === selectedImage ? "2px solid #0d7a68" : "2px solid transparent", borderRadius: 6, overflow: "hidden", cursor: "pointer", aspectRatio: "1/1", background: "none", outline: i === selectedImage ? "3px solid rgba(13,122,104,.18)" : "none", transition: "all .2s" }}>
-                        <Image className="w-full h-full object-cover" src={ds.image} alt={ds.title} />
+                    {displays.map((d,i) => (
+                      <button key={i} onClick={() => setSelImg(i)} style={{ padding:0,border:i===selImg?"2px solid var(--p)":"2px solid transparent",borderRadius:6,overflow:"hidden",cursor:"pointer",aspectRatio:"1/1",background:"none",transition:"all .2s" }}>
+                        <Image className="w-full h-full object-cover" src={d.img} alt={d.title} />
                       </button>
                     ))}
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* ══════════════════════════════════════════
-          AIRLINE MODAL — ✅ FIXED: FOLLOWS LIGHT/DARK MODE
-      ══════════════════════════════════════════ */}
-      {airlineModal && (
-        <div className="al-modal-backdrop" onClick={closeAirlineModal}>
-          <div className="al-modal" onClick={e => e.stopPropagation()}>
-            <div className="al-modal-topbar" />
-            <div className="al-modal-header">
-              <div>
-                <div className="al-modal-eyebrow">✦ Aviation Collection ✦</div>
-                <div className="al-modal-title">
-                  Our&nbsp;<span className="al-modal-title-accent">Scale Models</span>
+      {/* ═══ PROMOTION IMAGE MODAL ═══ */}
+      <AnimatePresence>
+        {promoModalOpen && (
+          <motion.div 
+            className="promo-modal-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setPromoModalOpen(false)}
+          >
+            <motion.div
+              className="promo-modal-content"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={e => e.stopPropagation()}
+            >
+              <button 
+                className="promo-modal-close"
+                onClick={() => setPromoModalOpen(false)}
+              >
+                ✕
+              </button>
+              <Image
+                src="https://res.cloudinary.com/deahgtn57/image/upload/v1779621029/omelett%27s/public/promotion_post/84_tana7u.png"
+                alt={t("premiumGiftPackaging") || "Premium Gift Packaging"}
+                className="rounded-xl"
+              />
+              <div className="promo-modal-hint">Click anywhere to close</div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ═══ AIRLINE MODAL ═══ */}
+      <AnimatePresence>
+        {alModal && (
+          <motion.div className="al-bk" initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }} onClick={closeAl}>
+            <motion.div className="al-m" onClick={e => e.stopPropagation()} initial={{ opacity:0,scale:.94,y:14 }} animate={{ opacity:1,scale:1,y:0 }} exit={{ opacity:0,scale:.94,y:14 }}>
+              <div className="al-m-top" />
+              <div className="al-m-hdr">
+                <div>
+                  <div className="al-m-ey">✦ Aviation Collection ✦</div>
+                  <div className="al-m-tt">Our&nbsp;<span>Scale Models</span></div>
+                </div>
+                <button className="al-m-x" onClick={closeAl}>×</button>
+              </div>
+              <div className="al-tabs">
+                {AIRLINES.map((a,i) => (
+                  <button key={a.id} className={`al-tab${alIdx===i?" on":""}`} onClick={() => setAlIdx(i)}>
+                    <img src={a.logo} alt={a.name} />
+                    <span>{a.name}</span>
+                  </button>
+                ))}
+              </div>
+              <div className="al-body">
+                <div>
+                  <img key={AIRLINES[alIdx].id+"-l"} src={AIRLINES[alIdx].logo} alt={AIRLINES[alIdx].name} className="al-logo" />
+                  <div className="al-nm">{AIRLINES[alIdx].name}</div>
+                  <div className="al-co">{AIRLINES[alIdx].country}</div>
+                  <div className="al-desc">{AIRLINES[alIdx].desc}</div>
+                  <div className="al-sp-tag">Model Specifications</div>
+                  <div className="al-sps">
+                    <div><div className="al-sp-v">{AIRLINES[alIdx].scale}</div><div className="al-sp-l">Scale</div></div>
+                    <div><div className="al-sp-v">{AIRLINES[alIdx].length}</div><div className="al-sp-l">Length</div></div>
+                    <div><div className="al-sp-v">{AIRLINES[alIdx].edition}</div><div className="al-sp-l">Edition</div></div>
+                  </div>
+                </div>
+                <div className="al-plane">
+                  <div className="al-plane-g" />
+                  <img key={AIRLINES[alIdx].id+"-p"} src={AIRLINES[alIdx].plane} alt={AIRLINES[alIdx].name+" model"} />
                 </div>
               </div>
-              <button className="al-modal-close" onClick={closeAirlineModal}>×</button>
-            </div>
-            <div className="al-tabs">
-              {AIRLINES.map((a, i) => (
-                <button key={a.id} className={`al-tab${activeAirline === i ? " active" : ""}`} onClick={() => setActiveAirline(i)}>
-                  <img src={a.logo} alt={a.name} className="al-tab-logo" />
-                  <span className="al-tab-name">{a.name}</span>
-                </button>
-              ))}
-            </div>
-            <div className="al-modal-body">
-              <div className="al-info">
-                <img key={AIRLINES[activeAirline].id + "-logo"} src={AIRLINES[activeAirline].logo} alt={AIRLINES[activeAirline].name} className="al-airline-logo-big" />
-                <div className="al-airline-name-big">{AIRLINES[activeAirline].name}</div>
-                <div className="al-airline-country">{AIRLINES[activeAirline].country}</div>
-                <div className="al-airline-desc">{AIRLINES[activeAirline].desc}</div>
-                <div className="al-specs-label">Model Specifications</div>
-                <div className="al-specs">
-                  <div>
-                    <div className="al-spec-val">{AIRLINES[activeAirline].scale}</div>
-                    <div className="al-spec-label">Scale</div>
-                  </div>
-                  <div>
-                    <div className="al-spec-val">{AIRLINES[activeAirline].length}</div>
-                    <div className="al-spec-label">Length</div>
-                  </div>
-                  <div>
-                    <div className="al-spec-val">{AIRLINES[activeAirline].edition}</div>
-                    <div className="al-spec-label">Edition</div>
-                  </div>
-                </div>
+              <div className="al-dots">
+                {AIRLINES.map((_,i) => <button key={i} className={`al-dot${alIdx===i?" on":""}`} onClick={() => setAlIdx(i)} />)}
               </div>
-              <div className="al-plane-panel">
-                <div className="al-plane-glow" />
-                <div className="al-plane-grid" />
-                <img key={AIRLINES[activeAirline].id + "-plane"} src={AIRLINES[activeAirline].plane} alt={AIRLINES[activeAirline].name + " model"} className="al-plane-img" />
-              </div>
-            </div>
-            <div className="al-dots">
-              {AIRLINES.map((_, i) => (
-                <button key={i} className={`al-dot${activeAirline === i ? " active" : ""}`} onClick={() => setActiveAirline(i)} />
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </DefaultLayout>
   );
 }
