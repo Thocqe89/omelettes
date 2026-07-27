@@ -44,31 +44,230 @@ const BLANK: OrderForm = {
 };
 
 // ═══ HELPERS ═══
-function optImg(url: string, w = 1200) {
+function optImg(url: string, w = 800) {
   if (!url?.includes("res.cloudinary.com")) return url || "";
-  return url.replace("/upload/", `/upload/f_auto,q_auto:best,w_${w},c_limit/`);
+  return url.replace("/upload/", `/upload/f_auto,q_auto:eco,w_${w},c_limit/`);
 }
 
-const IMG_K = ["image_meain", ...Array.from({ length: 15 }, (_, i) => `image_${i + 1}`)];
+// Updated to match your post_image sheet columns
+const IMG_K = ["image_1", "image_2", "image_3", "image_4", "image_5", "image_meain"];
 
 function getImgs(p: Product): string[] {
   const r: string[] = [];
-  if (p.Images) IMG_K.forEach(k => { const u = p.Images?.[k]; if (u?.trim()) r.push(optImg(u.trim())); });
-  if (!r.length) { 
-    if (p.Image?.trim()) r.push(optImg(p.Image.trim()));
-    else if (p.Logo?.trim()) r.push(optImg(p.Logo.trim()));
-    else r.push(FLY_LOGO); 
+  if (p.Images && typeof p.Images === 'object') {
+    IMG_K.forEach(k => { 
+      const u = p.Images?.[k]; 
+      if (u && typeof u === 'string' && u.trim()) {
+        r.push(optImg(u.trim(), 800));
+      }
+    });
+    
+    if (r.length === 0) {
+      Object.values(p.Images).forEach(u => {
+        if (u && typeof u === 'string' && u.trim()) {
+          r.push(optImg(u.trim(), 800));
+        }
+      });
+    }
   }
-  return r;
+  
+  if (!r.length) { 
+    if (p.Image && typeof p.Image === 'string' && p.Image.trim()) {
+      r.push(optImg(p.Image.trim(), 800));
+    } else if (p.Logo && typeof p.Logo === 'string' && p.Logo.trim()) {
+      r.push(optImg(p.Logo.trim(), 800));
+    } else {
+      r.push(FLY_LOGO);
+    }
+  }
+  
+  return [...new Set(r)];
 }
 
 function getLogo(p: Product): string {
-  if (p.Logo?.trim()) return optImg(p.Logo.trim());
-  if (p.Image?.trim()) return optImg(p.Image.trim());
+  if (p.Images && typeof p.Images === 'object') {
+    if (p.Images.image_1 && typeof p.Images.image_1 === 'string' && p.Images.image_1.trim()) {
+      return optImg(p.Images.image_1.trim(), 400);
+    }
+    if (p.Images.image_meain && typeof p.Images.image_meain === 'string' && p.Images.image_meain.trim()) {
+      return optImg(p.Images.image_meain.trim(), 400);
+    }
+    const firstImage = Object.values(p.Images).find(u => u && typeof u === 'string' && u.trim());
+    if (firstImage) {
+      return optImg(firstImage.trim(), 400);
+    }
+  }
+  
+  if (p.Logo && typeof p.Logo === 'string' && p.Logo.trim()) {
+    return optImg(p.Logo.trim(), 400);
+  }
+  if (p.Image && typeof p.Image === 'string' && p.Image.trim()) {
+    return optImg(p.Image.trim(), 400);
+  }
   return FLY_LOGO;
 }
 
 function mkId() { return `ORD-${Date.now().toString().slice(-6)}-${String(Math.floor(Math.random() * 1000)).padStart(3, "0")}`; }
+
+// ═══ SCROLL TO TOP HELPER ═══
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// ═══ PRODUCT IMAGE CAROUSEL WITH AUTO-SLIDESHOW ═══
+function ProductImageCarousel({ 
+  images, 
+  productId, 
+  alt,
+  onImageClick
+}: { 
+  images: string[], 
+  productId: string, 
+  alt: string,
+  onImageClick?: () => void
+}) {
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+  const [isHovering, setIsHovering] = React.useState(false);
+  const [loaded, setLoaded] = React.useState<Record<number, boolean>>({});
+  const autoPlayRef = React.useRef<number | null>(null);
+
+  React.useEffect(() => {
+    if (images.length <= 1) return;
+    
+    const startAutoPlay = () => {
+      if (autoPlayRef.current) clearInterval(autoPlayRef.current);
+      autoPlayRef.current = setInterval(() => {
+        if (!isHovering) {
+          setCurrentIndex((prev) => (prev + 1) % images.length);
+        }
+      }, 3000);
+    };
+    
+    startAutoPlay();
+    
+    return () => {
+      if (autoPlayRef.current) clearInterval(autoPlayRef.current);
+    };
+  }, [images.length, isHovering]);
+
+  React.useEffect(() => {
+    setCurrentIndex(0);
+  }, [images]);
+
+  const goToImage = (index: number) => {
+    setCurrentIndex(index);
+    if (autoPlayRef.current) {
+      clearInterval(autoPlayRef.current);
+      autoPlayRef.current = setInterval(() => {
+        if (!isHovering) {
+          setCurrentIndex((prev) => (prev + 1) % images.length);
+        }
+      }, 3000);
+    }
+  };
+
+  const nextImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  const currentImage = images[currentIndex] || images[0] || FLY_LOGO;
+
+  // Preload next image for smoother transition
+  React.useEffect(() => {
+    const nextIndex = (currentIndex + 1) % images.length;
+    if (images[nextIndex]) {
+      const img = new Image();
+      img.src = images[nextIndex];
+    }
+  }, [currentIndex, images]);
+
+  return (
+    <div 
+      className="product-carousel"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
+      {/* Gradient Background - Beautiful blue/teal gradient */}
+      <div className="carousel-gradient-bg">
+        <div className="gradient-orb orb-1" />
+        <div className="gradient-orb orb-2" />
+        <div className="gradient-orb orb-3" />
+      </div>
+
+      {/* Blur placeholder with smoother transition */}
+      <div 
+        className="carousel-blur"
+        style={{
+          backgroundImage: `url(${currentImage})`,
+          opacity: loaded[currentIndex] ? 0 : 0.5,
+          transition: 'opacity 0.8s ease',
+        }}
+      />
+
+      {/* Main image with smoother crossfade */}
+      <img
+        key={currentIndex}
+        src={currentImage}
+        alt={`${alt} - ${currentIndex + 1}`}
+        className="carousel-image"
+        style={{
+          opacity: loaded[currentIndex] ? 1 : 0,
+          transition: 'opacity 0.6s ease',
+        }}
+        loading="lazy"
+        decoding="async"
+        onLoad={() => {
+          setLoaded(prev => ({ ...prev, [currentIndex]: true }));
+        }}
+        onClick={onImageClick}
+      />
+
+      {images.length > 1 && (
+        <>
+          <button 
+            className="carousel-arrow carousel-arrow-left"
+            onClick={prevImage}
+          >
+            <AiOutlineLeft size={14} />
+          </button>
+          <button 
+            className="carousel-arrow carousel-arrow-right"
+            onClick={nextImage}
+          >
+            <AiOutlineRight size={14} />
+          </button>
+
+          <div className="carousel-dots">
+            {images.slice(0, 8).map((_, idx) => (
+              <button
+                key={idx}
+                className={`carousel-dot ${idx === currentIndex ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  goToImage(idx);
+                }}
+              />
+            ))}
+          </div>
+
+          <div className="carousel-counter">
+            {currentIndex + 1} / {images.length}
+          </div>
+        </>
+      )}
+
+      {!loaded[currentIndex] && (
+        <div className="carousel-shimmer" />
+      )}
+    </div>
+  );
+}
 
 // ═══ SUB COMPONENTS ═══
 function AniPrice({ price }: { price: number }) {
@@ -77,19 +276,7 @@ function AniPrice({ price }: { price: number }) {
   return <motion.span className="c-pr" initial={{ opacity: 0, scale: .8 }} animate={{ opacity: 1, scale: 1 }}>{v.toLocaleString()} ₭</motion.span>;
 }
 
-function LzImg({ src, alt, className, style, onClick }: { src: string; alt: string; className?: string; style?: React.CSSProperties; onClick?: (e: React.MouseEvent) => void }) {
-  const [ok, setOk] = React.useState(false);
-  const bl = src.includes("res.cloudinary.com") ? src.replace("/upload/", "/upload/w_20,e_blur:800,q_1,f_auto/") : src;
-  return (
-    <div style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden" }} onClick={onClick}>
-      <img src={bl} aria-hidden style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", filter: "blur(14px)", transform: "scale(1.06)", opacity: ok ? 0 : 1, transition: "opacity .5s", pointerEvents: "none" }} />
-      {!ok && <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg,rgba(13,122,104,.05) 25%,rgba(13,122,104,.12) 50%,rgba(13,122,104,.05) 75%)", backgroundSize: "200% 100%", animation: "shimmer 1.4s linear infinite", pointerEvents: "none" }} />}
-      <img src={src} alt={alt} className={className} style={{ ...style, opacity: ok ? 1 : 0, transition: "opacity .5s" }} loading="lazy" decoding="async" onLoad={() => setOk(true)} />
-    </div>
-  );
-}
-
-// ═══ UPDATED OK MODAL - Better animation, no copy button ═══
+// ═══ OK MODAL ═══
 function OkModal({ open, close, id }: { open: boolean; close: () => void; id: string }) {
   const [s, setS] = React.useState(3);
   
@@ -139,11 +326,8 @@ function OkModal({ open, close, id }: { open: boolean; close: () => void; id: st
         exit={{ scale: .85, y: 30, opacity: 0 }}
         transition={{ type: "spring", damping: 25, stiffness: 350 }}
       >
-        {/* Progress bar */}
         <div className="ok-bar" />
-        
         <div style={{ padding: "32px 24px 28px" }}>
-          {/* Animated check mark */}
           <motion.div 
             style={{ 
               display: "flex", 
@@ -319,11 +503,182 @@ const css = `
 @keyframes priceIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 @keyframes barShrink{0%{width:100%}100%{width:0}}
 @keyframes heartBeat{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+@keyframes floatOrb {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, -20px) scale(1.1); }
+}
 
 .pg{min-height:100vh;background:#f4f8f7}
 .dark .pg{background:#0f1a18}
 
-/* 🛒 Floating Cart Button - Mobile Optimized */
+.product-carousel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #0a0f0e;
+}
+
+.carousel-gradient-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(135deg, #0a1628, #0d2a3a, #0a3d3d);
+  overflow: hidden;
+}
+
+.gradient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.6;
+  animation: floatOrb 8s ease-in-out infinite;
+}
+
+.orb-1 {
+  width: 300px;
+  height: 300px;
+  top: -50px;
+  right: -50px;
+  background: radial-gradient(circle, rgba(13, 122, 104, 0.5), rgba(13, 122, 104, 0));
+  animation-delay: 0s;
+}
+
+.orb-2 {
+  width: 250px;
+  height: 250px;
+  bottom: -30px;
+  left: -30px;
+  background: radial-gradient(circle, rgba(77, 184, 168, 0.4), rgba(77, 184, 168, 0));
+  animation-delay: -2s;
+}
+
+.orb-3 {
+  width: 200px;
+  height: 200px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(13, 122, 104, 0.2), rgba(13, 122, 104, 0));
+  animation-delay: -4s;
+  filter: blur(100px);
+}
+
+.carousel-image {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  cursor: zoom-in;
+  transition: opacity 0.6s ease;
+  filter: drop-shadow(0 4px 20px rgba(0,0,0,0.3));
+}
+
+.carousel-blur {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-size: cover;
+  background-position: center;
+  filter: blur(20px) scale(1.1);
+  transition: opacity 0.8s ease;
+  pointer-events: none;
+}
+
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.product-carousel:hover .carousel-arrow {
+  opacity: 0.8;
+}
+
+.product-carousel:hover .carousel-arrow:hover {
+  opacity: 1;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-arrow-left {
+  left: 8px;
+}
+
+.carousel-arrow-right {
+  right: 8px;
+}
+
+.carousel-dots {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(4px);
+}
+
+.carousel-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  border: none;
+  background: rgba(255,255,255,0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.carousel-dot.active {
+  width: 16px;
+  background: #0d7a68;
+}
+
+.carousel-counter {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  padding: 2px 10px;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.carousel-shimmer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: linear-gradient(90deg, rgba(13,122,104,0.05) 25%, rgba(13,122,104,0.12) 50%, rgba(13,122,104,0.05) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+  pointer-events: none;
+}
+
+/* Floating Cart Button */
 .floating-cart-btn {
   position: fixed;
   bottom: 120px;
@@ -414,24 +769,73 @@ const css = `
   border-bottom: 6px solid transparent;
 }
 
+/* Scroll to Top Button - Below Cart */
+.scroll-top-btn {
+  position: fixed;
+  bottom: 60px;
+  right: 24px;
+  z-index: 9997;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(13, 122, 104, 0.2);
+  color: #0d7a68;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 16px rgba(13, 122, 104, 0.15);
+  opacity: 0;
+  transform: translateY(20px) scale(0.8);
+  pointer-events: none;
+}
+
+.scroll-top-btn.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.scroll-top-btn:hover {
+  background: rgba(13, 122, 104, 0.12);
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 8px 24px rgba(13, 122, 104, 0.25);
+}
+
+.scroll-top-btn:active {
+  transform: scale(0.95);
+}
+
+.scroll-top-btn svg {
+  transition: transform 0.3s ease;
+}
+
+.scroll-top-btn:hover svg {
+  transform: translateY(-2px);
+}
+
+.dark .scroll-top-btn {
+  background: rgba(26, 46, 41, 0.9);
+  border-color: rgba(77, 184, 168, 0.2);
+  color: #4db8a8;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.dark .scroll-top-btn:hover {
+  background: rgba(77, 184, 168, 0.15);
+}
+
 @keyframes floatAnimation {
-  0%, 100% { 
-    transform: translateY(0px);
-  }
-  50% { 
-    transform: translateY(-8px);
-  }
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
 }
 
 @keyframes badgePop {
-  0% { 
-    transform: scale(0);
-    opacity: 0;
-  }
-  100% { 
-    transform: scale(1);
-    opacity: 1;
-  }
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 @keyframes cartPulse {
@@ -449,7 +853,6 @@ const css = `
   animation: floatAnimation 3s ease-in-out infinite, cartPulse 2s ease-in-out infinite;
 }
 
-/* Cart Sidebar */
 .cart-overlay{position:fixed;inset:0;z-index:9999;background:rgba(10,28,25,.5);backdrop-filter:blur(8px)}
 .cart-sidebar{position:fixed;top:0;right:0;z-index:10000;width:100%;max-width:420px;height:100%;background:rgba(255,255,255,.95);backdrop-filter:blur(24px);box-shadow:-8px 0 40px rgba(0,0,0,.15);display:flex;flex-direction:column;overflow:hidden}
 .dark .cart-sidebar{background:rgba(26,46,41,.95)}
@@ -482,7 +885,6 @@ const css = `
 .dark .cart-total{color:#e5f5f2}
 .cart-total span:last-child{color:#E43636;font-size:1.2rem}
 
-/* Order Now & Clear in one line */
 .cart-actions {
   display: flex;
   gap: 8px;
@@ -497,7 +899,6 @@ const css = `
   margin-top: 0;
 }
 
-/* Updated Order Now Button */
 .cart-checkout {
   padding: 12px 20px;
   border-radius: 12px;
@@ -568,7 +969,6 @@ const css = `
   transform: scale(1.02);
 }
 
-/* Heart/Favorite Button - Enhanced Dark/Light Mode */
 .fav-btn {
   position: absolute;
   top: 10px;
@@ -640,14 +1040,6 @@ const css = `
   box-shadow: 0 4px 20px rgba(228, 54, 54, 0.2);
 }
 
-@keyframes heartBeat {
-  0%, 100% { transform: scale(1); }
-  25% { transform: scale(1.3); }
-  50% { transform: scale(1); }
-  75% { transform: scale(1.2); }
-}
-
-/* Header */
 .hdr{position:relative;overflow:hidden;background:linear-gradient(135deg,#050e0c,#0d7a68 55%,#0a5a4c);padding:72px 24px 60px;text-align:center}
 .hdr-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:48px 48px}
 .hdr-orb{position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none}
@@ -678,17 +1070,8 @@ const css = `
 .crd:hover{box-shadow:0 22px 55px rgba(0,0,0,.14);transform:translateY(-4px)}
 
 .c-iz{position:relative;height:250px;overflow:hidden;background:#0a0f0e}
-.c-bl{position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(18px);transform:scale(1.12);opacity:.55}
-.c-dm{position:absolute;inset:0;background:rgba(0,0,0,.1)}
-.c-mi{position:relative;z-index:2;width:100%;height:100%;object-fit:contain;transition:transform .5s;cursor:zoom-in}
-.crd:hover .c-mi{transform:scale(1.04)}
+
 .c-bg{position:absolute;top:10px;left:10px;z-index:15;padding:3px 10px;border-radius:5px;font-size:.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;background:#0d7a68;color:#fff}
-.c-nv{position:absolute;top:50%;transform:translateY(-50%);z-index:20;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.14);backdrop-filter:blur(16px);box-shadow:0 4px 16px rgba(0,0,0,.28);color:#fff;transition:background .2s,transform .18s}
-.c-nv:hover{background:rgba(13,122,104,.55);transform:translateY(-50%) scale(1.1)}
-.c-nv-l{left:10px}.c-nv-r{right:10px}
-.c-ds{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:4px;z-index:10}
-.c-dt{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.42);border:none;padding:0;cursor:pointer;transition:all .25s}
-.c-dt.on{background:#0d7a68;width:16px;border-radius:3px}
 
 .c-bd{padding:18px;flex:1;display:flex;flex-direction:column}
 .c-nm{font-size:1.05rem;font-weight:700;color:#0d7a68;line-height:1.25;margin-bottom:2px}
@@ -707,10 +1090,6 @@ const css = `
 .emp{text-align:center;padding:72px 16px;color:rgba(0,0,0,.38)}
 .dark .emp{color:rgba(255,255,255,.28)}
 
-.go-top{position:fixed;bottom:max(env(safe-area-inset-bottom,0px)+80px,80px);right:20px;z-index:9000;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(13,122,104,.72);backdrop-filter:blur(20px);box-shadow:0 4px 16px rgba(13,122,104,.45);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
-.go-top:hover{background:rgba(13,122,104,.95);transform:translateY(-3px)}
-
-/* Lightbox */
 .lb-bg{position:fixed;inset:0;z-index:1000000;background:rgba(0,0,0,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px 80px}
 .lb-top{position:fixed;top:0;left:0;right:0;z-index:1000002;display:flex;align-items:center;justify-content:space-between;padding:12px 16px}
 .lb-cnt{padding:5px 14px;border-radius:20px;background:rgba(255,255,255,.12);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:.75rem;letter-spacing:2px;font-family:'Ubuntu',sans-serif}
@@ -728,7 +1107,6 @@ const css = `
 .lb-th:hover{opacity:.75}
 .lb-th.on{border-color:#4db8a8;opacity:1}
 
-/* Order Modal */
 .om-bg{position:fixed;inset:0;z-index:99999;background:rgba(10,28,25,.45);backdrop-filter:blur(14px);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
 .om-bg::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.05;background-image:radial-gradient(circle at 1px 1px,rgba(13,122,104,1) 1px,transparent 0);background-size:26px 26px;z-index:0}
 .om-orb{position:fixed;pointer-events:none;border-radius:50%;z-index:0}
@@ -794,7 +1172,6 @@ const css = `
 .om-wa:hover{box-shadow:0 8px 24px rgba(37,211,102,.4);transform:translateY(-1px)}
 .ok-bar{position:absolute;bottom:0;left:0;height:3px;background:linear-gradient(90deg,#4db8a8,#0d7a68);animation:barShrink 3s linear forwards}
 
-/* Cart Checkout Summary Modal */
 .cart-summary-modal .om-pn{max-width:600px}
 .cart-summary-items{max-height:300px;overflow-y:auto;margin:4px 0 8px}
 .cart-summary-items::-webkit-scrollbar{width:4px}
@@ -807,13 +1184,11 @@ const css = `
 .dark .cart-summary-item .qty{color:rgba(255,255,255,.4)}
 .cart-summary-item .price{font-weight:600;white-space:nowrap}
 
-/* Dark mode fixes for cart images - LOGO visibility */
 .dark .cart-item-img {
   background: rgba(255,255,255,0.08);
   filter: brightness(1.1) contrast(1.1);
 }
 
-/* Fix product image backgrounds in dark mode */
 .dark .c-iz {
   background: #0a1a18;
 }
@@ -822,7 +1197,6 @@ const css = `
   opacity: 0.4;
 }
 
-/* Dark mode fixes for order modal text colors */
 .dark .om-tl {
   color: #e5f5f2;
 }
@@ -839,7 +1213,6 @@ const css = `
   color: #e5f5f2;
 }
 
-/* Fix floating cart tooltip in dark mode */
 .dark .floating-cart-btn .cart-tooltip {
   background: rgba(0,0,0,0.9);
   border-color: rgba(255,255,255,0.15);
@@ -849,18 +1222,18 @@ const css = `
   border-left-color: rgba(0,0,0,0.9);
 }
 
-/* Mobile Styles */
+/* Mobile Styles - Updated for footer */
 @media(max-width:640px){
   .grd{grid-template-columns:1fr}
   .hdr{padding:50px 16px 42px}
-  .go-top{width:40px;height:40px;bottom:max(env(safe-area-inset-bottom,0px)+88px,88px);right:14px}
   
-  /* Smaller cart button on mobile */
+  /* Mobile button positioning - above footer */
   .floating-cart-btn {
-    bottom: 100px;
+    bottom: 130px;
     right: 16px;
     width: 48px;
     height: 48px;
+    z-index: 9999;
   }
   .floating-cart-btn .cart-icon {
     font-size: 20px;
@@ -874,6 +1247,17 @@ const css = `
   }
   .floating-cart-btn .cart-tooltip {
     display: none;
+  }
+  
+  .scroll-top-btn {
+    bottom: 75px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    z-index: 9998;
+  }
+  .scroll-top-btn svg {
+    font-size: 16px;
   }
   
   .om-wr{padding:12px 8px 32px}
@@ -891,6 +1275,61 @@ const css = `
   .cart-actions .cart-clear {
     margin-top: 8px;
   }
+  
+  .carousel-arrow {
+    width: 28px;
+    height: 28px;
+    opacity: 0.5;
+  }
+  .carousel-dots {
+    bottom: 4px;
+    padding: 3px 6px;
+  }
+  .carousel-dot {
+    width: 5px;
+    height: 5px;
+  }
+  .carousel-dot.active {
+    width: 12px;
+  }
+}
+
+/* Extra small devices */
+@media(max-width:380px){
+  .floating-cart-btn {
+    bottom: 120px;
+    right: 12px;
+    width: 44px;
+    height: 44px;
+  }
+  .floating-cart-btn .cart-icon {
+    font-size: 18px;
+  }
+  .scroll-top-btn {
+    bottom: 70px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+  }
+  .scroll-top-btn svg {
+    font-size: 14px;
+  }
+}
+
+/* Tablet styles */
+@media(min-width:641px) and (max-width:1024px){
+  .floating-cart-btn {
+    bottom: 130px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+  }
+  .scroll-top-btn {
+    bottom: 68px;
+    right: 24px;
+    width: 48px;
+    height: 48px;
+  }
 }
 `;
 
@@ -900,7 +1339,6 @@ export default function Omellets() {
   const [entries, setEntries] = React.useState<Product[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [search, setSearch] = React.useState("");
-  const [imgIdx, setImgIdx] = React.useState<Record<string, number>>({});
   
   // 🛒 Cart state
   const [cartItems, setCartItems] = React.useState<CartItem[]>([]);
@@ -929,6 +1367,11 @@ export default function Omellets() {
 
   const total = form.price * form.quantity;
   const list = entries.filter(e => Object.values(e).some(v => String(v).toLowerCase().includes(search.toLowerCase())));
+
+  // ═══ CART HANDLER - NO SCROLL ═══
+  const handleCartClick = () => {
+    setCartOpen(true); // Just open cart, no scroll
+  };
 
   // Load cart from localStorage on mount
   React.useEffect(() => {
@@ -987,7 +1430,7 @@ export default function Omellets() {
     setCartSummaryOpen(true);
   };
 
-  // Confirm cart checkout - sends to WhatsApp with details in header
+  // Confirm cart checkout
   const confirmCartCheckout = () => {
     if (cartItems.length === 0) return;
     const note = (document.getElementById('cart-note') as HTMLTextAreaElement)?.value || '';
@@ -996,7 +1439,6 @@ export default function Omellets() {
     const tm = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
     const id = mkId();
     
-    // Get details from the first item (assuming all items have similar details)
     const firstItem = cartItems[0];
     const details = [];
     
@@ -1009,7 +1451,6 @@ export default function Omellets() {
     
     const detailsText = details.length > 0 ? `\n${details.map(d => `  ${d}`).join('\n')}` : '';
     
-    // Simple items list - only name, quantity, price
     let items = cartItems.map((item, index) => {
       return `${index + 1}. ${item.Name} x ${item.cartQuantity}\n  ${(item["Final Selling Price"] * item.cartQuantity).toLocaleString()} KIP`;
     }).join('\n');
@@ -1018,7 +1459,6 @@ export default function Omellets() {
     
     window.open(`https://wa.me/${WA_NUM}?text=${encodeURIComponent(msg)}`, "_blank");
     setCartSummaryOpen(false);
-    // Show the "Order Sent" animation
     pendingRef.current = true; pendingIdRef.current = id; hiddenRef.current = false;
     setTimeout(() => {
       if (pendingRef.current && !hiddenRef.current) {
@@ -1037,7 +1477,11 @@ export default function Omellets() {
     return () => { document.body.style.overflow = ""; };
   }, [orderOn, lbOn, okOn, cartOpen, cartSummaryOpen]);
 
-  React.useEffect(() => { const h = () => setTopOn(window.scrollY > 320); window.addEventListener("scroll", h, { passive: true }); return () => window.removeEventListener("scroll", h); }, []);
+  React.useEffect(() => { 
+    const h = () => setTopOn(window.scrollY > 320); 
+    window.addEventListener("scroll", h, { passive: true }); 
+    return () => window.removeEventListener("scroll", h); 
+  }, []);
 
   React.useEffect(() => {
     const onVis = () => {
@@ -1064,18 +1508,37 @@ export default function Omellets() {
   }, [lbOn, lbImgs.length]);
 
   React.useEffect(() => {
-    fetch(`${API_URL}?t=${Date.now()}`).then(r => r.json()).then(d => {
-      if (d.success && Array.isArray(d.products)) setEntries(d.products.map((p: any) => ({
-        ID: p.ID || "N/A", Name: p.Name || "N/A", Type: p.Type || "-", Size: p.Size || "-",
-        "Qty Bought": Number(p["Qty Bought"]) || 0, "Final Selling Price": Number(p["Final Selling Price"]) || 0,
-        Status: p.Status || "", Notes: p.Notes || "", Image: p.Image || "", Phone: p.Phone || "", Logo: p.logo || "",
-        Images: p.Images || {}, Rating: Math.min(5, Math.max(0, Number(p.Rating) || 4)),
-        "Aircraft Type": p["Aircraft Type"] || "", "Material & Composition": p["Material & Composition"] || "",
-        "Assembly Required": p["Assembly Required"] || "", "Age Group": p["Age Group"] || "",
-        Origin: p.Origin || "", "Toy Type": p["Toy Type"] || "", "Gender Applicability": p["Gender Applicability"] || "",
-      })));
-      setLoading(false);
-    }).catch(() => setLoading(false));
+    fetch(`${API_URL}?t=${Date.now()}`)
+      .then(r => r.json())
+      .then(d => {
+        console.log('API Response:', d);
+        if (d.success && Array.isArray(d.products)) {
+          setEntries(d.products.map((p: any) => ({
+            ID: p.ID || "N/A", 
+            Name: p.Name || "N/A", 
+            Type: p.Type || "-", 
+            Size: p.Size || "-",
+            "Qty Bought": Number(p["Qty Bought"]) || 0, 
+            "Final Selling Price": Number(p["Final Selling Price"]) || 0,
+            Status: p.Status || "", 
+            Notes: p.Notes || "", 
+            Image: p.Image || "", 
+            Phone: p.Phone || "", 
+            Logo: p.logo || "",
+            Images: p.Images || {}, 
+            Rating: Math.min(5, Math.max(0, Number(p.Rating) || 4)),
+            "Aircraft Type": p["Aircraft Type"] || "", 
+            "Material & Composition": p["Material & Composition"] || "",
+            "Assembly Required": p["Assembly Required"] || "", 
+            "Age Group": p["Age Group"] || "",
+            Origin: p.Origin || "", 
+            "Toy Type": p["Toy Type"] || "", 
+            "Gender Applicability": p["Gender Applicability"] || "",
+          })));
+        }
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, []);
 
   const upd = (p: Partial<OrderForm>) => { setForm(f => ({ ...f, ...p })); };
@@ -1092,7 +1555,6 @@ export default function Omellets() {
     const msg = `Order | ${dt} ${tm}\nID: ${id}\n\n------------------------------\nPRODUCT\n------------------------------\nID: OMS-00-00-${form.productId}\nName: ${form.productName}\nType: ${prod.Type}\nSize: ${prod.Size}\n${extra ? extra + "\n" : ""}Unit: ${form.price.toLocaleString()} KIP\nQty: ${form.quantity}\nTotal: ${total.toLocaleString()} KIP${form.notes ? `\n\nNotes: ${form.notes}` : ""}\n\nPayment: PENDING`;
     window.open(`https://wa.me/${WA_NUM}?text=${encodeURIComponent(msg)}`, "_blank");
     togOrd();
-    // Show the "Order Sent" animation
     pendingRef.current = true; pendingIdRef.current = id; hiddenRef.current = false;
     setTimeout(() => {
       if (pendingRef.current && !hiddenRef.current) {
@@ -1101,9 +1563,6 @@ export default function Omellets() {
       }
     }, 1200);
   };
-
-  const ni = (id: string, n: number) => setImgIdx(p => ({ ...p, [id]: ((p[id] ?? 0) + 1) % n }));
-  const pi = (id: string, n: number) => setImgIdx(p => ({ ...p, [id]: ((p[id] ?? 0) - 1 + n) % n }));
 
   return (
     <DefaultLayout>
@@ -1118,10 +1577,10 @@ export default function Omellets() {
           <div className="pill"><span className="pill-dot" /> ✈ Collection Store</div>
         </div>
         
-        {/* 🛒 Floating Cart Button */}
+        {/* 🛒 Floating Cart Button - NO SCROLL */}
         <button 
           className={`floating-cart-btn${cartCount > 0 ? ' has-items' : ''}`}
-          onClick={() => setCartOpen(true)}
+          onClick={handleCartClick}
           aria-label="Open cart"
         >
           <AiOutlineShoppingCart className="cart-icon" />
@@ -1130,6 +1589,22 @@ export default function Omellets() {
             {cartCount > 0 ? `${cartCount} item${cartCount > 1 ? 's' : ''} in favorites` : 'Your favorites'}
           </span>
         </button>
+
+        {/* ═══ SCROLL TO TOP BUTTON (Below Cart) ═══ */}
+        <motion.button 
+          className={`scroll-top-btn${topOn ? ' visible' : ''}`}
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          aria-label="Scroll to top"
+          initial={{ opacity: 0, y: 20, scale: 0.8 }}
+          animate={{ 
+            opacity: topOn ? 1 : 0, 
+            y: topOn ? 0 : 20,
+            scale: topOn ? 1 : 0.8
+          }}
+          transition={{ duration: 0.3, ease: [0.34, 1.56, 0.64, 1] }}
+        >
+          <AiOutlineArrowUp size={20} />
+        </motion.button>
 
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 20px" }}>
           <div className="sw"><div className="si"><div className="sg"><FiSearch size={17} className="s-ico" /><input placeholder={t("search") || "Search airplane models..."} value={search} onChange={e => setSearch(e.target.value)} />{search && <button className="s-clr" onClick={() => setSearch("")}><IoClose size={13} /></button>}</div></div></div>
@@ -1140,16 +1615,21 @@ export default function Omellets() {
               <p className="cnt">{list.length} model{list.length !== 1 ? "s" : ""} found</p>
               <div className="grd">
                 {list.map((e, i) => {
-                  const imgs = getImgs(e); const ci = imgIdx[e.ID] ?? 0; const inCart = isInCart(e.ID);
+                  const imgs = getImgs(e); 
+                  const inCart = isInCart(e.ID);
+                  
                   return (
                     <motion.div key={e.ID} className="crd" style={{ animationDelay: `${i * .05}s` }} whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 280, damping: 20 }}>
                       <div className="c-iz">
-                        <div className="c-bl" style={{ backgroundImage: `url(${imgs[ci]})` }} />
-                        <div className="c-dm" />
-                        <LzImg src={imgs[ci]} alt={e.Name} className="c-mi" style={{ position: "relative", zIndex: 2 }} onClick={(ev) => { ev.stopPropagation(); openLb(imgs, ci); }} />
+                        <ProductImageCarousel 
+                          images={imgs} 
+                          productId={e.ID} 
+                          alt={e.Name}
+                          onImageClick={() => openLb(imgs, 0)}
+                        />
+                        
                         {e.Status && <div className="c-bg">{e.Status}</div>}
                         
-                        {/* ❤️ Heart Button */}
                         <button 
                           className={`fav-btn${inCart ? " active" : ""}`}
                           onClick={(ev) => { 
@@ -1164,14 +1644,6 @@ export default function Omellets() {
                         >
                           {inCart ? <FaHeart size={15} /> : <FaRegHeart size={15} />}
                         </button>
-
-                        {imgs.length > 1 && (
-                          <>
-                            <button className="c-nv c-nv-l" onClick={ev => { ev.stopPropagation(); pi(e.ID, imgs.length); }}><AiOutlineLeft size={13} /></button>
-                            <button className="c-nv c-nv-r" onClick={ev => { ev.stopPropagation(); ni(e.ID, imgs.length); }}><AiOutlineRight size={13} /></button>
-                            <div className="c-ds">{imgs.slice(0, 8).map((_, j) => <button key={j} className={`c-dt${j === ci ? " on" : ""}`} onClick={ev => { ev.stopPropagation(); setImgIdx(p => ({ ...p, [e.ID]: j })); }} />)}</div>
-                          </>
-                        )}
                       </div>
                       <div className="c-bd">
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8, flexWrap: "wrap" }}>
@@ -1196,7 +1668,7 @@ export default function Omellets() {
         </div>
       </div>
 
-      {/* 🛒 CART SIDEBAR - Shows LOGO only */}
+      {/* 🛒 CART SIDEBAR */}
       <AnimatePresence>
         {cartOpen && (
           <>
@@ -1227,7 +1699,6 @@ export default function Omellets() {
                   </div>
                 ) : (
                   cartItems.map(item => {
-                    // Use LOGO only in cart
                     const logoUrl = getLogo(item);
                     return (
                       <div key={item.ID} className="cart-item">
@@ -1283,8 +1754,6 @@ export default function Omellets() {
           onConfirm={confirmCartCheckout}
         />
       </AnimatePresence>
-
-      <AnimatePresence>{topOn && <motion.button className="go-top" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} initial={{ opacity: 0, y: 16, scale: .8 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 16, scale: .8 }}><AiOutlineArrowUp size={18} /></motion.button>}</AnimatePresence>
 
       {/* ═══ LIGHTBOX ═══ */}
       <AnimatePresence>

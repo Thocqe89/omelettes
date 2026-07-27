@@ -1,12 +1,13 @@
+// App.js
 import { Route, Routes } from "react-router-dom";
 import { I18nextProvider } from "react-i18next";
 
 import i18n from "./i18n";
+// REMOVE: import { TranslationProvider } from "react-auto-google-translate";
 import ProductsPage from "./pages/products";
 import Logistics from "./components/logistics";
 import DataCheck from "./components/data_check";
 import Logistics_status from "./components/logistics_status";
-
 
 import "aos/dist/aos.css";
 import AboutPage from "@/pages/about";
@@ -22,33 +23,24 @@ import LoginPage from "./components/login";
 import OMSDashboard from "./components/test";
 import OMS_Help_Request from "./components/customers";
 import Loading from "./components/loading";
-
+import HSKApp from "./components/oms-tirp-tracker";
 
 function App() {
   return (
+    // REMOVE: <TranslationProvider originalLang="en">
     <I18nextProvider i18n={i18n}>
       <Routes>
         <Route element={<IndexPage />} path="/" />
-        {/* <Route element={<ProductsPage />} path="/product" /> */}
-        <Route element={<Omellets />} path="/omelette's" />
-        {/* <Route element={<ThreeLeaves />} path="/three_leaves" /> */}
+        <Route element={<Omellets />} path="/oms-store" />
         <Route element={<AboutPage />} path="/about" />
         <Route element={<Logistics />} path="/logistics" />
-        {/* <Route element={<Bank />} path="/BlankPage" />
-        <Route element={<OMS_Trip_Tracker />} path="/OMS-T" /> */}
-        <Route element={<DataCheck />} path="/dataCheck" />
-        {/* <Route element={<Logistics_status />} path="/logistics_status" /> */}
-        <Route element={< OMS_Help_Request />} path="/help" />
-        <Route element={<  LoginPage />} path="/OMS_Login" />
-        {/* <Route element={<OMSDashboard />} path="/OMS_Dashboard" />
-        <Route element={<Dashboard />} path="/oms-dashboard" /> */}
-          <Route element={<Loading />} path="/omloooding" /> 
-
-
-
-
+        <Route element={<HSKApp />} path="/OMS_chinese" />
+        <Route element={<OMS_Help_Request />} path="/help" />
+        <Route element={<LoginPage />} path="/OMS_Login" />
+        <Route element={<Loading />} path="/OMS-Loading" />
       </Routes>
     </I18nextProvider>
+    // REMOVE: </TranslationProvider>
   );
 }
 

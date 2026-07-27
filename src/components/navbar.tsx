@@ -9,7 +9,8 @@ import {
   AiOutlineInfoCircle, 
   AiOutlineClose, 
   AiOutlineMenu,
-  AiOutlineIdcard
+  AiOutlineIdcard,
+  AiFillSignature
 } from "react-icons/ai";
 import { useTranslation } from "react-i18next";
 import {
@@ -43,7 +44,7 @@ export const Navbar = () => {
   const [activeNav, setActiveNav] = useState("");
   const [storeWiggle, setStoreWiggle] = useState(false);
 
-  const isOnStorePage = location.pathname.startsWith("/Omelette's");
+  const isOnStorePage = location.pathname.startsWith("/oms-store");
 
   useEffect(() => {
     setLanguage(i18n.language);
@@ -55,7 +56,7 @@ export const Navbar = () => {
     const path = location.pathname;
     if (path === "/") setActiveNav("home");
     else if (path.startsWith("/about")) setActiveNav("about_us");
-    else if (path.startsWith("/Omelette's")) setActiveNav("store");
+    else if (path.startsWith("/oms-store")) setActiveNav("store");
     else if (path.startsWith("/help")) setActiveNav("help");
     else setActiveNav("");
 
@@ -72,7 +73,7 @@ export const Navbar = () => {
     const path = location.pathname;
     if (path === "/") setActiveNav("home");
     else if (path.startsWith("/about")) setActiveNav("about_us");
-    else if (path.startsWith("/Omelette's")) {
+    else if (path.startsWith("/oms-store")) {
       setActiveNav("store");
       setStoreWiggle(false);
       requestAnimationFrame(() => {
@@ -111,7 +112,7 @@ export const Navbar = () => {
     { href: "/", label: "home", icon: <AiOutlineHome /> },
     { href: "/about", label: "about_us", icon: <AiOutlineInfoCircle /> },
     { href: "/help", label: "help", icon: <AiOutlineIdcard /> },
-    { href: "/Omelette's", label: "store", icon: <AiOutlineShopping /> },
+    { href: "/oms-store", label: "store", icon: <AiOutlineShopping /> },
   ];
 
   const tabletNavItems = navItems.slice(0, 3);
@@ -234,24 +235,35 @@ export const Navbar = () => {
           height="64px"
         >
           {/* Left: Brand Logo */}
-          <NavbarContent justify="start" className="p-0 m-0">
-            <NavbarBrand className="gap-3 m-0 p-0">
-              <Image
-                isBlurred
-                alt="Omelette's logo"
-                src="https://res.cloudinary.com/deahgtn57/image/upload/v1751616678/omelett%27s/public/image/ChatGPT_Image_Jun_29_2025_02_29_59_PM_vmvihs.png"
-                width={50}
-                height={50}
-                className="rounded-lg shadow-sm"
-              />
-              <div className="hidden md:block">
-                <h1 className="text-lg lg:text-xl font-bold text-[#0d7a68]">
-                  Omelette<span className="text-[#E43636]">'</span>s
-                </h1>
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('oms')}</span>
-              </div>
-            </NavbarBrand>
-          </NavbarContent>
+        {/* Left: Brand Logo */}
+<NavbarContent justify="start" className="p-0 m-0">
+  <NavbarBrand className="gap-3 m-0 p-0">
+    {/* Light mode logo */}
+    <Image
+      isBlurred
+      alt="Omelette's logo"
+      src="https://res.cloudinary.com/deahgtn57/image/upload/v1781425959/omelett%27s/public/logo/web-app%20logo/dark-2026.png"
+      width={50}
+      height={50}
+      className="rounded-lg shadow-sm block dark:hidden"
+    />
+    {/* Dark mode logo */}
+    <Image
+      isBlurred
+      alt="Omelette's logo"
+      src="https://res.cloudinary.com/deahgtn57/image/upload/v1781425952/omelett%27s/public/logo/web-app%20logo/white-2026.png"
+      width={50}
+      height={50}
+      className="rounded-lg shadow-sm hidden dark:block"
+    />
+    <div className="hidden md:block">
+      <h1 className="text-lg lg:text-xl font-bold text-[#0d7a68]">
+        Omelette<span className="text-[#E43636]">'</span>s
+      </h1>
+      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('oms')}</span>
+    </div>
+  </NavbarBrand>
+</NavbarContent>
 
           {/* ====== TABLET VIEW (768px-1024px) ====== */}
           <NavbarContent className="hidden md:flex lg:hidden gap-1" justify="center">
@@ -418,12 +430,22 @@ export const Navbar = () => {
                   selectionMode="single" selectedKeys={[currentLanguage.code]}
                   onAction={(key) => handleLanguageChange(key as string)}
                 >
-                  {languages.map((lang) => (
-                    <DropdownItem key={lang.code} className={clsx("flex items-center gap-3", language === lang.code && "bg-[#0d7a68]/10 text-[#0d7a68]")}>
-                      <Image alt={`${lang.name} Flag`} className="w-5 h-5 rounded" src={lang.flag} width={20} height={20} />
-                      <span>{lang.name}</span>
-                    </DropdownItem>
-                  ))}
+                 {languages.map((lang) => (
+  <DropdownItem
+    key={lang.code}
+    className={clsx("flex items-center gap-3", language === lang.code && "bg-[#0d7a68]/10 text-[#0d7a68]")}
+  >
+    <Image
+      alt={`${lang.name} Flag`}
+      className="w-5 h-5 rounded"
+      src={lang.flag}
+      width={20}
+      height={20}
+      // isBlurred removed here
+    />
+    <span>{lang.name}</span>
+  </DropdownItem>
+))}
                 </DropdownMenu>
               </Dropdown>
             </NavbarItem>
@@ -530,6 +552,15 @@ export const Navbar = () => {
 
               {/* Footer Info */}
               <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                   <Button
+                as={Link} to="/OMS_chinese"
+                className="w-full bg-[#2a2b2b] hover:bg-[#0b6a5a] text-white font-medium py-4 mb-4"
+                startContent={<AiFillSignature size={20} />}  
+                onClick={() => { setIsMenuOpen(false); window.scrollTo(0, 0); }}
+              >
+                {t("Learning Chinese")}
+              
+              </Button>
                 <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
                   Copyright © 2023-2026 Omelette<span className="text-[#E43636]">'</span>s. All rights reserved.
                 </p>

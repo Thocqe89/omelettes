@@ -151,7 +151,7 @@ export const MobileFooter = () => {
   useEffect(() => {
     const path = window.location.pathname;
     if (path === "/")                        setActiveTab("home");
-    else if (path.startsWith("/Omelette's")) setActiveTab("store");
+    else if (path.startsWith("/oms-store")) setActiveTab("store");
     else if (path.startsWith("/about"))      setActiveTab("about_us");
     else if (path.startsWith("/help"))       setActiveTab("help");
     else                                     setActiveTab("");
@@ -159,7 +159,7 @@ export const MobileFooter = () => {
 
   const nav = [
     { tab: "home",     href: "/",            icon: <AiOutlineHome size={22} />,       label: t("home")     },
-    { tab: "store",    href: "/Omelette's",  icon: <AiOutlineShopping size={22} />,   label: t("store")    },
+    { tab: "store",    href: "/oms-store",  icon: <AiOutlineShopping size={22} />,   label: t("store")    },
     { tab: "about_us", href: "/about",       icon: <AiOutlineInfoCircle size={22} />, label: t("about_us") },
     { tab: "help",     href: "/help",        icon: <AiOutlineUser size={22} />,       label: t("help")     },
   ];

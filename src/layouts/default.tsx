@@ -513,11 +513,11 @@ export default function DefaultLayout({
             <div className="footer-col">
               <h4>Shop</h4>
               <ul className="footer-links">
-                <li><Link href="/Omelette's">Collection</Link></li>
-                <li><Link href="/Omelette's">New Arrivals</Link></li>
-                <li><Link href="/Omelette's">Best Sellers</Link></li>
-                <li><Link href="/Omelette's">Limited Edition</Link></li>
-                <li><Link href="/Omelette's">Gift Sets</Link></li>
+                <li><Link href="/oms-store">Collection</Link></li>
+                <li><Link href="/oms-store">New Arrivals</Link></li>
+                <li><Link href="/oms-store">Best Sellers</Link></li>
+                <li><Link href="/oms-store">Limited Edition</Link></li>
+                <li><Link href="/oms-store">Gift Sets</Link></li>
               </ul>
             </div>
 

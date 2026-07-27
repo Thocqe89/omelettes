@@ -523,7 +523,7 @@ export default function AboutPage() {
               </motion.p>
 
               <motion.div {...ani(0.2)}>
-                <Link to="/Omelette's">
+                <Link to="/oms-store">
                   <button className="ab-btn">
                     <FaPlaneDeparture style={{ fontSize: 15 }} />
                     {t("exploreButton") || "Explore Collection"}

@@ -10,15 +10,15 @@ import {
   AiOutlineLeft, 
   AiOutlineGift, 
   AiOutlineCheck, 
-  AiOutlineStar,
   AiOutlineSound,
   AiOutlineMuted,
   AiOutlineHeart,
   AiFillHeart,
   AiOutlineShareAlt,
-  AiOutlineFullscreen,
-  AiOutlineFullscreenExit
+  AiOutlinePause,
+  AiOutlineDownload,
 } from "react-icons/ai";
+import { FaPlay } from "react-icons/fa6";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaHeart } from "react-icons/fa";
@@ -109,7 +109,7 @@ const styles = `
 .hro-fade{position:absolute;bottom:0;left:0;right:0;height:120px;background:linear-gradient(to bottom,transparent,var(--bg));pointer-events:none}
 
 /* ═══ TIKTOK VIDEO CAROUSEL ═══ */
-.tiktok-carousel{position:relative;border-radius:20px;overflow:hidden;background:#000;margin:0 auto;box-shadow:0 20px 60px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.08)}
+.tiktok-carousel{position:relative;border-radius:20px;overflow:hidden;background:#000;margin:0 auto;box-shadow:0 20px 60px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.08);aspect-ratio:9/16;max-width:320px;width:100%}
 .tiktok-carousel:fullscreen {
   max-width: 100vw !important;
   max-height: 100vh !important;
@@ -126,63 +126,174 @@ const styles = `
   object-fit: contain !important;
 }
 .tiktok-video-wrapper{position:relative;width:100%;height:100%;overflow:hidden}
-.tiktok-video{width:100%;height:100%;object-fit:cover;display:block}
-.tiktok-overlay{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.6) 100%)}
-.tiktok-gradient-top{position:absolute;top:0;left:0;right:0;height:60%;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.3) 0%,transparent 100%)}
-.tiktok-progress{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,.2);z-index:15}
+.tiktok-video{width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:9/16}
+.tiktok-overlay{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.7) 100%)}
+.tiktok-gradient-top{position:absolute;top:0;left:0;right:0;height:50%;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.2) 0%,transparent 100%)}
+.tiktok-progress{position:absolute;bottom:64px;left:0;right:0;height:3px;background:rgba(255,255,255,.2);z-index:15}
 .tiktok-progress-bar{height:100%;background:linear-gradient(90deg,var(--p),var(--a));transition:width .1s linear;border-radius:0 2px 2px 0}
-.tiktok-dots{position:absolute;top:16px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:20;pointer-events:auto}
+.tiktok-dots{position:absolute;top:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:20;pointer-events:auto;flex-wrap:wrap;justify-content:center;max-width:80%}
 .tiktok-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.3);border:none;padding:0;cursor:pointer;transition:all .3s}
-.tiktok-dot.active{background:#fff;width:24px;border-radius:3px}
+.tiktok-dot.active{background:#fff;width:20px;border-radius:3px}
 
-/* TikTok Controls */
-.tiktok-controls-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:20;pointer-events:auto;display:flex;gap:20px;align-items:center}
-.tiktok-control-btn{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.15);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;cursor:pointer;transition:all .3s}
-.tiktok-control-btn:hover{background:rgba(255,255,255,.3);transform:scale(1.08)}
+/* ===== iOS FROSTED GLASS CONTROLS - MATCHING FOOTER ===== */
+.tiktok-controls-bottom {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  z-index: 20;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 2px;
+  padding: 6px 8px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(50px) saturate(2.2) brightness(1.15);
+  -webkit-backdrop-filter: blur(50px) saturate(2.2) brightness(1.15);
+  border: 0.5px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    0 1px 3px rgba(0,0,0,.04),
+    0 8px 24px rgba(0,0,0,.08),
+    0 0 0 0.5px rgba(0,0,0,.03),
+    0 1px 0 rgba(255,255,255,.85) inset;
+}
 
-/* TikTok Bottom Controls */
-.tiktok-bottom-controls{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:12px;z-index:20;pointer-events:auto}
-.tiktok-bottom-btn{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.12);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;cursor:pointer;transition:all .25s}
-.tiktok-bottom-btn:hover{background:rgba(255,255,255,.25);transform:scale(1.05)}
-.tiktok-bottom-btn.sound-btn{background:rgba(255,255,255,.08)}
-.tiktok-bottom-btn.sound-btn.on{background:rgba(13,122,104,.3);border-color:rgba(13,122,104,.4)}
-.tiktok-bottom-btn.fullscreen-btn{background:rgba(255,255,255,.08)}
-.tiktok-bottom-btn.fullscreen-btn.on{background:rgba(13,122,104,.3);border-color:rgba(13,122,104,.4)}
+.tiktok-controls-bottom::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 12%; right: 12%; height: 0.5px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.9) 50%, transparent);
+  border-radius: 24px;
+  pointer-events: none;
+}
 
-/* TikTok Navigation Arrows */
-.tiktok-nav-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:25;pointer-events:auto;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;cursor:pointer;transition:all .3s}
-.tiktok-nav-arrow:hover{background:rgba(0,0,0,.8);transform:translateY(-50%) scale(1.08)}
-.tiktok-nav-arrow.prev{left:12px}
-.tiktok-nav-arrow.next{right:12px}
-.tiktok-nav-arrow:disabled{opacity:0.3;cursor:not-allowed;transform:translateY(-50%) scale(0.95)}
+.tiktok-controls-bottom::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.05) 100%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.dark .tiktok-controls-bottom {
+  background: rgba(12, 22, 19, 0.55);
+  backdrop-filter: blur(50px) saturate(2) brightness(0.85);
+  -webkit-backdrop-filter: blur(50px) saturate(2) brightness(0.85);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 1px 3px rgba(0,0,0,.15),
+    0 8px 28px rgba(0,0,0,.35),
+    0 0 0 0.5px rgba(255,255,255,.03),
+    0 1px 0 rgba(255,255,255,.04) inset;
+}
+.dark .tiktok-controls-bottom::before {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.06) 50%, transparent);
+}
+.dark .tiktok-controls-bottom::after {
+  background: linear-gradient(180deg, rgba(255,255,255,.04) 0%, transparent 100%);
+}
+
+/* ── Control Items ── */
+.tiktok-control-item {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 3px 4px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: transform 0.18s cubic-bezier(.34,1.56,.64,1);
+  -webkit-tap-highlight-color: transparent;
+  background: transparent;
+  border: none;
+  color: rgba(0, 0, 0, 0.4);
+  min-width: 32px;
+}
+.tiktok-control-item:active { transform: scale(0.9); }
+.tiktok-control-item.active {
+  background: rgba(13, 122, 104, 0.1);
+}
+.dark .tiktok-control-item.active {
+  background: rgba(13, 122, 104, 0.22);
+}
+
+.tiktok-control-item .icon-wrap {
+  width: 32px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 10px;
+  transition: background 0.2s, transform 0.22s cubic-bezier(.34,1.56,.64,1);
+}
+.tiktok-control-item.active .icon-wrap {
+  background: rgba(13, 122, 104, .12);
+  transform: translateY(-1px) scale(1.05);
+}
+.dark .tiktok-control-item.active .icon-wrap {
+  background: rgba(77, 184, 168, .18);
+}
+
+.tiktok-control-item .icon {
+  display: flex;
+  transition: color 0.2s;
+  color: rgba(0, 0, 0, 0.4);
+  font-size: 16px;
+}
+.tiktok-control-item.active .icon { color: #0d7a68; }
+.dark .tiktok-control-item .icon { color: rgba(255, 255, 255, 0.4); }
+.dark .tiktok-control-item.active .icon { color: #4db8a8; }
+
+.tiktok-control-item .label {
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.35);
+  transition: color 0.2s, font-weight 0.15s;
+}
+.tiktok-control-item.active .label {
+  color: #0d7a68;
+  font-weight: 700;
+}
+.dark .tiktok-control-item .label { color: rgba(255, 255, 255, 0.3); }
+.dark .tiktok-control-item.active .label { color: #4db8a8; font-weight: 700; }
+
+/* Play button slightly larger */
+.tiktok-play-btn .icon-wrap { width: 36px; height: 30px; }
+.tiktok-play-btn .icon { font-size: 18px; }
+
+/* Spacer */
+.tiktok-spacer { flex: 1; }
 
 /* TikTok Side Actions */
-.tiktok-actions{position:absolute;right:12px;bottom:100px;display:flex;flex-direction:column;gap:20px;z-index:20;pointer-events:auto}
-.tiktok-action-btn{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;color:#fff;cursor:pointer;transition:all .3s;padding:4px;position:relative}
-.tiktok-action-btn .icon-wrap{width:44px;height:44px;border-radius:50%;backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:20px;transition:all .3s;background:rgba(255,255,255,.08)}
-.tiktok-action-btn:hover .icon-wrap{background:rgba(255,255,255,.2);transform:scale(1.05)}
-.tiktok-action-btn .count{font-size:11px;font-weight:600;letter-spacing:.3px;color:rgba(255,255,255,.8)}
+.tiktok-actions{position:absolute;right:10px;bottom:100px;display:flex;flex-direction:column;gap:14px;z-index:20;pointer-events:auto}
+.tiktok-action-btn{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;color:#fff;cursor:pointer;transition:all .3s;padding:3px;position:relative}
+.tiktok-action-btn .icon-wrap{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.15);backdrop-filter:blur(16px) saturate(180%);-webkit-backdrop-filter:blur(16px) saturate(180%);border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .3s cubic-bezier(0.25, 0.46, 0.45, 0.94);box-shadow:0 4px 16px rgba(0,0,0,.15)}
+.tiktok-action-btn:hover .icon-wrap{background:rgba(255,255,255,.25);transform:scale(1.08)}
+.tiktok-action-btn:active .icon-wrap{transform:scale(0.92)}
+.tiktok-action-btn .count{font-size:10px;font-weight:600;letter-spacing:.3px;color:rgba(255,255,255,.8);text-shadow:0 2px 8px rgba(0,0,0,.3)}
 
-/* Like Button - Green Theme */
-.tiktok-action-btn.like-btn .icon-wrap{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:#fff}
-.tiktok-action-btn.like-btn:hover .icon-wrap{background:rgba(255,255,255,.2);transform:scale(1.08)}
-.tiktok-action-btn.like-btn .icon-wrap.liked{background:rgba(13,122,104,.9);border-color:#0d7a68;color:#fff;animation:heartBurst .4s ease}
+.tiktok-action-btn.like-btn .icon-wrap{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.1)}
+.tiktok-action-btn.like-btn:hover .icon-wrap{background:rgba(255,255,255,.2)}
+.tiktok-action-btn.like-btn .icon-wrap.liked{background:rgba(13,122,104,.85);border-color:#0d7a68;box-shadow:0 0 24px rgba(13,122,104,.3);animation:heartBurst .4s ease}
 .tiktok-action-btn.like-btn .icon-wrap.liked .like-icon{animation:heartBurst .4s ease;display:inline-block;color:#fff}
 .tiktok-action-btn.like-btn .count.liked{color:#0d7a68}
+
+.tiktok-action-btn.share-btn .icon-wrap{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.1)}
+.tiktok-action-btn.share-btn:hover .icon-wrap{background:rgba(255,255,255,.2)}
+.tiktok-share-tooltip{position:absolute;bottom:100%;right:50%;transform:translateX(50%);background:rgba(0,0,0,.8);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);color:#fff;padding:4px 12px;border-radius:8px;font-size:10px;white-space:nowrap;margin-bottom:8px;animation:slideUp .3s ease;border:1px solid rgba(255,255,255,.08)}
+
 .tiktok-action-btn .float-hearts{position:absolute;pointer-events:none}
-.tiktok-action-btn .float-heart{position:absolute;color:#0d7a68;font-size:20px;animation:floatHeart 1s ease-out forwards}
+.tiktok-action-btn .float-heart{position:absolute;color:#0d7a68;font-size:18px;animation:floatHeart 1s ease-out forwards}
 
-/* Share Button */
-.tiktok-action-btn.share-btn .icon-wrap{background:rgba(77,184,168,.12);border-color:rgba(77,184,168,.15);color:#4db8a8}
-.tiktok-action-btn.share-btn:hover .icon-wrap{background:rgba(77,184,168,.2);transform:scale(1.08)}
-.tiktok-share-tooltip{position:absolute;bottom:100%;right:50%;transform:translateX(50%);background:rgba(0,0,0,.85);color:#fff;padding:6px 14px;border-radius:10px;font-size:11px;white-space:nowrap;margin-bottom:10px;animation:slideUp .3s ease;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.08)}
-
-/* TikTok Info */
-.tiktok-info{position:absolute;bottom:76px;left:16px;right:64px;z-index:20;pointer-events:none}
-.tiktok-info-title{color:#fff;font-size:15px;font-weight:700;text-shadow:0 2px 8px rgba(0,0,0,.5);margin-bottom:4px;display:flex;align-items:center;gap:8px}
-.tiktok-info-title .verified{color:var(--p);font-size:12px}
-.tiktok-info-sub{color:rgba(255,255,255,.7);font-size:11px;text-shadow:0 2px 8px rgba(0,0,0,.5)}
-.tiktok-info-sub span{margin:0 6px}
+.tiktok-info{position:absolute;bottom:82px;left:14px;right:60px;z-index:20;pointer-events:none}
+.tiktok-info-title{color:#fff;font-size:13px;font-weight:700;text-shadow:0 2px 12px rgba(0,0,0,.6);margin-bottom:3px;display:flex;align-items:center;gap:6px}
+.tiktok-info-title .verified{color:var(--p);font-size:11px;text-shadow:0 2px 8px rgba(0,0,0,.3)}
+.tiktok-info-sub{color:rgba(255,255,255,.6);font-size:10px;text-shadow:0 2px 8px rgba(0,0,0,.4)}
+.tiktok-info-sub span{margin:0 4px}
 
 /* section */
 .sec{position:relative;padding:clamp(56px,9vw,88px) 0;background:var(--bg);transition:background .3s}
@@ -278,40 +389,175 @@ const styles = `
 .al-dot{height:5px;width:5px;border-radius:3px;background:var(--bd);cursor:pointer;border:none;padding:0;transition:all .25s}
 .al-dot.on{background:var(--p);width:22px}.dark .al-dot.on{background:var(--a)}
 
-/* ═══ PROMOTION - BEAUTIFUL GLASS STYLE ═══ */
-.promo-glass{background:var(--glass);border:1px solid var(--bd);backdrop-filter:blur(20px) saturate(1.3);box-shadow:var(--sh2);border-radius:24px;overflow:hidden;position:relative}
-.promo-glass::before{content:'';position:absolute;top:0;left:12%;right:12%;height:1px;background:linear-gradient(90deg,transparent,rgba(13,122,104,.1),transparent);pointer-events:none}
-.dark .promo-glass{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)}
-.promo-glass .promo-orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(80px);animation:orbPulse 6s ease-in-out infinite}
-.promo-glass .promo-orb-1{width:350px;height:350px;top:-80px;right:-80px;background:radial-gradient(circle,rgba(13,122,104,.08),transparent 70%)}
-.promo-glass .promo-orb-2{width:250px;height:250px;bottom:-60px;left:-60px;background:radial-gradient(circle,rgba(77,184,168,.06),transparent 70%);animation-delay:3s}
-.dark .promo-glass .promo-orb-1{background:radial-gradient(circle,rgba(13,122,104,.15),transparent 70%)}
-.dark .promo-glass .promo-orb-2{background:radial-gradient(circle,rgba(77,184,168,.1),transparent 70%)}
-.promo-glass .dots-bg{position:absolute;inset:0;pointer-events:none;opacity:.02;background-image:radial-gradient(circle,var(--tx) 1px,transparent 1px);background-size:40px 40px}
-.dark .promo-glass .dots-bg{opacity:.03}
-.promo-glass .scan-line{position:absolute;bottom:0;left:10%;right:10%;height:1px;background:var(--bd);overflow:hidden}
-.promo-glass .scan-line::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,var(--a),transparent);animation:scan 3s linear infinite}
+/* ═══ PROMO CARDS - NEW 4 CARD SECTION ═══ */
+.promo-cards-section {
+  margin-top: 40px;
+}
 
-.promo-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(13,122,104,.06);border:1px solid rgba(13,122,104,.12);padding:5px 14px;border-radius:100px;font-size:.55rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--p)}
-.dark .promo-badge{background:rgba(77,184,168,.08);border-color:rgba(77,184,168,.12);color:var(--a)}
-.promo-title{font-size:clamp(1.6rem,3.2vw,2.6rem);font-weight:800;line-height:1.05;letter-spacing:-.5px;color:var(--tx)}
-.promo-title .gold{color:var(--p)}
-.dark .promo-title .gold{color:var(--a)}
-.promo-desc{color:var(--tx3);font-size:.9rem;line-height:1.7}
-.promo-feature{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:12px;background:var(--cd);border:1px solid var(--bd);transition:all .3s}
-.promo-feature:hover{transform:translateX(6px);border-color:rgba(13,122,104,.2);box-shadow:var(--sh)}
-.promo-feature-icon{width:36px;height:36px;border-radius:50%;background:rgba(13,122,104,.06);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;color:var(--p)}
-.dark .promo-feature-icon{background:rgba(77,184,168,.12);color:var(--a)}
-.promo-feature-text{font-size:.85rem;font-weight:500;color:var(--tx2)}
-.promo-image-wrap{position:relative;display:flex;align-items:center;justify-content:center;padding:16px;cursor:pointer}
-.promo-image-wrap .click-hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.4);backdrop-filter:blur(8px);padding:3px 12px;border-radius:20px;color:rgba(255,255,255,.5);font-size:.55rem;border:1px solid rgba(255,255,255,.05);pointer-events:none}
-.promo-image{max-height:260px;width:auto;object-fit:contain;filter:drop-shadow(0 8px 24px rgba(13,122,104,.06));transition:transform .3s}
-.promo-image:hover{transform:scale(1.02)}
-.promo-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
-.promo-grid-item{display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:8px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04)}
-.promo-grid-item span{font-size:.65rem;color:rgba(255,255,255,.4);font-weight:400}
+.promo-cards-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
 
-/* ═══ PROMO MODAL ═══ */
+.promo-cards-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--tx);
+  margin-top: 4px;
+}
+
+.promo-cards-subtitle {
+  font-size: 0.85rem;
+  color: var(--tx3);
+  margin-top: 2px;
+}
+
+.promo-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.promo-card {
+  position: relative;
+  background: var(--cd);
+  border: 1px solid var(--bd);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  cursor: pointer;
+  box-shadow: var(--sh);
+}
+
+.promo-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--sh2);
+  border-color: rgba(13, 122, 104, 0.25);
+}
+
+.promo-card-image {
+  position: relative;
+  width: 100%;
+  padding-top: 75%;
+  overflow: hidden;
+  background: var(--bg3);
+}
+
+.promo-card-image img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.promo-card:hover .promo-card-image img {
+  transform: translate(-50%, -50%) scale(1.05);
+}
+
+.promo-card-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--p);
+  color: #fff;
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 16px;
+  z-index: 2;
+}
+
+.promo-card-icon {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  z-index: 2;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.promo-card-content {
+  padding: 14px 16px 16px;
+}
+
+.promo-card-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--tx);
+  margin-bottom: 1px;
+}
+
+.promo-card-subtitle {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--p);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.promo-card-desc {
+  font-size: 0.75rem;
+  color: var(--tx3);
+  line-height: 1.5;
+  margin-bottom: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.promo-card-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 14px;
+  border-radius: 16px;
+  border: 1.5px solid var(--p);
+  background: transparent;
+  color: var(--p);
+  font-size: 0.65rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s;
+  text-decoration: none;
+}
+
+.promo-card-btn:hover {
+  background: var(--p);
+  color: #fff;
+  transform: translateX(3px);
+}
+
+.promo-card-btn.download-btn {
+  background: var(--p);
+  color: #fff;
+  border-color: var(--p);
+}
+
+.promo-card-btn.download-btn:hover {
+  background: var(--p2);
+  transform: scale(1.02);
+  border-color: var(--p2);
+}
+
+/* ── Promo Modal ── */
 .promo-modal-backdrop{position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.85);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;padding:20px}
 .promo-modal-content{position:relative;max-width:900px;width:100%;max-height:90vh;overflow:auto}
 .promo-modal-content img{width:100%;height:auto;border-radius:16px;box-shadow:0 40px 80px rgba(0,0,0,.5)}
@@ -319,7 +565,59 @@ const styles = `
 .promo-modal-close:hover{color:#fff}
 .promo-modal-hint{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.5);backdrop-filter:blur(8px);padding:6px 18px;border-radius:20px;color:rgba(255,255,255,.4);font-size:.7rem;border:1px solid rgba(255,255,255,.05)}
 
-/* ═══ MOBILE SPACING FOR VIDEO ═══ */
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .promo-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .promo-cards-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .promo-cards-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .promo-cards-title {
+    font-size: 0.95rem;
+  }
+  .promo-cards-subtitle {
+    font-size: 0.75rem;
+  }
+  .promo-card-content {
+    padding: 10px 12px 12px;
+  }
+  .promo-card-title {
+    font-size: 0.75rem;
+  }
+  .promo-card-desc {
+    font-size: 0.65rem;
+    -webkit-line-clamp: 2;
+  }
+  .promo-card-btn {
+    font-size: 0.55rem;
+    padding: 4px 10px;
+  }
+  .promo-card-badge {
+    font-size: 0.4rem;
+    padding: 2px 8px;
+    top: 6px;
+    right: 6px;
+  }
+  .promo-card-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    top: 6px;
+    left: 6px;
+  }
+}
+
 .tiktok-section-wrapper {
   padding-bottom: clamp(80px, 15vh, 120px);
 }
@@ -334,26 +632,28 @@ const styles = `
   .al-dots{margin:0 18px}
   .al-plane{min-height:160px}
   .al-desc{max-width:100%}
-  .promo-image{max-height:200px}
-  .promo-modal-content{max-width:100%}
-  .promo-modal-close{top:-40px;font-size:22px}
-  .promo-grid{grid-template-columns:1fr 1fr}
   .tiktok-carousel{max-width:100% !important;border-radius:12px}
-  .tiktok-actions{right:8px;gap:16px}
-  .tiktok-action-btn .icon-wrap{width:38px;height:38px;font-size:16px}
-  .tiktok-info{left:12px;right:56px}
-  .tiktok-control-btn{width:44px;height:44px;font-size:18px}
-  .tiktok-nav-arrow{width:28px;height:28px;font-size:12px}
-  .tiktok-nav-arrow.prev{left:6px}
-  .tiktok-nav-arrow.next{right:6px}
-  
-  /* Extra bottom padding for mobile to avoid footer overlap */
+  .tiktok-actions{right:6px;gap:10px}
+  .tiktok-action-btn .icon-wrap{width:34px;height:34px;font-size:14px}
+  .tiktok-info{left:10px;right:50px;bottom:74px}
+  .tiktok-info-title{font-size:11px}
+  .tiktok-info-sub{font-size:9px}
+  .tiktok-controls-bottom{padding:4px 6px;gap:1px;bottom:8px;left:8px;right:8px;border-radius:18px}
+  .tiktok-control-item{padding:2px 2px;min-width:26px}
+  .tiktok-control-item .icon-wrap{width:24px;height:20px}
+  .tiktok-control-item .icon{font-size:12px}
+  .tiktok-control-item .label{font-size:6px}
+  .tiktok-play-btn .icon-wrap{width:28px;height:24px}
+  .tiktok-play-btn .icon{font-size:14px}
+  .tiktok-dots{gap:4px;top:8px}
+  .tiktok-dot{width:4px;height:4px}
+  .tiktok-dot.active{width:14px}
+  .tiktok-progress{bottom:56px}
   .tiktok-section-wrapper {
     padding-bottom: clamp(100px, 20vh, 140px);
   }
 }
 
-/* iPad and tablet */
 @media(min-width:641px) and (max-width:1024px) {
   .tiktok-section-wrapper {
     padding-bottom: clamp(60px, 10vh, 100px);
@@ -399,14 +699,57 @@ export default function IndexPage() {
   const [showControls, setShowControls] = useState(true);
   const [floatingHearts, setFloatingHearts] = useState<{id: number; x: number; y: number}[]>([]);
   const [shareTooltip, setShareTooltip] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [isVideoLoading, setIsVideoLoading] = useState(false);
   const prodRef = useRef<HTMLDivElement>(null!);
   const dispRef = useRef<HTMLDivElement>(null!);
   const videoRef = useRef<HTMLVideoElement>(null);
   const API_URL = import.meta.env.VITE_PRODUCT_DETAILS_API;
 
-  // TikTok videos data
+  // ============ PROMO CARDS DATA ============
+  const promoCards = [
+    {
+      id: 1,
+      title: "Aircraft Body",
+      subtitle: "Precision 1:200 Scale",
+      desc: "Meticulously crafted aircraft body with authentic airline livery and exceptional detail.",
+      icon: "✈️",
+      image: "https://res.cloudinary.com/deahgtn57/image/upload/v1749978991/omelett%27s/public/c919/115_mwwmjj.png",
+      badge: "Premium",
+      link: "/oms-store"
+    },
+    {
+      id: 2,
+      title: "Landing Gear",
+      subtitle: "Engineering Excellence",
+      desc: "Fully detailed landing gear with realistic struts, wheels, and hydraulic components.",
+      icon: "🛬",
+      image: "https://res.cloudinary.com/deahgtn57/image/upload/v1749978988/omelett%27s/public/c919/103_qxckbi.png",
+      badge: "Detailed",
+      link: "/oms-store"
+    },
+    {
+      id: 3,
+      title: "Display Stand",
+      subtitle: "Elegant Presentation",
+      desc: "Premium acrylic display stand with secure mounting for perfect presentation.",
+      icon: "🏛️",
+      image: "https://res.cloudinary.com/deahgtn57/image/upload/v1779621029/omelett%27s/public/promotion_post/84_tana7u.png",
+      badge: "Premium",
+      link: "/oms-store"
+    },
+    {
+      id: 4,
+      title: "Download Details",
+      subtitle: "Digital Collection",
+      desc: "Download your aircraft model certificate, assembly guide, and exclusive content.",
+      icon: "📥",
+      image: "https://res.cloudinary.com/deahgtn57/image/upload/v1769280086/omelett%27s/public/index%20page/WhatsApp_Image_2025-07-12_at_20.39.20_3f364bf1_dzua9j.jpg",
+      badge: "Digital",
+      isDownload: true,
+      downloadUrl: "https://res.cloudinary.com/deahgtn57/image/upload/v1779621029/omelett%27s/public/promotion_post/84_tana7u.png"
+    },
+  ];
+
   const [tiktokVideos, setTiktokVideos] = useState<TikTokVideo[]>([
     {
       id: 1,
@@ -549,6 +892,8 @@ export default function IndexPage() {
     "https://res.cloudinary.com/deahgtn57/image/upload/v1769280086/omelett%27s/public/index%20page/WhatsApp_Image_2025-07-12_at_20.39.23_9277beb2_i2bq2d.jpg",
     "https://res.cloudinary.com/deahgtn57/image/upload/v1769280598/omelett%27s/public/index%20page/WhatsApp_Image_2025-03-27_at_10.58.37_85769d8a_nlalyy.jpg",
     "https://res.cloudinary.com/deahgtn57/image/upload/v1769280086/omelett%27s/public/index%20page/WhatsApp_Image_2025-07-17_at_17.18.59_526cb521_b7v8t5.jpg",
+    "https://res.cloudinary.com/deahgtn57/image/upload/v1784974773/omelett%27s/public/index%20page/WhatsApp_Image_2026-07-25_at_4.54.48_PM_8_zlmeki.jpg",
+    
   ];
 
   const displays = [
@@ -567,27 +912,8 @@ export default function IndexPage() {
     { title:"Certified Authenticity", desc:"Documented provenance for each piece" },
   ];
 
-  // Fullscreen functions
-  const toggleFullscreen = useCallback(() => {
-    const videoElement = videoRef.current;
-    if (!videoElement) return;
-
-    if (!document.fullscreenElement) {
-      const container = videoElement.closest('.tiktok-carousel');
-      if (container?.requestFullscreen) {
-        container.requestFullscreen().catch(() => {});
-      }
-      setIsFullscreen(true);
-    } else {
-      document.exitFullscreen?.().catch(() => {});
-      setIsFullscreen(false);
-    }
-  }, []);
-
   useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
+    const handleFullscreenChange = () => {};
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
@@ -682,7 +1008,6 @@ export default function IndexPage() {
 
     const handleEnded = () => {
       setVideoProgress(0);
-      // Auto-advance to next video after a short delay
       if (autoAdvanceTimeout) clearTimeout(autoAdvanceTimeout);
       autoAdvanceTimeout = setTimeout(() => {
         const nextIndex = (currentVideoIndex + 1) % tiktokVideos.length;
@@ -705,11 +1030,9 @@ export default function IndexPage() {
     videoElement.addEventListener('canplay', handleCanPlay);
     videoElement.addEventListener('ended', handleEnded);
 
-    // Initial play with sound off by default
     videoElement.muted = true;
     videoElement.play().catch(() => {});
 
-    // Hide controls after 3 seconds of inactivity
     let hideTimeout: ReturnType<typeof setTimeout>;
     const resetTimer = () => {
       setShowControls(true);
@@ -875,6 +1198,10 @@ export default function IndexPage() {
     ref.current?.scrollBy({ left: dir==="l" ? -(ref.current.clientWidth*.75) : (ref.current.clientWidth*.75), behavior:"smooth" });
   };
 
+  const handleDownload = (url: string) => {
+    window.open(url, '_blank');
+  };
+
   return (
     <DefaultLayout>
       <style dangerouslySetInnerHTML={{ __html: styles }} />
@@ -999,7 +1326,7 @@ export default function IndexPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6, duration: 0.5 }}
               >
-                <Link href="/Omelette's" className="btn-main" style={{ borderRadius:8 }}>
+                <Link href="/oms-store" className="btn-main" style={{ borderRadius:8 }}>
                   {t("viewModels") || "View Collection"} <AiOutlineRight size={17} />
                 </Link>
               </motion.div>
@@ -1039,7 +1366,7 @@ export default function IndexPage() {
               <motion.div {...ani(.1)} className="flex items-center gap-3 flex-shrink-0">
                 <button className="nav-btn" onClick={() => scroll(prodRef,"l")}><AiOutlineLeft size={16} /></button>
                 <button className="nav-btn" onClick={() => scroll(prodRef,"r")} style={{ background:"var(--p)",color:"#fff",borderColor:"var(--p)" }}><AiOutlineRight size={16} /></button>
-                <Link href="/Omelette's" className="hidden sm:inline-flex items-center gap-1" style={{ color:"var(--p)",fontWeight:600,fontSize:".84rem",textDecoration:"none" }}>
+                <Link href="/oms-store" className="hidden sm:inline-flex items-center gap-1" style={{ color:"var(--p)",fontWeight:600,fontSize:".84rem",textDecoration:"none" }}>
                   {t("viewFullCollection")} <AiOutlineRight size={13} />
                 </Link>
               </motion.div>
@@ -1079,7 +1406,7 @@ export default function IndexPage() {
                     </div>
                   </div>
                 ))}
-                <Link href="/Omelette's" className="flex-shrink-0 rounded-2xl overflow-hidden flex flex-col items-center justify-center"
+                <Link href="/oms-store" className="flex-shrink-0 rounded-2xl overflow-hidden flex flex-col items-center justify-center"
                   style={{ width:"clamp(180px,18vw,220px)",background:"linear-gradient(135deg,var(--p),var(--p2))",minHeight:300,textDecoration:"none",color:"#fff",gap:10,padding:24,transition:"transform .3s" }}
                   onMouseEnter={e => (e.currentTarget as HTMLElement).style.transform="translateY(-5px)"}
                   onMouseLeave={e => (e.currentTarget as HTMLElement).style.transform="translateY(0)"}>
@@ -1092,7 +1419,7 @@ export default function IndexPage() {
             )}
 
             <div className="sm:hidden text-center mt-8">
-              <Link href="/Omelette's" className="btn-main" style={{ padding:"11px 26px" }}>
+              <Link href="/oms-store" className="btn-main" style={{ padding:"11px 26px" }}>
                 {t("viewFullCollection")} <AiOutlineRight size={15} />
               </Link>
             </div>
@@ -1135,124 +1462,70 @@ export default function IndexPage() {
               ))}
             </motion.div>
 
-            {/* ═══ PROMOTION - BEAUTIFUL GLASS STYLE ═══ */}
-            <motion.div {...ani(.15)} className="promo-glass mt-12">
-              <div className="promo-orb promo-orb-1" />
-              <div className="promo-orb promo-orb-2" />
-              <div className="dots-bg" />
-              <div className="scan-line" />
-              
-              <div className="grid lg:grid-cols-2 gap-8 p-8 lg:p-12 relative z-10">
-                {/* LEFT CONTENT */}
-                <div className="flex flex-col justify-center">
-                  <motion.div
-                    initial={{ opacity:0, y:20 }}
-                    whileInView={{ opacity:1, y:0 }}
-                    transition={{ duration:.6 }}
-                    className="promo-badge"
-                  >
-                    <AiOutlineGift size={14} /> {t("perfectGiftPackaging") || "Gift Packaging"}
-                  </motion.div>
-
-                  <motion.h3
-                    initial={{ opacity:0, y:20 }}
-                    whileInView={{ opacity:1, y:0 }}
-                    transition={{ duration:.7, delay:.1 }}
-                    className="promo-title mt-4"
-                  >
-                    {t("premiumGiftPresentation") || "The Perfect"} <br />
-                    <span className="gold">{t("premiumGift") || "Premium Gift"}</span>
-                  </motion.h3>
-
-                  <motion.p
-                    initial={{ opacity:0, y:20 }}
-                    whileInView={{ opacity:1, y:0 }}
-                    transition={{ duration:.7, delay:.2 }}
-                    className="promo-desc mt-3"
-                  >
-                    {t("eachAircraftModelComes") || "Each model comes beautifully packaged in a premium gift box, making it the perfect present for any aviation enthusiast."}
-                  </motion.p>
-
-                  <motion.div
-                    initial={{ opacity:0, y:20 }}
-                    whileInView={{ opacity:1, y:0 }}
-                    transition={{ duration:.7, delay:.3 }}
-                    className="flex flex-col gap-2 mt-4"
-                  >
-                    {[
-                      { icon: "🎁", label: t("premiumGiftBox") || "Premium Gift Box" },
-                      { icon: "💌", label: t("personalizedCard") || "Personalized Card" },
-                      { icon: "✨", label: t("elegantPackaging") || "Elegant Packaging" },
-                      { icon: "🔒", label: "Certificate of Authenticity" },
-                    ].map((item, idx) => (
-                      <motion.div
-                        key={idx}
-                        initial={{ opacity:0, x:-20 }}
-                        whileInView={{ opacity:1, x:0 }}
-                        transition={{ duration:.4, delay: .4 + idx * .08 }}
-                        className="promo-feature"
-                      >
-                        <div className="promo-feature-icon">{item.icon}</div>
-                        <span className="promo-feature-text">{item.label}</span>
-                      </motion.div>
-                    ))}
-                  </motion.div>
-
-                  {/* Trust badges grid */}
-                  <motion.div
-                    initial={{ opacity:0, y:20 }}
-                    whileInView={{ opacity:1, y:0 }}
-                    transition={{ duration:.6, delay:.5 }}
-                    className="promo-grid"
-                  >
-                    {["Free Shipping", "24/7 Support", "Authenticity", "Secure Payment"].map((item, idx) => (
-                      <div key={idx} className="promo-grid-item">
-                        <AiOutlineCheck size={10} style={{ color: "rgba(13,122,104,.4)" }} />
-                        <span>{item}</span>
-                      </div>
-                    ))}
-                  </motion.div>
-
-                  <motion.div
-                    initial={{ opacity:0, y:20 }}
-                    whileInView={{ opacity:1, y:0 }}
-                    transition={{ duration:.6, delay:.6 }}
-                    className="mt-6"
-                  >
-                    <Link href="/Omelette's" className="btn-main" style={{ padding:"12px 28px" }}>
-                      Browse Collection <AiOutlineRight size={15} />
-                    </Link>
-                  </motion.div>
+            {/* ═══ NEW 4-CARD PROMOTION SECTION ═══ */}
+            <motion.div 
+              {...ani(.15)} 
+              className="promo-cards-section"
+            >
+              <div className="promo-cards-header">
+                <div>
+                  <span className="tag">Premium Collection</span>
+                  <h3 className="promo-cards-title">Every Detail Matters</h3>
+                  <p className="promo-cards-subtitle">Discover what makes our aircraft models extraordinary</p>
                 </div>
+                <Link href="/oms-store" className="text-sm font-semibold text-[var(--p)] hover:opacity-80 transition-opacity flex items-center gap-1">
+                  View All <AiOutlineRight size={14} />
+                </Link>
+              </div>
 
-                {/* RIGHT IMAGE */}
-                <div 
-                  className="promo-image-wrap"
-                  onClick={() => setPromoModalOpen(true)}
-                >
+              <div className="promo-cards-grid">
+                {promoCards.map((card) => (
                   <motion.div
-                    animate={{ y: [0, -6, 0] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                    className="relative"
+                    key={card.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: card.id * 0.08 }}
+                    viewport={{ once: true }}
+                    className="promo-card"
                   >
-                    <Image
-                      className="promo-image"
-                      src="https://res.cloudinary.com/deahgtn57/image/upload/v1779621029/omelett%27s/public/promotion_post/84_tana7u.png"
-                      alt={t("premiumGiftPackaging") || "Premium Gift Packaging"}
-                    />
-                    <div className="click-hint">🔍 Click to enlarge</div>
+                    <div className="promo-card-image">
+                      <Image
+                        src={card.image}
+                        alt={card.title}
+                        className="w-full h-full object-contain"
+                        style={{ padding: '12px' }}
+                      />
+                      <span className="promo-card-badge">{card.badge}</span>
+                      <span className="promo-card-icon">{card.icon}</span>
+                    </div>
+                    <div className="promo-card-content">
+                      <h4 className="promo-card-title">{card.title}</h4>
+                      <p className="promo-card-subtitle">{card.subtitle}</p>
+                      <p className="promo-card-desc">{card.desc}</p>
+                      {card.isDownload ? (
+                        <button 
+                          className="promo-card-btn download-btn"
+                          onClick={() => handleDownload(card.downloadUrl!)}
+                        >
+                          <AiOutlineDownload size={14} /> Download
+                        </button>
+                      ) : (
+                        <Link href={card.link} className="promo-card-btn">
+                          Learn More <AiOutlineRight size={14} />
+                        </Link>
+                      )}
+                    </div>
                   </motion.div>
-                </div>
+                ))}
               </div>
             </motion.div>
           </div>
         </section>
 
-        {/* ═══ CRAFTSMANSHIP - TIKTOK VIDEO WITH LIKE & SHARE ═══ */}
+        {/* ═══ CRAFTSMANSHIP - TIKTOK VIDEO ═══ */}
         <section className="sec sec-alt tiktok-section-wrapper">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
-              {/* Quality Content */}
               <motion.div {...ani()}>
                 <span className="tag">{t("craftsmanship")}</span>
                 <h2 className="h2 mt-3">{t("uncompromisingQuality")}</h2>
@@ -1281,14 +1554,7 @@ export default function IndexPage() {
 
               {/* TikTok Video */}
               <motion.div {...ani(.1)} className="flex justify-center">
-                <div 
-                  className="tiktok-carousel"
-                  style={{ 
-                    aspectRatio: "9/16",
-                    maxWidth: "320px",
-                    width: "100%"
-                  }}
-                >
+                <div className="tiktok-carousel">
                   <div className="tiktok-video-wrapper">
                     <video
                       ref={videoRef}
@@ -1306,28 +1572,11 @@ export default function IndexPage() {
                       Your browser does not support the video tag.
                     </video>
 
-                    {/* Loading overlay */}
                     {isVideoLoading && (
                       <div className="absolute inset-0 flex items-center justify-center z-30 bg-black/50">
-                        <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
+                        <div className="w-10 h-10 border-3 border-white/20 border-t-white rounded-full animate-spin"></div>
                       </div>
                     )}
-
-                    {/* Navigation Arrows - Next & Previous */}
-                    <button 
-                      className="tiktok-nav-arrow prev"
-                      onClick={goToPreviousVideo}
-                      aria-label="Previous video"
-                    >
-                      <AiOutlineLeft size={20} />
-                    </button>
-                    <button 
-                      className="tiktok-nav-arrow next"
-                      onClick={goToNextVideo}
-                      aria-label="Next video"
-                    >
-                      <AiOutlineRight size={20} />
-                    </button>
 
                     <div className="tiktok-gradient-top" />
                     <div className="tiktok-overlay" />
@@ -1348,47 +1597,88 @@ export default function IndexPage() {
                       </div>
                     )}
 
-                    {showControls && (
-                      <div className="tiktok-controls-center">
-                        <button className="tiktok-control-btn" onClick={togglePlay}>
-                          {isPlaying ? '⏸' : '▶'}
-                        </button>
+                    <div className="tiktok-info">
+                      <div className="tiktok-info-title">
+                        ✈️ {tiktokVideos[currentVideoIndex].title}
+                        <span className="verified">✓</span>
                       </div>
-                    )}
+                      <div className="tiktok-info-sub">
+                        Premium Quality <span>•</span> 1:200 Scale <span>•</span> #Aviation
+                      </div>
+                    </div>
 
-                    <div className="tiktok-bottom-controls">
-                      <button className="tiktok-bottom-btn" onClick={togglePlay}>
-                        {isPlaying ? '⏸' : '▶'}
-                      </button>
-                      <button className="tiktok-bottom-btn" onClick={restartVideo}>
-                        ⟳
-                      </button>
+                    {/* ===== CONTROLS - FOOTER STYLE (NO FULLSCREEN) ===== */}
+                    <div className="tiktok-controls-bottom">
                       <button 
-                        className={`tiktok-bottom-btn sound-btn ${isSoundOn ? 'on' : ''}`}
+                        className="tiktok-control-item"
+                        onClick={goToPreviousVideo}
+                        aria-label="Previous video"
+                      >
+                        <span className="icon-wrap">
+                          <span className="icon"><AiOutlineLeft size={18} /></span>
+                        </span>
+                        <span className="label">Prev</span>
+                      </button>
+
+                      <button 
+                        className="tiktok-control-item tiktok-play-btn active"
+                        onClick={togglePlay}
+                      >
+                        <span className="icon-wrap">
+                          <span className="icon">
+                            {isPlaying ? <AiOutlinePause size={20} /> : <FaPlay size={20} />}
+                          </span>
+                        </span>
+                        <span className="label">{isPlaying ? 'Pause' : 'Play'}</span>
+                      </button>
+
+                      <button 
+                        className="tiktok-control-item"
+                        onClick={goToNextVideo}
+                        aria-label="Next video"
+                      >
+                        <span className="icon-wrap">
+                          <span className="icon"><AiOutlineRight size={18} /></span>
+                        </span>
+                        <span className="label">Next</span>
+                      </button>
+
+                      <div className="tiktok-spacer" />
+
+                      <button 
+                        className="tiktok-control-item"
+                        onClick={restartVideo}
+                      >
+                        <span className="icon-wrap">
+                          <span className="icon">⟳</span>
+                        </span>
+                        <span className="label">Replay</span>
+                      </button>
+
+                      <button 
+                        className={`tiktok-control-item ${isSoundOn ? 'active' : ''}`}
                         onClick={toggleSound}
                       >
-                        {isSoundOn ? <AiOutlineSound size={16} /> : <AiOutlineMuted size={16} />}
-                      </button>
-                      <button 
-                        className={`tiktok-bottom-btn fullscreen-btn ${isFullscreen ? 'on' : ''}`}
-                        onClick={toggleFullscreen}
-                      >
-                        {isFullscreen ? <AiOutlineFullscreenExit size={16} /> : <AiOutlineFullscreen size={16} />}
+                        <span className="icon-wrap">
+                          <span className="icon">
+                            {isSoundOn ? <AiOutlineSound size={16} /> : <AiOutlineMuted size={16} />}
+                          </span>
+                        </span>
+                        <span className="label">{isSoundOn ? 'Sound' : 'Mute'}</span>
                       </button>
                     </div>
 
-                    {/* Side Actions - Like & Share with Green Theme */}
+                    {/* Side Actions */}
                     <div className="tiktok-actions">
-                      {/* Like Button - Turns GREEN when clicked */}
                       <button 
                         className="tiktok-action-btn like-btn"
                         onClick={() => handleLike(currentVideoIndex)}
                       >
                         <div className={`icon-wrap ${tiktokVideos[currentVideoIndex].liked ? 'liked' : ''}`}>
                           {tiktokVideos[currentVideoIndex].liked ? (
-                            <AiFillHeart size={20} className="like-icon" />
+                            <AiFillHeart size={18} className="like-icon" />
                           ) : (
-                            <AiOutlineHeart size={20} />
+                            <AiOutlineHeart size={18} />
                           )}
                         </div>
                         <span className={`count ${tiktokVideos[currentVideoIndex].liked ? 'liked' : ''}`}>
@@ -1396,25 +1686,23 @@ export default function IndexPage() {
                         </span>
                       </button>
 
-                      {/* Share Button */}
                       <button 
                         className="tiktok-action-btn share-btn"
                         onClick={handleShare}
                         style={{ position: 'relative' }}
                       >
                         <div className="icon-wrap">
-                          <AiOutlineShareAlt size={20} />
+                          <AiOutlineShareAlt size={18} />
                         </div>
                         <span className="count">Share</span>
                         {shareTooltip && (
                           <div className="tiktok-share-tooltip">
-                            Copied to clipboard!
+                            Copied!
                           </div>
                         )}
                       </button>
                     </div>
 
-                    {/* Floating Hearts Animation */}
                     {floatingHearts.map(heart => (
                       <div
                         key={heart.id}
@@ -1424,12 +1712,12 @@ export default function IndexPage() {
                           bottom: `${heart.y}px`,
                           zIndex: 30,
                           pointerEvents: 'none',
-                          fontSize: '24px',
+                          fontSize: '20px',
                           color: '#0d7a68',
                           animation: 'floatHeart 1s ease-out forwards'
                         }}
                       >
-                        <FaHeart size={26} color="#0d7a68" />
+                        <FaHeart size={22} color="#0d7a68" />
                       </div>
                     ))}
                   </div>
@@ -1442,7 +1730,7 @@ export default function IndexPage() {
         </section>
       </div>
 
-      {/* ═══ DISPLAY MODAL ═══ */}
+      {/* ═══ MODALS ═══ */}
       <AnimatePresence>
         {modalOn && selImg !== null && (
           <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }} style={{ position:"fixed",inset:0,zIndex:99999,background:"rgba(0,0,0,.85)",backdropFilter:"blur(10px)",display:"flex",alignItems:"center",justifyContent:"center",padding:12 }} onClick={closeDsp}>
@@ -1497,7 +1785,6 @@ export default function IndexPage() {
         )}
       </AnimatePresence>
 
-      {/* ═══ PROMOTION IMAGE MODAL ═══ */}
       <AnimatePresence>
         {promoModalOpen && (
           <motion.div 
@@ -1531,7 +1818,6 @@ export default function IndexPage() {
         )}
       </AnimatePresence>
 
-      {/* ═══ AIRLINE MODAL ═══ */}
       <AnimatePresence>
         {alModal && (
           <motion.div className="al-bk" initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }} onClick={closeAl}>
