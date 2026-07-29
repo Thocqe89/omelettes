@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@heroui/button";
-import { FaFacebookF, FaInstagram, FaTiktok } from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaSlideshare, FaTiktok } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
 import { 
   AiOutlineUser, 
@@ -34,6 +34,7 @@ import { Image } from "@heroui/image";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { siteConfig } from "@/config/site";
 import React from "react";
+import { TbHeadset } from "react-icons/tb";
 
 export const Navbar = () => {
   const { t, i18n } = useTranslation();
@@ -55,7 +56,7 @@ export const Navbar = () => {
 
     const path = location.pathname;
     if (path === "/") setActiveNav("home");
-    else if (path.startsWith("/about")) setActiveNav("about_us");
+    else if (path.startsWith("/class")) setActiveNav("class");
     else if (path.startsWith("/oms-store")) setActiveNav("store");
     else if (path.startsWith("/help")) setActiveNav("help");
     else setActiveNav("");
@@ -72,7 +73,7 @@ export const Navbar = () => {
   useEffect(() => {
     const path = location.pathname;
     if (path === "/") setActiveNav("home");
-    else if (path.startsWith("/about")) setActiveNav("about_us");
+    else if (path.startsWith("/class")) setActiveNav("class");
     else if (path.startsWith("/oms-store")) {
       setActiveNav("store");
       setStoreWiggle(false);
@@ -110,8 +111,8 @@ export const Navbar = () => {
 
   const navItems = [
     { href: "/", label: "home", icon: <AiOutlineHome /> },
-    { href: "/about", label: "about_us", icon: <AiOutlineInfoCircle /> },
-    { href: "/help", label: "help", icon: <AiOutlineIdcard /> },
+    { href: "/class", label: "class", icon: <FaSlideshare /> },
+    { href: "/help", label: "help", icon: <TbHeadset /> },
     { href: "/oms-store", label: "store", icon: <AiOutlineShopping /> },
   ];
 
@@ -316,7 +317,7 @@ export const Navbar = () => {
             <NavbarItem>
               <NavbarMenuToggle
                 aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-                icon={isMenuOpen ? <AiOutlineClose size={24} /> : <AiOutlineMenu size={24} />}
+                icon={isMenuOpen ? <FaSlideshare size={24} /> : <AiOutlineMenu size={24} />}
                 className="text-gray-700 dark:text-gray-300 hover:text-[#0d7a68]"
               />
             </NavbarItem>

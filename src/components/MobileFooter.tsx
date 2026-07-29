@@ -7,6 +7,8 @@ import {
   AiOutlineShopping,
   AiOutlineUser,
 } from "react-icons/ai";
+import { TbHeadset } from "react-icons/tb";
+import { FaSlideshare } from "react-icons/fa";
 
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap');
@@ -152,7 +154,7 @@ export const MobileFooter = () => {
     const path = window.location.pathname;
     if (path === "/")                        setActiveTab("home");
     else if (path.startsWith("/oms-store")) setActiveTab("store");
-    else if (path.startsWith("/about"))      setActiveTab("about_us");
+    else if (path.startsWith("/class"))      setActiveTab("class");
     else if (path.startsWith("/help"))       setActiveTab("help");
     else                                     setActiveTab("");
   }, []);
@@ -160,8 +162,8 @@ export const MobileFooter = () => {
   const nav = [
     { tab: "home",     href: "/",            icon: <AiOutlineHome size={22} />,       label: t("home")     },
     { tab: "store",    href: "/oms-store",  icon: <AiOutlineShopping size={22} />,   label: t("store")    },
-    { tab: "about_us", href: "/about",       icon: <AiOutlineInfoCircle size={22} />, label: t("about_us") },
-    { tab: "help",     href: "/help",        icon: <AiOutlineUser size={22} />,       label: t("help")     },
+    { tab: "class", href: "/class",       icon: <FaSlideshare size={22} />, label: t("class") },
+    { tab: "help",     href: "/help",        icon: <TbHeadset  size={22} />,       label: t("help")     },
   ];
 
   return (

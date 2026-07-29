@@ -338,5 +338,6 @@
       "truck": "Truck Delivery",
       "headset": "Headset",
       "certificate": "Certificate",
-      "item": "Item"
+      "item": "Item",
+      "class":"Class"
 }

@@ -17,13 +17,13 @@ import Omellets from "./components/omelettes";
 import Bank from "./components/bank";
 
 import Dashboard from "./components/OMS-Trip-Dashboard/Dashboard";
-import OMS_Trip_Tracker from "./components/oms-tirp-tracker";
+// import OMS_Trip_Tracker from "./components/LearnChinese";
 
 import LoginPage from "./components/login";
 import OMSDashboard from "./components/test";
 import OMS_Help_Request from "./components/customers";
 import Loading from "./components/loading";
-import HSKApp from "./components/oms-tirp-tracker";
+import HSKApp from "./components/LearnChinese";
 
 function App() {
   return (
@@ -32,9 +32,9 @@ function App() {
       <Routes>
         <Route element={<IndexPage />} path="/" />
         <Route element={<Omellets />} path="/oms-store" />
-        <Route element={<AboutPage />} path="/about" />
+        {/* <Route element={<AboutPage />} path="/about" /> */}
         <Route element={<Logistics />} path="/logistics" />
-        <Route element={<HSKApp />} path="/OMS_chinese" />
+        <Route element={<HSKApp />} path="/class" />
         <Route element={<OMS_Help_Request />} path="/help" />
         <Route element={<LoginPage />} path="/OMS_Login" />
         <Route element={<Loading />} path="/OMS-Loading" />
